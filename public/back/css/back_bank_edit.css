@@ -1,0 +1,43 @@
+.text_red{
+    color: #F00;
+}
+
+/*==================================
+テキストボックス、コンボボックスの文字の大きさ
+===================================*/
+.form-control, .form-select, .btn, .dropdown-menu{
+    font-size: 0.9rem;
+}
+
+/*==================================
+ラベル(必須、任意)
+===================================*/
+label.label_required:after {
+    padding: 0px 6px 0px 6px;
+    font-size: 0.7rem;
+    margin-right: 0.5rem;
+    color: white;
+    background-color: #C44;
+    content: "必須";
+}
+
+/* ラベル(任意) */
+label.label_any:after {
+    padding: 0px 6px 0px 6px;
+    font-size: 0.7rem;
+    margin-right: 0.5rem;
+    color: white;
+    background-color: #5e5e5e;
+    content: "任意";
+}
+
+/* テーブル上のhrのmargin_bottom */
+.info_title{
+    font-size: 1.1rem;
+    color: #6c757d;
+    /* letter-spacing: 0.1rem; */
+}
+
+.icon_blue{
+    color: #98a4c7;
+}

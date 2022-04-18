@@ -4,7 +4,7 @@
         <title>ログイン/COSTS</title>
 
         <!-- css -->
-        @component('component.front_head')
+        @component('component.backHead')
         @endcomponent
 
         <!-- login -->
@@ -20,7 +20,7 @@
 
                 <!-- Icon -->
                 <div class="fadeIn first">
-                    <img src="./login/images/kasegu_logo.png" id="icon" alt="User Icon" />
+                    <img src="./login/images/lutan_logo.png" id="icon" alt="User Icon" />
                 </div>
 
                 <!-- Login Form -->
@@ -35,33 +35,29 @@
                     
                     <!-- パスワード -->
                     <label for="">Password<br></label>
-                    <input type="password" id="password_request" class="fadeIn third" name="login" placeholder="" required>
+                    <input type="password" id="password_request" class="fadeIn third form-control" name="login" placeholder="" required>
                 
                     <!-- 登録ボタン -->
-                    <input type="button" class="fadeIn fourth btn" value="Log In">
+                    <input type="button" class="fadeIn fourth btn" value="ログイン">
                     
                     <!-- 自動ログイン -->
-                    <div class="fadeIn fifth">
+                    <div class="fadeIn fifth mt-2">
                         <input class="form-check-input" type="checkbox" name="autoLogin" id="auto_login_flag">
                         <span class="form-check-label" for="autoLogin">次回から自動的にログイン</span>
                     </div>
 
                 </form>
 
-                <!-- アカウント作成 -->
+                <!-- パスワードを忘れた -->
                 <div id="formFooter">
                     <div class="container">
                         <div class="row">
-                            <div class="col-12 col-md-12 col-lg-6">
-                                <a class="underlineHover float-lg-start" href="createUserInit">パスワードを忘れた</a>
-                            </div>
-                            <div class="col-12 col-md-12 col-lg-6">
-                                <a class="underlineHover float-lg-end" href="createUserInit">ユーザ登録</a>
+                            <div class="col-12 col-md-12 col-lg-12">
+                                <a class="underlineHover float-lg-end" href="createUserInit">パスワードを忘れた</a>
                             </div>
                         </div>
                     </div>
                 </div>
-
 
             </div>
         </div>
@@ -70,7 +66,7 @@
         <input type="hidden" id="top_url" value="{{ url('/') }}" />
 
         <!-- js -->
-        @component('component.front_js')
+        @component('component.backJs')
         @endcomponent
         
         <!-- login.js -->

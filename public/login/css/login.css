@@ -2,6 +2,7 @@
 body {
     font-family: "Poppins", sans-serif;
     height: 100vh;
+    font-size: 1rem;
 }
 
 a {
@@ -66,8 +67,6 @@ h2.active {
     color: #0d0d0d;
     border-bottom: 2px solid #5fbae9;
 }
-
-
 
 /* FORM TYPOGRAPHY*/
 
@@ -264,16 +263,19 @@ input[type=password]:placeholder {
 } 
 
 #icon {
-width:60%;
-margin: 2rem;
+    width:60%;
+    margin-top: 3rem;
+    margin-right: 2rem;
+    margin-bottom: 2rem;
+    margin-left: 2rem;
 }
 
 label{
-text-align: left;
-width: 85%;
+    text-align: left;
+    width: 85%;
 }
 
 .error_text{
-color: red;
-margin-bottom: 1rem;
+    color: red;
+    margin-bottom: 1rem;
 }

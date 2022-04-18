@@ -1,0 +1,138 @@
+body {
+    /* font-family: "Hiragino Sans"; */
+    /* letter-spacing: 0.1rem; */
+}
+/*-----------------------------ダッシュボード(編集はここから)-------------------------------------------------*/
+.dashboard_box{
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	margin-bottom: 1rem;
+}
+
+.dashboard_box_inner_1{
+    
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	/* 親要素に対して少し小さくするため */
+	width: 95%;
+	background-color: #06a3ea;
+	border-radius: 5px;
+    padding-left: 1rem;
+}
+
+.dashboard_box_inner_2{
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	/* 親要素に対して少し小さくするため */
+	width: 95%;
+	background-color: #eea3c7;
+	border-radius: 5px;
+    padding-left: 1rem;
+}
+
+.dashboard_box_inner_3{
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	/* 親要素に対して少し小さくするため */
+	width: 95%;
+	background-color: #ffdc07;
+	border-radius: 5px;
+    padding-left: 1rem;
+}
+
+.dashboard_box_inner_4{
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	/* 親要素に対して少し小さくするため */
+	width: 95%;
+	background-color: #c8d606;
+	border-radius: 5px;
+    padding-left: 1rem;
+}
+
+.dashboard_box_inner_5{
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	/* 親要素に対して少し小さくするため */
+	width: 95%;
+	background-color: #ffdc07;
+	border-radius: 5px;
+    padding-left: 1rem;
+}
+
+.dashboard_box_inner_6{
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	/* 親要素に対して少し小さくするため */
+	width: 95%;
+	background-color: #c8d606;
+	border-radius: 5px;
+    padding-left: 1rem;
+}
+
+.dashboard_box_inner_7{
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	/* 親要素に対して少し小さくするため */
+	width: 95%;
+	background-color: #06a3ea;
+	border-radius: 5px;
+    padding-left: 1rem;
+}
+
+.dashboard_box_inner_8{
+	/* ダッシュボードの大きさ */
+	height: 13rem;
+	/* 親要素に対して少し小さくするため */
+	width: 95%;
+	background-color: #eea3c7;
+	border-radius: 5px;
+    padding-left: 1rem;
+}
+
+.dashboard_box_title{
+	font-size: 1rem;
+}
+
+.dashboard_box_num{
+	font-size: 1.7rem;
+	font-weight: bold;
+	color: #1745a3;
+}
+
+/*-----------------------------お知らせ、アップデート情報-------------------------------------------------*/
+/* 行間 */
+.table-condensed > thead > tr > th,
+.table-condensed > tbody > tr > th,
+.table-condensed > tfoot > tr > th,
+.table-condensed > thead > tr > td,
+.table-condensed > tbody > tr > td,
+.table-condensed > tfoot > tr > td {
+    padding: 10px;  /* 5px の値を変更 */    
+}
+
+table, td, th {
+    /* 見出し線、テーブル線のカスタマイズ */
+    border-bottom: 1px solid #dee2e6!important;
+    /* はみ出た部分を隠す */
+    overflow: hidden;
+    /* 折り返し無し */
+    white-space: nowrap;
+} 
+
+/* テーブル上のhrのmargin_bottom */
+.info_hr{
+    /* margin-top: 0.5rem; */
+    margin-bottom: 0;
+}
+
+/* テーブル上のhrのmargin_bottom */
+.info_title{
+    font-size: 1.1rem;
+    color: #6c757d;
+    /* letter-spacing: 0.1rem; */
+}
+
+.icon_blue{
+    color: #98a4c7;
+}

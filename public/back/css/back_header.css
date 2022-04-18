@@ -1,0 +1,11 @@
+/*-----------------------------ヘッダー-------------------------------------------------*/
+.header_box{
+	position: fixed;
+	width: 100%;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	color: white;
+	text-align: right;
+	background-color: #1745a3;
+	z-index: 1;
+}

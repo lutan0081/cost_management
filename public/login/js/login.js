@@ -1,4 +1,6 @@
-// ajax
+/**
+ * ログインボタン
+ */
 $(function() {
     $(".btn").on('click', function(e) {
 
@@ -20,14 +22,17 @@ $(function() {
             "mail_request": mail_request,
             "password_request": password_request
         };
+
         console.log(sendData);
         
         $.ajaxSetup({
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
         });
+
         $.ajax({
+            
             type: 'post',
-            url: 'loginApi',
+            url: 'loginEntry',
             dataType: 'json',
             data: sendData,
         
@@ -40,16 +45,21 @@ $(function() {
              * admin = trueの場合、管理画面に遷移
              */
             if(data.admin == true){
+
                 location.href = 'adminInit'
                 return false;
+
             }else{
                 /**
                  * status = trueの場合、一般画面に遷移
                  */
                 if(data.status == true){
+
                     location.href = 'backHomeInit';
                     return false;
+
                 }else{
+
                     /**
                      * falseの処理
                      */
@@ -57,9 +67,11 @@ $(function() {
                     $('.msg').text('E-mailまたはPasswordが正しくありません。').show();
                 
                 }
+
             }
         // ajax接続が出来なかった場合の処理
         }).fail(function(jqXHR, textStatus, errorThrown) {
+            
             console.log(jqXHR);
             console.log(textStatus);
             console.log(errorThrown);

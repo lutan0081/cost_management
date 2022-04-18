@@ -1,0 +1,32 @@
+/*==================================================
+スタート時は要素自体を透過0にするためのopacity:0;を指定する
+===================================*/
+
+.box{
+	opacity: 0;
+}
+
+/*==================================================
+動かしたい動き（今回は” ふわっ” を採用）
+===================================*/
+
+.fadeUp {
+  animation-name:fadeUpAnime;
+  animation-duration:0.5s;
+  animation-fill-mode:forwards;
+  opacity: 0;
+}
+
+@keyframes fadeUpAnime{
+  from {
+    opacity: 0;
+	transform: translateY(100px);
+  }
+
+  to {
+    opacity: 1;
+	transform: translateY(0);
+  }
+}
+
+
