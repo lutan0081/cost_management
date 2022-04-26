@@ -14,7 +14,6 @@ $(function(){
 
         // 文字列をアンダーバーで分割
         id = id.split('_')[1];
-
         console.log(id);
 
         setTimeout(function(){
@@ -22,7 +21,7 @@ $(function(){
         },500);
 
         // idをパラメーターでControllerに渡す
-        location.href = "backOwnerEditInit?owner_id=" + id;
+        location.href = "backRealEstateEditInit?real_estate_id=" + id;
     });
 
     // 編集(ラジオボタンの処理)
@@ -55,7 +54,11 @@ $(function(){
         var id = $('input[name=flexRadioDisabled]:checked').attr('id');
         console.log(id);
 
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },500);
+
         // idをパラメーターでControllerに渡す
-        location.href = "backBankEditInit?bank_id=" + id;
+        location.href = "backRealEstateEditInit?real_estate_id=" + id;
     });
 });

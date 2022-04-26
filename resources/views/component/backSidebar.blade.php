@@ -70,7 +70,7 @@
                                 <a href="backRealEstateInit">物件一覧</a>
                             </li>
                             <li>
-                                <a href="backAppInit">部屋一覧</a>
+                                <a href="backRoomInit">部屋一覧</a>
                             </li>
                             <li>
                                 <a href="backBankInit">銀行一覧</a>

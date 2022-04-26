@@ -9,7 +9,7 @@
         @endcomponent
 
 		<!-- 自作css -->
-		<link rel="stylesheet" href="{{ asset('back/css/back_owner_edit.css') }}">  
+		<link rel="stylesheet" href="{{ asset('back/css/back_real_estate_edit.css') }}">  
 		
         <style>
 
@@ -76,7 +76,7 @@
                         <div class="col-7 col-md-4 col-lg-2 mt-3">
                             <label class="label_required mb-2" for="textBox"></label>郵便番号
                             <div class="input-group">
-                                <input type="number" class="form-control" name="real_estate_post_number_error" id="real_estate_post_number_error" value="{{ $real_estate_list->real_estate_post_number }}" placeholder="例：1111111" required>
+                                <input type="number" class="form-control" name="real_estate_post_number" id="real_estate_post_number" value="{{ $real_estate_list->real_estate_post_number }}" placeholder="例：1111111" required>
                                 <button id="owner-btn-zip" class="btn btn-outline-primary btn_zip"><i class="fas fa-search"></i></button>
                                 <div class="invalid-feedback" id="real_estate_post_number_error">
                                     郵便番号は必須です。
@@ -93,7 +93,6 @@
                             </div>       
                         </div>
 
-
                         <div class="col-6 col-md-8 col-lg-12 mt-4">
                             <hr>
                         </div>
@@ -102,20 +101,23 @@
                         <div class="col-6 col-md-8 col-lg-5 mt-3">
                             <label class="label_required mb-2"></label>家主名
                             
-                            <select class="form-select" name="owner_name" id="owner_name">
+                            <select class="form-select" name="owner_name" id="owner_name" required>
                                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                 <option></option>
                                 @foreach($owner_list as $owners)
                                     <option value="{{ $owners->owner_id }}" @if($real_estate_list->owner_id == $owners->owner_id) selected @endif>{{ $owners->owner_name }}</option>
                                 @endforeach
                             </select>
+                            <div class="invalid-feedback" id ="owner_name_error">
+                                家主名は必須です。
+                            </div>  
                         </div>
 
                         <!-- 郵便番号 -->
                         <div class="col-7 col-md-4 col-lg-2 mt-3">
                             <label class="label_required mb-2" for="textBox"></label>郵便番号
                             <div class="input-group">
-                                <input type="number" class="form-control" name="owner_post_number" id="owner_post_number" value="{{ $real_estate_list->real_estate_name }}" placeholder="例：1111111" disabled>
+                                <input type="number" class="form-control" name="owner_post_number" id="owner_post_number"  @if($real_estate_list->owner_id == $owners->owner_id) value="{{ $owners->owner_post_number }} @endif" placeholder="例：1111111" disabled>
                                 <div class="invalid-feedback" id="owner_post_number_error">
                                     郵便番号は必須です。
                                 </div>
@@ -125,7 +127,7 @@
                         <!-- 住所 -->
                         <div class="col-12 col-md-12 col-lg-8 mt-3">
                             <label class="label_required mb-2" for="textBox"></label>住所
-                            <input type="text" class="form-control" name="owner_address" id="owner_address" value="{{ $real_estate_list->real_estate_name }}" placeholder="例：大阪府大阪市梅田1丁目xx-yy" disabled>
+                            <input type="text" class="form-control" name="owner_address" id="owner_address" @if($real_estate_list->owner_id == $owners->owner_id) value="{{ $owners->owner_address }}" @endif placeholder="例：大阪府大阪市梅田1丁目xx-yy" disabled>
                             <div class="real_estate-tab invalid-feedback" id ="owner_address_error">
                                 住所は必須です。
                             </div>       
@@ -137,7 +139,7 @@
                         <!-- TEL -->
                         <div class="col-12 col-md-12 col-lg-3 mt-3">
                             <label class="label_required mb-2" for="textBox"></label>TEL
-                            <input type="text" class="form-control" name="owner_tel" id="owner_tel" value="{{ $real_estate_list->real_estate_name }}" placeholder="例：06-1234-5678" disabled>
+                            <input type="text" class="form-control" name="owner_tel" id="owner_tel" @if($real_estate_list->owner_id == $owners->owner_id) value="{{ $owners->owner_tel }}" @endif placeholder="例：06-1234-5678" disabled>
                             <div class="invalid-feedback" id ="owner_tel_error">
                                 TELは必須です。
                             </div>
@@ -146,7 +148,7 @@
                         <!-- FAX -->
                         <div class="col-12 col-md-12 col-lg-3 mt-3 pb-2">
                             <label class="label_any mb-2" for="textBox"></label>FAX
-                            <input type="text" class="form-control" name="owner_fax" id="owner_fax" value="{{ $real_estate_list->real_estate_name }}" placeholder="例：06-1234-5678" disabled>
+                            <input type="text" class="form-control" name="owner_fax" id="owner_fax" @if($real_estate_list->owner_id == $owners->owner_id) value="{{ $owners->owner_fax }}" @endif placeholder="例：06-1234-5678" disabled>
                             <div class="invalid-feedback" id ="owner_fax_error">
                                 FAXは必須です。
                             </div>
@@ -173,7 +175,7 @@
                         <!-- ボタン -->
 
                         <!-- 不動産id -->
-                        <input type="hidden" name="owner_id" id="owner_id" value="{{ $real_estate_list->real_estate_id }}">
+                        <input type="hidden" name="real_estate_id" id="real_estate_id" value="{{ $real_estate_list->real_estate_id }}">
 
                     </form>
 
@@ -191,7 +193,7 @@
         @endcomponent
 
 		<!-- 自作js -->
-		<script src="{{ asset('back/js/back_owner_edit.js') }}"></script>
+		<script src="{{ asset('back/js/back_real_estate_edit.js') }}"></script>
 	</body>
 	
 </html>

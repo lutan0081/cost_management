@@ -1,5 +1,99 @@
+
+
 $(function(){
-    
+
+    /**
+     * イニシャライズ
+     */
+    $(window).on('load', function(){
+
+        clearProc();
+
+    });
+
+    /**
+     * 初期化
+     */
+    function clearProc() {
+
+        // 名前
+        $('#owner_name').val('');
+
+        // 郵便番号
+        $('#owner_post_number').val('');
+
+        // 住所
+        $('#owner_address').val('');
+
+        // 電話番号
+        $('#owner_tel').val('');
+
+        // FAX
+        $('#owner_fax').val('');
+    }
+
+    /**
+     * 家主コンボボックス変更
+     */
+    $("#owner_name").change(function(e) {
+        console.log('家主名変更の処理');
+
+        e.preventDefault();
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);
+
+        // id
+        let owner_id = $("#owner_name").val();
+        console.log(owner_id);
+
+        // 送信データ設定
+        var sendData = new FormData();
+        
+        sendData.append('owner_id', owner_id);
+        
+        // ajaxヘッダー
+        $.ajaxSetup({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+        });
+
+        $.ajax({
+            type: 'post',
+            url: 'backOwnerNameChange',
+            dataType: 'json',
+            data: sendData,
+            cache:false,
+            processData : false,
+            contentType : false,
+
+        // 接続が出来た場合の処理
+        }).done(function(data) {
+
+            $('#owner_post_number').val(data.owner_list[0]['owner_post_number']);
+            $('#owner_address').val(data.owner_list[0]['owner_address']);
+            $('#owner_tel').val(data.owner_list[0]['owner_tel']);
+            $('#owner_fax').val(data.owner_list[0]['owner_fax']);
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+        // ajax接続が出来なかった場合の処理
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+            
+        });
+    });
+
     /**
      * 登録
      */
@@ -78,32 +172,28 @@ $(function(){
         }
 
         // 家主id
-        let owner_id = $("#owner_id").val();
+        let owner_id = $("#owner_name").val();
 
-        // 家主名
-        let owner_name = $("#owner_name").val();
+        // 不動産id
+        let real_estate_id = $("#real_estate_id").val();
+        
+        // 不動産名
+        let real_estate_name = $("#real_estate_name").val();
 
         // 郵便番号
-        let owner_post_number = $("#owner_post_number").val();
+        let real_estate_post_number = $("#real_estate_post_number").val();
 
         // 住所
-        let owner_address = $("#owner_address").val();
-
-        // TEL
-        let owner_tel = $("#owner_tel").val();
-
-        // FAX
-        let owner_fax = $("#owner_fax").val();
+        let real_estate_address = $("#real_estate_address").val();
 
         // 送信データインスタンス化
         var sendData = new FormData();
         
+        sendData.append('real_estate_id', real_estate_id);
+        sendData.append('real_estate_name', real_estate_name);
+        sendData.append('real_estate_post_number', real_estate_post_number);
+        sendData.append('real_estate_address', real_estate_address);
         sendData.append('owner_id', owner_id);
-        sendData.append('owner_name', owner_name);
-        sendData.append('owner_post_number', owner_post_number);
-        sendData.append('owner_address', owner_address);
-        sendData.append('owner_tel', owner_tel);
-        sendData.append('owner_fax', owner_fax);
         
         // ajaxヘッダー
         $.ajaxSetup({
@@ -112,7 +202,7 @@ $(function(){
 
         $.ajax({
             type: 'post',
-            url: 'backOwnerEditEntry',
+            url: 'backRealEstateEditEntry',
             dataType: 'json',
             data: sendData,
             cache:false,
@@ -141,7 +231,7 @@ $(function(){
                     .then(function(val) {
                     if (val) {
 
-                        location.href = 'backOwnerInit';
+                        location.href = 'backRealEstateInit';
                     };
                 });
 
@@ -246,8 +336,8 @@ $(function(){
         };
 
         // 値取得
-        let owner_id = $("#owner_id").val();
-        console.log(owner_id);
+        let real_estate_id = $("#real_estate_id").val();
+        console.log(real_estate_id);
         
         // then() OKを押した時の処理
         swal(options)
@@ -267,7 +357,7 @@ $(function(){
                 // 送信用データ
                 let sendData = {
 
-                    "owner_id": owner_id,
+                    "real_estate_id": real_estate_id,
                 };
 
                 console.log(sendData);
@@ -279,7 +369,7 @@ $(function(){
                 $.ajax({
 
                     type: 'post',
-                    url: 'backOwnerDeleteEntry',
+                    url: 'backRealEstateDeleteEntry',
                     dataType: 'json',
                     data: sendData,
                 
@@ -301,7 +391,7 @@ $(function(){
                         .then(function(val) {
                         if (val) {
 
-                            location.href="backOwnerInit"
+                            location.href="backRealEstateInit"
                             
                         }
                     });
@@ -341,7 +431,7 @@ $(function(){
         // 郵便番号初期値
         let post_number = '';
 
-        post_number = $('#owner_post_number').val();
+        post_number = $('#real_estate_post_number').val();
 
         // 郵便番号が空白の場合のプログラム終了
         if(post_number==""){
@@ -387,7 +477,7 @@ $(function(){
                 if(post_number_id == 'owner-btn-zip'){
                     let address = data.results[0].address1 + data.results[0].address2 + data.results[0].address3;
                     console.log(address);
-                    $('#owner_address').val(address);
+                    $('#real_estate_address').val(address);
                 }
 
             }
@@ -400,9 +490,6 @@ $(function(){
             console.log(errorThrown);
 
         });
-
     });
-
-
 
 });

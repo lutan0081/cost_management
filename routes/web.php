@@ -45,7 +45,7 @@ Route::get('backOwnerNewInit', 'Back\Owner\BackOwnerController@backOwnerNewInit'
 // 編集表示
 Route::get('backOwnerEditInit', 'Back\Owner\BackOwnerController@backOwnerEditInit')->middleware("cost_auth");
 
-// 新規・登録分岐
+// 新規・編集分岐
 Route::post('backOwnerEditEntry', 'Back\Owner\BackOwnerController@backOwnerEditEntry')->middleware("cost_auth");
 
 // 削除
@@ -58,7 +58,25 @@ Route::post('backOwnerDeleteEntry', 'Back\Owner\BackOwnerController@backOwnerDel
 Route::any('backRealEstateInit', 'Back\RealEstate\BackRealEstateController@backRealEstateInit')->middleware("cost_auth");
 
 // 新規表示
-Route::any('backRealEstateNewInit', 'Back\RealEstate\BackRealEstateController@backRealEstateNewInit')->middleware("cost_auth");
+Route::get('backRealEstateNewInit', 'Back\RealEstate\BackRealEstateController@backRealEstateNewInit')->middleware("cost_auth");
+
+// 編集表示
+Route::get('backRealEstateEditInit', 'Back\RealEstate\BackRealEstateController@backRealEstateEditInit')->middleware("cost_auth");
 
 // 家主コンボボックス変更
 Route::post('backOwnerNameChange', 'Back\RealEstate\BackRealEstateController@backOwnerNameChange')->middleware("cost_auth");
+
+// 新規・編集分岐
+Route::post('backRealEstateEditEntry', 'Back\RealEstate\BackRealEstateController@backRealEstateEditEntry')->middleware("cost_auth");
+
+// 削除
+Route::post('backRealEstateDeleteEntry', 'Back\RealEstate\BackRealEstateController@backRealEstateDeleteEntry')->middleware("cost_auth");
+
+/**
+ * 部屋マスタ
+ */
+// 一覧画面表示
+Route::any('backRoomInit', 'Back\Room\BackRoomController@backRoomInit')->middleware("cost_auth");
+
+// 新規表示
+Route::get('backRoomNewInit', 'Back\Room\BackRoomController@backRoomNewInit')->middleware("cost_auth");

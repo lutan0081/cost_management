@@ -2,14 +2,14 @@
 <html lang="ja">
 
 	<head>
-		<title>物件一覧/COSTS</title>
+		<title>部屋一覧/COSTS</title>
 
 		<!-- head -->
         @component('component.backHead')
         @endcomponent
 
 		<!-- 自作css -->
-		<link rel="stylesheet" href="{{ asset('back/css/back_real_estate.css') }}">  
+		<link rel="stylesheet" href="{{ asset('back/css/back_room.css') }}">  
 		
         <style>
 
@@ -56,7 +56,7 @@
                             <div class="row">
                                 <div class="col-12 col-md-12 col-lg-12 mb-2">
                                     <div class="info_title mt-3">
-                                        <i class="fas fa-key icon_blue me-2"></i>物件一覧
+                                        <i class="fas fa-key icon_blue me-2"></i>部屋一覧
                                     </div>
                                     <!-- 境界線 -->
                                     <hr>
@@ -65,7 +65,7 @@
                             <!-- タイトル -->
                             
                             <div class="row">
-                                <form action="backRealEstateInit" method="post">
+                                <form action="backRoomInit" method="post">
                                     {{ csrf_field() }}
                                     <div class="col-sm-12">
                                         <div class="card border border-0">
@@ -117,24 +117,22 @@
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
                                                         <th>選択</th>
                                                         <th scope="col" id="owner_name">物件名</th>
-                                                        <th scope="col" id="owner_post_number">郵便番号</th>
-                                                        <th scope="col" id="owner_address">住所</th>
-                                                        <th scope="col" id="owner_tel">家主名</th>
-                                                        <th scope="col" id="owner_tel">電話番号</th>
+                                                        <th scope="col" id="owner_post_number">号室</th>
+                                                        <th scope="col" id="owner_address">専有面積</th>
+                                                        <th scope="col" id="owner_tel">用途</th>
                                                     </tr>
                                                 </thead>
 
                                                 <!-- テーブルボディ -->
                                                 <tbody>
-                                                    @foreach($res as $real_estate_list)
+                                                    @foreach($res as $room_list)
                                                         <tr>
-                                                            <td id="select_{{ $real_estate_list->real_estate_id }}" class="click_class" style="display:none"></td>
-                                                            <td id="id_{{ $real_estate_list->real_estate_id }}" class="click_class"><input id="{{ $real_estate_list->real_estate_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
-                                                            <td id="name_{{ $real_estate_list->real_estate_id }}" class="click_class">{{ $real_estate_list->real_estate_name }}</td>
-                                                            <td id="post_{{ $real_estate_list->real_estate_id }}" class="click_class">{{ $real_estate_list->real_estate_post_number }}</td>
-                                                            <td id="address_{{ $real_estate_list->real_estate_id }}" class="click_class">{{ $real_estate_list->real_estate_address }}</td>
-                                                            <td id="ownerName_{{ $real_estate_list->real_estate_id }}" class="click_class">{{ $real_estate_list->owner_name }}</td>
-                                                            <td id="ownerTel_{{ $real_estate_list->real_estate_id }}" class="click_class">{{ $real_estate_list->owner_tel }}</td>
+                                                            <td id="select_{{ $room_list->room_id }}" class="click_class" style="display:none"></td>
+                                                            <td id="roomId_{{ $room_list->room_id }}" class="click_class"><input id="{{ $room_list->room_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
+                                                            <td id="realEstateName_{{ $room_list->room_id }}" class="click_class">{{ $room_list->real_estate_name }}</td>
+                                                            <td id="roomName_{{ $room_list->room_id }}" class="click_class">{{ $room_list->room_name }}</td>
+                                                            <td id="realEstateSize_{{ $room_list->room_id }}" class="click_class">{{ $room_list->room_size }}</td>
+                                                            <td id="realEstateType_{{ $room_list->room_id }}" class="click_class">{{ $room_list->room_type_name }}</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -164,7 +162,7 @@
                                     <!-- 新規、編集 -->
                                     <div class="col-12">
                                         <div class="btn-group float-end" role="group">
-                                            <button type="button" onclick="location.href='backRealEstateNewInit'" class="btn btn-outline-primary float-end btn-default">新規登録</button>
+                                            <button type="button" onclick="location.href='backRoomNewInit'" class="btn btn-outline-primary float-end btn-default">新規登録</button>
                                             <button type="button" id="btn_edit" class="btn btn-outline-primary float-end btn-default">編集</button>
                                         </div>
                                     </div>
@@ -189,7 +187,7 @@
         @endcomponent
 
 		<!-- 自作js -->
-		<script src="{{ asset('back/js/back_real_estate.js') }}"></script>
+		<script src="{{ asset('back/js/back_room_edit.js') }}"></script>
 	</body>
 	
 </html>

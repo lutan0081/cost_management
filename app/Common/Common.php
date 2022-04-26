@@ -26,6 +26,40 @@ class Common
     }
 
     /**
+     * 不動産一覧
+     *
+     * @return $ret
+     */
+    public function getRealEstateList(){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from real_estates "
+        ."order by real_estate_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
+    /**
+     * 部屋種別
+     *
+     * @return $ret
+     */
+    public function getRoomTypeList(){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from room_types "
+        ."order by room_type_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
+    /**
      * 月度
      *
      * @return void

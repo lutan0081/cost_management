@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Back\RealEstate;
+namespace App\Http\Controllers\Back\Room;
 
 use Illuminate\Http\Request;
 
@@ -24,9 +24,9 @@ use Illuminate\Support\Facades\Crypt;
 use Common;
 
 /**
- * 不動産マスタ(表示・登録、編集、削除)
+ * 表示・登録、編集、削除
  */
-class BackRealEstateController extends Controller
+class BackRoomController extends Controller
 {   
     /**
      *  一覧(表示)
@@ -34,17 +34,14 @@ class BackRealEstateController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backRealEstateInit(Request $request){   
+    public function backRoomInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
-            // 物件一覧
-            $real_estate_list = $this->getRealEstateList($request);
+            // 部屋一覧
+            $room_list = $this->getRoomList($request);
 
             $common = new Common();
-
-            // 家主一覧
-            $owner_list = $common->getOwnerList();
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -56,15 +53,15 @@ class BackRealEstateController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRealEstate' ,$real_estate_list ,compact('owner_list'));
+        return view('back.backRoom' ,$room_list);
     }
 
     /**
-     * 不動産一覧(sql)
+     * 一覧(sql)
      *
      * @return $ret(銀行一覧)
      */
-    private function getRealEstateList(Request $request){
+    private function getRoomList(Request $request){
 
         Log::debug('log_start:'.__FUNCTION__);
 
@@ -79,20 +76,18 @@ class BackRealEstateController extends Controller
             Log::debug('$session_id:' .$session_id);
 
             $str = "select "
-            ."real_estates.real_estate_id, "
-            ."real_estates.owner_id, "
-            ."owners.owner_name, "
-            ."owners.owner_tel, "
-            ."real_estates.real_estate_name, "
-            ."real_estates.real_estate_post_number, "
-            ."real_estates.real_estate_address, "
-            ."real_estates.entry_user_id, "
-            ."real_estates.entry_date, "
-            ."real_estates.update_user_id, "
-            ."real_estates.update_date "
-            ."from real_estates "
-            ."left join owners "
-            ."on owners.owner_id = real_estates.owner_id ";
+            ."rooms.room_id, "
+            ."rooms.room_name, "
+            ."rooms.room_size, "
+            ."rooms.room_type_id, "
+            ."room_types.room_type_name, "
+            ."rooms.real_estate_id, "
+            ."real_estates.real_estate_name "
+            ."from rooms "
+            ."left join real_estates "
+            ."on real_estates.real_estate_id = rooms.real_estate_id "
+            ."left join room_types "
+            ."on room_types.room_type_id = rooms.room_type_id ";
 
             // where句
             $where = "";
@@ -109,8 +104,8 @@ class BackRealEstateController extends Controller
                     $where = "and ";
                 }
 
-                $where = $where ."ifnull(real_estate_name,'') like '%$free_word%'";
-                $where = $where ."or ifnull(owner_name,'') like '%$free_word%'";
+                $where = $where ."ifnull(room_name,'') like '%$free_word%'";
+                $where = $where ."or ifnull(real_estate_name,'') like '%$free_word%'";
             };
 
             // id
@@ -160,18 +155,21 @@ class BackRealEstateController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backRealEstateNewInit(Request $request){   
+    public function backRoomNewInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
 
             // 不動産一覧
-            $real_estate_list = $this->getNewList($request);
+            $room_list = $this->getNewList($request);
 
             $common = new Common();
 
             // 家主一覧
-            $owner_list = $common->getOwnerList();
+            $real_estate_list = $common->getRealEstateList();
+
+            // 部屋種別
+            $room_type_list = $common->getRoomTypeList();
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -183,7 +181,7 @@ class BackRealEstateController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRealEstateEdit' ,compact('real_estate_list' ,'owner_list'));
+        return view('back.backRoomEdit' ,compact('room_list','real_estate_list' ,'room_type_list'));
     }
 
     /**
@@ -193,19 +191,15 @@ class BackRealEstateController extends Controller
      */
     private function getNewList(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
+        
         $obj = new \stdClass();
         
-        // 募集要項
-        $obj->real_estate_id  = '';
-        $obj->real_estate_name = '';
-        $obj->real_estate_post_number = '';
-        $obj->real_estate_address = '';
-        $obj->owner_id = '';
-        $obj->owner_name = '';
-        $obj->owner_owner_post_number = '';
-        $obj->owner_address = '';
-        $obj->owner_tel = '';
-        $obj->owner_fax = '';
+        $obj->room_id  = '';
+        $obj->room_name = '';
+        $obj->room_size = '';
+        $obj->room_type_id = '';
+        $obj->real_estate_id = '';
+
 
         $ret = [];
         $ret = $obj;
