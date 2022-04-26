@@ -64,10 +64,10 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li>
-                                <a href="backAppInit">家主一覧</a>
+                                <a href="backOwnerInit">家主一覧</a>
                             </li>
                             <li>
-                                <a href="backAppInit">物件一覧</a>
+                                <a href="backRealEstateInit">物件一覧</a>
                             </li>
                             <li>
                                 <a href="backAppInit">部屋一覧</a>

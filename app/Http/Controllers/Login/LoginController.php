@@ -110,8 +110,8 @@ class LoginController extends Controller
                 // 管理者フラグ:true=管理者/false=一般
                 $request->session()->put('admin_user_flag',$data[0]->admin_user_flag);
 
-                // kasegu_auth=trueに設定(ログインしていない場合falseの為、frontHomeに強制遷移)
-                // $request->session()->put('kasegu_auth',true);
+                // cost_auth=trueに設定(ログインしていない場合falseの為、frontHomeに強制遷移)
+                $request->session()->put('cost_auth',true);
 
                 // session_id
                 $request->session()->put('create_user_id',$data[0]->create_user_id);
