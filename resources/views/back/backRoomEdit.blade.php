@@ -87,7 +87,6 @@
                         <!-- 種別 -->
                         <div class="col-6 col-md-8 col-lg-3 mt-3 pb-2">
                             <label class="label_any mb-2"></label>種別
-                            
                             <select class="form-select" name="room_type_id" id="room_type_id">
                                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                 <option></option>
@@ -100,10 +99,14 @@
                         </div>
 
                         <!-- 専有面積 -->
-                        <div class="col-12 col-md-12 col-lg-3 mt-3 pb-2">
-                            <label class="label_any mb-2" for="textBox"></label>専有面積
-                            <input type="text" class="form-control" name="room_size" id="room_size" value="{{ $room_list->room_size }}">
-                            <div class="invalid-feedback" id ="room_size_error">
+                        <div class="col-12 col-md-12 col-lg-2 mt-3">
+                            <label class="label_any mb-2" for="textBox"></label>契約面積
+                            <!-- テキストボックスの右側に文字表示 -->
+                            <div class="input-group">
+                                <input type="number" class="form-control" name="room_size" id="room_size" value="" style="text-align:right" placeholder="例：60.00">
+                                <span class="d-flex align-items-end ms-1">㎡</span>                                                      <!-- バリデーション -->
+                                <div class="real_estate-tab invalid-feedback" id ="room_size_error">
+                                </div>
                             </div>
                         </div>
 
@@ -128,7 +131,7 @@
                         <!-- ボタン -->
 
                         <!-- id -->
-                        <input type="hidden" name="room_id" id="room_id" value="{{ $room_list->room_id }}">
+                        <input type="text" name="room_id" id="room_id" value="{{ $room_list->room_id }}">
 
                     </form>
 

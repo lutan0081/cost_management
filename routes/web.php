@@ -86,3 +86,6 @@ Route::get('backRoomEditInit', 'Back\Room\BackRoomController@backRoomEditInit')-
 
 // 登録分岐
 Route::post('backRoomEditEntry', 'Back\Room\BackRoomController@backRoomEditEntry')->middleware("cost_auth");
+
+// 削除
+Route::post('backRoomDeleteEntry', 'Back\Room\BackRoomController@backRoomDeleteEntry')->middleware("cost_auth");

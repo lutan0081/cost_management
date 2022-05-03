@@ -78,7 +78,8 @@ $(function(){
         }
 
         // 部屋id
-        let room_id = $("#owner_nameroom_id").val();
+        let room_id = $("#room_id").val();
+        console.log(room_id);
 
         // 不動産id
         let real_estate_name = $("#real_estate_name").val();
@@ -109,7 +110,7 @@ $(function(){
         });
 
         $.ajax({
-            
+
             type: 'post',
             url: 'backRoomEditEntry',
             dataType: 'json',
@@ -246,8 +247,8 @@ $(function(){
         };
 
         // 値取得
-        let real_estate_id = $("#real_estate_id").val();
-        console.log(real_estate_id);
+        let room_id = $("#room_id").val();
+        console.log(room_id);
         
         // then() OKを押した時の処理
         swal(options)
@@ -267,7 +268,7 @@ $(function(){
                 // 送信用データ
                 let sendData = {
 
-                    "real_estate_id": real_estate_id,
+                    "room_id": room_id,
                 };
 
                 console.log(sendData);
@@ -279,7 +280,7 @@ $(function(){
                 $.ajax({
 
                     type: 'post',
-                    url: 'backRealEstateDeleteEntry',
+                    url: 'backRoomDeleteEntry',
                     dataType: 'json',
                     data: sendData,
                 
@@ -301,7 +302,7 @@ $(function(){
                         .then(function(val) {
                         if (val) {
 
-                            location.href="backRealEstateInit"
+                            location.href="backRoomInit"
                             
                         }
                     });
@@ -319,86 +320,6 @@ $(function(){
                 });
             };
             // sweetalert
-        });
-    });
-
-    /**
-     * 住所検索
-     */
-    $(".btn_zip").on('click', function(e) {
-
-        console.log("btn_zipクリックされています");
-
-        e.preventDefault();
-
-        // ローディング画面
-        $("#overlay").fadeIn(300);
-
-        // 住所検索ボタンのid取得
-        var post_number_id = $(this).attr('id');
-        console.log(post_number_id);
-
-        // 郵便番号初期値
-        let post_number = '';
-
-        post_number = $('#real_estate_post_number').val();
-
-        // 郵便番号が空白の場合のプログラム終了
-        if(post_number==""){
-
-            // ローディング画面停止
-            setTimeout(function(){
-                $("#overlay").fadeOut(300);
-            },500);
-
-            return false;
-        }
-
-        // url指定
-        let zipUrl = "https://zipcloud.ibsnet.co.jp/api/search?zipcode="+ post_number;
-
-        $.ajaxSetup({
-            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
-        });
-
-        $.ajax({
-            type: 'get',
-            url: zipUrl,
-            // 自身のサイトの場合json,他のサイトの場合jsonp
-            dataType: 'jsonp'
-
-        // 接続が出来た場合の処理
-        }).done(function(data) {
-            console.log(data);
-            
-            // ローディング画面終了の処理
-            setTimeout(function(){
-                $("#overlay").fadeOut(300);
-            },500);
-
-            //取得結果がNGの場合、メッセージを追加する
-            if(data.results == null){
-                console.log(data.message);
-            }
-
-            // 取得結果がOKの場合、ifで入力データをもとに分岐し住所を設定する
-            if(data.results !== null){
-
-                if(post_number_id == 'owner-btn-zip'){
-                    let address = data.results[0].address1 + data.results[0].address2 + data.results[0].address3;
-                    console.log(address);
-                    $('#real_estate_address').val(address);
-                }
-
-            }
-
-        // ajax接続が出来なかった場合の処理
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
-
         });
     });
 

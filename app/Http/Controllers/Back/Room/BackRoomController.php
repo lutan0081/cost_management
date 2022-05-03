@@ -57,7 +57,7 @@ class BackRoomController extends Controller
     /**
      * 一覧(sql)
      *
-     * @return $ret(銀行一覧)
+     * @return $ret(部屋一覧)
      */
     private function getRoomList(Request $request){
 
@@ -296,7 +296,7 @@ class BackRoomController extends Controller
      * @param $request(edit.blade.phpの各項目)
      * @return $response(status:true=OK/false=NG)
      */
-    public function backRealEstateEditEntry(Request $request){
+    public function backRoomEditEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
         
         // return初期値
@@ -317,7 +317,7 @@ class BackRoomController extends Controller
          * id=有:update
          */
         // 新規登録
-        if($request->input('real_estate_id') == ""){
+        if($request->input('room_id') == ""){
 
             Log::debug('新規の処理');
 
@@ -359,20 +359,16 @@ class BackRoomController extends Controller
          * rules
          */
         $rules = [];
-        $rules['real_estate_name'] = "required|max:50";
-        $rules['real_estate_post_number'] = "required|zip";
-        $rules['real_estate_address'] = "required|max:100";
+        $rules['roon_name'] = "required|max:10";
+        $rules['room_size'] = "nullable|max:100";
 
         /**
          * messages
          */
         $messages = [];
-        $messages['real_estate_name.required'] = "物件名は必須です。";
-        $messages['real_estate_name.max'] = "物件名の文字数が超過しています。";
-        $messages['real_estate_post_number.required'] = "郵便番号は必須です。";
-        $messages['real_estate_post_number.zip'] = "郵便番号の形式が不正です。";
-        $messages['real_estate_address.required'] = "住所は必須です。";
-        $messages['real_estate_address.max:100'] = "住所の文字数が超過しています。";
+        $messages['roon_name.required'] = "号室は必須です。";
+        $messages['roon_name.max'] = "号室の文字数が超過しています。";
+        $messages['room_size.max'] = "専有面積の文字数が超過しています。";
     
         // validation判定
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -423,6 +419,7 @@ class BackRoomController extends Controller
      * @return ret(true:登録OK/false:登録NG、maxId(contract_id)、session_id(create_user_id))
      */
     private function insertData(Request $request){
+        
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
@@ -434,7 +431,7 @@ class BackRoomController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $bank_info = $this->insertRealEstate($request);
+            $bank_info = $this->insertRoom($request);
 
             // returnのステータスにtrueを設定
             $ret['status'] = $bank_info['status'];
@@ -471,7 +468,8 @@ class BackRoomController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function insertRealEstate(Request $request){
+    private function insertRoom(Request $request){
+        
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
@@ -480,52 +478,53 @@ class BackRoomController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
-            $real_estate_name = $request->input('real_estate_name');
-            $real_estate_post_number = $request->input('real_estate_post_number');
-            $real_estate_address = $request->input('real_estate_address');
-            $owner_id = $request->input('owner_id');
+            $room_id = $request->input('room_id');
+            $real_estate_id = $request->input('real_estate_name');
+            $roon_name = $request->input('roon_name');
+            $room_type_id = $request->input('room_type_id');
+            $room_size = $request->input('room_size');
 
             // 現在の日付取得
             $date = now() .'.000';
     
             // 物件名
-            if($real_estate_name == null){
-                $real_estate_name ='';
+            if($real_estate_id == null){
+                $real_estate_id =0;
             }
 
-            // 郵便番号
-            if($real_estate_post_number == null){
-                $real_estate_post_number ='';
+            // 号室
+            if($roon_name == null){
+                $roon_name ='';
             }
 
-            // 住所
-            if($real_estate_address == null){
-                $real_estate_address ='';
+            // 種別
+            if($room_type_id == null){
+                $room_type_id =0;
             }
 
-            // 家主id
-            if($owner_id == null){
-                $owner_id = 0;
+            // 専有面積
+            if($room_size == null){
+                $room_size = '';
             }
 
             // 登録
             $str = "insert "
             ."into "
-            ."real_estates "
+            ."rooms "
             ."( "
-            ."owner_id, "
-            ."real_estate_name, "
-            ."real_estate_post_number, "
-            ."real_estate_address, "
+            ."real_estate_id, "
+            ."room_name, "
+            ."room_size, "
+            ."room_type_id, "
             ."entry_user_id, "
             ."entry_date, "
             ."update_user_id, "
             ."update_date "
             .")values( "
-            ."$owner_id, "
-            ."'$real_estate_name', "
-            ."'$real_estate_post_number', "
-            ."'$real_estate_address', "
+            ."$real_estate_id, "
+            ."'$roon_name', "
+            ."$room_type_id, "
+            ."'$room_size', "
             ."$session_id, "
             ."'$date', "
             ."$session_id, "
@@ -569,10 +568,10 @@ class BackRoomController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $legal_place_info = $this->updateBackOwner($request);
+            $room_info = $this->updateRoom($request);
 
             // returnのステータスにtrueを設定
-            $ret['status'] = $legal_place_info['status'];
+            $ret['status'] = $room_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -606,7 +605,7 @@ class BackRoomController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function updateBackOwner(Request $request){
+    private function updateRoom(Request $request){
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
@@ -615,53 +614,48 @@ class BackRoomController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
-            $real_estate_id = $request->input('real_estate_id');
-            $real_estate_name = $request->input('real_estate_name');
-            $real_estate_post_number = $request->input('real_estate_post_number');
-            $real_estate_address = $request->input('real_estate_address');
-            $owner_id = $request->input('owner_id');
+            $room_id = $request->input('room_id');
+            $real_estate_id = $request->input('real_estate_name');
+            $roon_name = $request->input('roon_name');
+            $room_type_id = $request->input('room_type_id');
+            $room_size = $request->input('room_size');
 
             // 現在の日付取得
             $date = now() .'.000';
 
-            // 不動産id
-            if($real_estate_id == null){
-                $real_estate_id = 0;
-            }
-            
             // 物件名
-            if($real_estate_name == null){
-                $real_estate_name ='';
+            if($real_estate_id == null){
+                $real_estate_id =0;
             }
 
-            // 郵便番号
-            if($real_estate_post_number == null){
-                $real_estate_post_number ='';
+            // 号室
+            if($roon_name == null){
+                $roon_name ='';
             }
 
-            // 住所
-            if($real_estate_address == null){
-                $real_estate_address ='';
+            // 種別
+            if($room_type_id == null){
+                $room_type_id =0;
             }
 
-            // 家主id
-            if($owner_id == null){
-                $owner_id = 0;
+            // 専有面積
+            if($room_size == null){
+                $room_size = '';
             }
 
             $str = "update "
-            ."real_estates "
+            ."rooms "
             ."set "
-            ."owner_id = $owner_id, "
-            ."real_estate_name = '$real_estate_name', "
-            ."real_estate_post_number = '$real_estate_post_number', "
-            ."real_estate_address = '$real_estate_address', "
+            ."real_estate_id = $real_estate_id, "
+            ."room_name = '$roon_name', "
+            ."room_size = '$room_size', "
+            ."room_type_id = $room_type_id, "
             ."entry_user_id = $session_id, "
             ."entry_date = '$date', "
             ."update_user_id = $session_id, "
             ."update_date = '$date' "
             ."where "
-            ."real_estate_id = $real_estate_id; ";
+            ."room_id = $room_id ";
             
             Log::debug('sql:'.$str);
 
@@ -688,7 +682,7 @@ class BackRoomController extends Controller
      * @param Request $request
      * @return void
      */
-    public function backRealEstateDeleteEntry(Request $request){
+    public function backRoomDeleteEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -696,10 +690,10 @@ class BackRoomController extends Controller
             // return初期値
             $response = [];
 
-            $real_estate_info = $this->deleteRealEstate($request);
+            $room_info = $this->deleteRoom($request);
 
             // js側での判定のステータス(true:OK/false:NG)
-            $response['status'] = $real_estate_info['status'];
+            $response['status'] = $room_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -734,7 +728,7 @@ class BackRoomController extends Controller
      * @param Request $request
      * @return void
      */
-    private function deleteRealEstate(Request $request){
+    private function deleteRoom(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -742,13 +736,13 @@ class BackRoomController extends Controller
             $ret = [];
 
             // 値取得
-            $real_estate_id = $request->input('real_estate_id');
+            $room_id = $request->input('room_id');
 
             $str = "delete "
             ."from "
-            ."real_estates "
+            ."rooms "
             ."where "
-            ."real_estate_id = $real_estate_id; ";
+            ."room_id = $room_id; ";
             Log::debug('str:'.$str);
 
             // OK=1/NG=0
