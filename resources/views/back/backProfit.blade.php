@@ -197,7 +197,7 @@
                         <!-- テーブルcard -->
 
                         <!-- ボタン -->
-                        <div class="col-12 col-md-6 col-lg-12 mt-3">
+                        <div class="col-12 col-md-6 col-lg-12 mt-3 pt-3">
                             <div class="card border border-0">
                             <!-- row -->
                             <div class="row">
