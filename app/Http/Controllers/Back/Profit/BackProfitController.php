@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Back\Room;
+namespace App\Http\Controllers\Back\Profit;
 
 use Illuminate\Http\Request;
 
@@ -26,7 +26,7 @@ use Common;
 /**
  * 表示・登録、編集、削除
  */
-class BackRoomController extends Controller
+class BackProfitController extends Controller
 {   
     /**
      *  一覧(表示)
@@ -34,12 +34,15 @@ class BackRoomController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backRoomInit(Request $request){   
+    public function backProfitInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
-            // 部屋一覧
-            $room_list = $this->getRoomList($request);
+            // 売上一覧取得
+            $profit_list = $this->getProfitList($request);
+
+            // 勘定科目一覧
+            
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -51,7 +54,7 @@ class BackRoomController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRoom' ,$room_list);
+        return view('back.backProfit' ,$profit_list);
     }
 
     /**
@@ -59,7 +62,7 @@ class BackRoomController extends Controller
      *
      * @return $ret(部屋一覧)
      */
-    private function getRoomList(Request $request){
+    private function getProfitList(Request $request){
 
         Log::debug('log_start:'.__FUNCTION__);
 
@@ -72,20 +75,37 @@ class BackRoomController extends Controller
             // session_id
             $session_id = $request->session()->get('create_user_id');
             Log::debug('$session_id:' .$session_id);
+            
+            // 勘定科目id
+            $free_word = $request->input('free_word');
+            Log::debug('$free_word:' .$free_word);
 
             $str = "select "
-            ."rooms.room_id, "
-            ."rooms.room_name, "
-            ."rooms.room_size, "
-            ."rooms.room_type_id, "
-            ."room_types.room_type_name, "
+            ."profits.profit_id, "
+            ."profits.profit_person_id, "
+            ."create_users.create_user_name, "
             ."rooms.real_estate_id, "
-            ."real_estates.real_estate_name "
-            ."from rooms "
-            ."left join real_estates "
-            ."on real_estates.real_estate_id = rooms.real_estate_id "
-            ."left join room_types "
-            ."on room_types.room_type_id = rooms.room_type_id ";
+            ."real_estates.real_estate_name, "
+            ."profits.room_id, "
+            ."rooms.room_name, "
+            ."profits.profit_account_id, "
+            ."profit_accounts.profit_account_name, "
+            ."profits.profit_account_date, "
+            ."profits.profit_fee, "
+            ."profits.profit_memo, "
+            ."profits.entry_user_id, "
+            ."profits.entry_date, "
+            ."profits.update_user_id, "
+            ."profits.update_date "
+            ."from profits "
+            ."left join create_users on "
+            ."create_users.create_user_id = profits.entry_user_id "
+            ."left join rooms on "
+            ."rooms.room_id = profits.room_id "
+            ."left join real_estates on "
+            ."real_estates.real_estate_id = rooms.real_estate_id "
+            ."left join profit_accounts on "
+            ."profit_accounts.profit_account_id = profits.profit_account_id ";
 
             // where句
             $where = "";
@@ -102,24 +122,24 @@ class BackRoomController extends Controller
                     $where = "and ";
                 }
 
-                $where = $where ."ifnull(room_name,'') like '%$free_word%'";
-                $where = $where ."or ifnull(real_estate_name,'') like '%$free_word%'";
+                $where = $where ."ifnull(real_estate_name,'') like '%$free_word%'";
+                $where = $where ."or ifnull(profit_memo,'') like '%$free_word%'";
             };
 
-            // id
+            // 勘定科目id
             if($where == ""){
 
                 $where = $where ."where "
-                ."real_estates.entry_user_id = '$session_id' ";
+                ."profits.profit_account_id = '$session_id' ";
 
             }else{
 
                 $where = $where ."and "
-                ."real_estates.entry_user_id = '$session_id' ";
+                ."profits.profit_account_id = '$session_id' ";
             }
 
             // order by句
-            $order_by = "order by owner_id ";
+            $order_by = "order by profit_id ";
 
             $str = $str .$where .$order_by;
             Log::debug('$sql:' .$str);

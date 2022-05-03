@@ -131,7 +131,7 @@
                         <!-- ボタン -->
 
                         <!-- id -->
-                        <input type="text" name="room_id" id="room_id" value="{{ $room_list->room_id }}">
+                        <input type="hidden" name="room_id" id="room_id" value="{{ $room_list->room_id }}">
 
                     </form>
 

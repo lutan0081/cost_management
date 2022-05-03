@@ -10,7 +10,7 @@
 
         <!-- サイドメニュータイトル -->
         <div class="sidebar-brand">
-            <a href="#">COSTS</a>
+            <a href="#">COSTS Ver 1.00</a>
             <div id="close-sidebar">
                 <i class="fas fa-times"></i>
             </div>
@@ -87,7 +87,7 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li>
-                                <a href="backContractInit">売上一覧</a>
+                                <a href="backProfitInit">売上一覧</a>
                             </li>
                             <li>
                                 <a href="adminAppInit">経費一覧</a>

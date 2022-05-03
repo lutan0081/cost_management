@@ -204,7 +204,7 @@
 			<!-- dashboard -->
 
 			<!-- お知らせ -->
-			<div class="container mb-4 mt-4">
+			<div class="container mb-3">
                 <div class="row">
                     <div class="col-12 col-md-12 col-lg-12">
                         <div class="overflow-auto" style="max-height:30rem;">

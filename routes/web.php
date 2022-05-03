@@ -31,7 +31,7 @@ Route::get('backBankEditInit', 'Back\Bank\BackBankController@backBankEditInit')-
 Route::post('backBankEditEntry', 'Back\Bank\BackBankController@backBankEditEntry')->middleware("cost_auth");
 
 // 削除
-Route::post('backBankDeleteEntry', 'Back\Bank\BackBankController@backBankDeleteEntry')->middleware("cost_auth");
+Route::post('backBankDeleteEntry', 'Back\Profit\BackBankController@backBankDeleteEntry')->middleware("cost_auth");
 
 /**
  * 家主マスタ
@@ -89,3 +89,8 @@ Route::post('backRoomEditEntry', 'Back\Room\BackRoomController@backRoomEditEntry
 
 // 削除
 Route::post('backRoomDeleteEntry', 'Back\Room\BackRoomController@backRoomDeleteEntry')->middleware("cost_auth");
+
+/**
+ * 売上管理
+ */
+Route::any('backProfitInit', 'Back\Profit\BackProfitController@backProfitInit')->middleware("cost_auth");
