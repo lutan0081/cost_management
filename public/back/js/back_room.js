@@ -4,6 +4,7 @@
 $(function(){
     
     $(".click_class").on('dblclick', function(e) {
+
         console.log("ダブルクリックの処理.");
 
         // ローディング画面
@@ -21,7 +22,7 @@ $(function(){
         },500);
 
         // idをパラメーターでControllerに渡す
-        location.href = "backRealEstateEditInit?real_estate_id=" + id;
+        location.href = "backRoomEditInit?room_id=" + id;
     });
 
     // 編集(ラジオボタンの処理)

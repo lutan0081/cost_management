@@ -113,7 +113,7 @@
                         <!-- 口座番号 -->
 
                         <!-- 口座名義人 -->
-                        <div class="col-12 col-md-12 col-lg-6 mt-3 pb-3">
+                        <div class="col-12 col-md-12 col-lg-6 mt-3 pb-2">
                             <label class="label_required mb-2" for="textBox"></label>名義人
                             <input type="text" class="form-control" name="bank_account_name" id="bank_account_name" value="{{ $bank_list->bank_account_name }}" placeholder="例：カブシキガイシャ〇〇〇〇" required>
                             <div class="invalid-feedback" id ="bank_account_name_error">

@@ -44,13 +44,13 @@
             <!-- sidebar-wrapper  -->
             
             <!-- page-content" -->
-            <main class="page-content">
+            <main class="page-content mb-3">
 
                 <!-- 上段検索 -->
                 <div class="container">
 
                     <div class="row">
-                        <div class="col-12 col-md-12 col-lg-12 mt-2 mb-3">
+                        <div class="col-12 col-md-12 col-lg-12 mt-2">
 
                             <!-- タイトル -->
                             <div class="row">
@@ -96,7 +96,7 @@
                 <!-- 上段検索 -->
 
                 <!-- 一覧 -->
-                <div class="container mt-3 mb-5">
+                <div class="container">
                     
                     <div class="row">
                             
@@ -108,7 +108,7 @@
                                 <!-- カードボディ -->
                                 <div class="card-body">
                                     <!-- スクロール -->
-                                    <div class="overflow-auto" style="height:37rem;">
+                                    <div class="overflow-auto" style="height:35rem;">
                                         <div class="table-responsive">
                                             <table class="table table-hover table-condensed table-striped">
                                                 <!-- テーブルヘッド -->
@@ -155,7 +155,7 @@
                         <!-- テーブルcard -->
 
                         <!-- ボタン -->
-                        <div class="col-sm-12 mt-4 pt-2">
+                        <div class="col-sm-12 mt-4 pt-3">
                             <div class="card border border-0">
                                 <!-- row -->
                                 <div class="row">
@@ -187,7 +187,7 @@
         @endcomponent
 
 		<!-- 自作js -->
-		<script src="{{ asset('back/js/back_room_edit.js') }}"></script>
+		<script src="{{ asset('back/js/back_room.js') }}"></script>
 	</body>
 	
 </html>

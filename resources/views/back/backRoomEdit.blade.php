@@ -15,7 +15,7 @@
 
             /* ボタンデフォルト値 */
             .btn-default{
-                width: 7rem;
+                width: 6rem;
             }
 
             .card-body {
@@ -76,27 +76,19 @@
 
                         <!-- 号室 -->
                         <div class="col-12 col-md-10 col-lg-3 mt-3">
-                            <label class="label_required mb-2" for="textBox"></label>部屋番号
+                            <label class="label_required mb-2" for="textBox"></label>号室
                             <input type="text" class="form-control" name="roon_name" id="roon_name" placeholder="例：101" value="{{ $room_list->room_name }}" required>
                             <!-- エラーメッセージ -->
-                            <div class="invalid-feedback" id ="real_estate_name_error">
-                                物件名は必須です。
-                            </div>
-                        </div>
-
-                        <!-- 専有面積 -->
-                        <div class="col-12 col-md-12 col-lg-3 mt-3 pb-2">
-                            <label class="label_any mb-2" for="textBox"></label>専有面積
-                            <input type="text" class="form-control" name="room_size" id="room_size">
-                            <div class="invalid-feedback" id ="room_size_error">
+                            <div class="invalid-feedback" id ="roon_name_error">
+                                号室は必須です。
                             </div>
                         </div>
 
                         <!-- 種別 -->
-                        <div class="col-6 col-md-8 col-lg-3 mt-3">
+                        <div class="col-6 col-md-8 col-lg-3 mt-3 pb-2">
                             <label class="label_any mb-2"></label>種別
                             
-                            <select class="form-select" name="room_type_id" id="room_type_id" required>
+                            <select class="form-select" name="room_type_id" id="room_type_id">
                                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                 <option></option>
                                 @foreach($room_type_list as $room_types)
@@ -107,7 +99,15 @@
                             </div>  
                         </div>
 
-                        <div class="col-6 col-md-8 col-lg-12 mt-4">
+                        <!-- 専有面積 -->
+                        <div class="col-12 col-md-12 col-lg-3 mt-3 pb-2">
+                            <label class="label_any mb-2" for="textBox"></label>専有面積
+                            <input type="text" class="form-control" name="room_size" id="room_size" value="{{ $room_list->room_size }}">
+                            <div class="invalid-feedback" id ="room_size_error">
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-12 col-lg-12 mt-4">
                             <hr>
                         </div>
         

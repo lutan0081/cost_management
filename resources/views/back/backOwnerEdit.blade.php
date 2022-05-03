@@ -106,7 +106,7 @@
                         </div>
 
                         <!-- FAX -->
-                        <div class="col-12 col-md-12 col-lg-3 mt-3 pb-3">
+                        <div class="col-12 col-md-12 col-lg-3 mt-3 pb-2">
                             <label class="label_any mb-2" for="textBox"></label>FAX
                             <input type="text" class="form-control" name="owner_fax" id="owner_fax" value="{{ $owner_list->owner_fax }}" placeholder="例：06-1234-5678" required>
                             <div class="invalid-feedback" id ="owner_fax_error">

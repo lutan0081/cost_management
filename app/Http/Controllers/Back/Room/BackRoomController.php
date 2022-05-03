@@ -40,8 +40,6 @@ class BackRoomController extends Controller
         try {
             // 部屋一覧
             $room_list = $this->getRoomList($request);
-
-            $common = new Common();
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -209,54 +207,27 @@ class BackRoomController extends Controller
     }
 
     /**
-     * 家主コンボボックス変更
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function backOwnerNameChange(Request $request){
-
-        Log::debug('log_start:'.__FUNCTION__);
-
-        // 家主id
-        $owner_id = $request->input('owner_id');
-
-        $str = "select * "
-        ."from "
-        ."owners "
-        ."where owners.owner_id = $owner_id ";
-        Log::debug('sql:' .$str);
-
-        $owner_list = DB::select($str);
-        
-        // return
-        $response = [];
-        $response['owner_list'] = $owner_list;
-
-        Log::debug('log_end:' .__FUNCTION__);
-        return response()->json($response);
-
-    }
-    
-    /**
      *  編集(表示)
      *
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backRealEstateEditInit(Request $request){   
+    public function backRoomEditInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
 
             // 一覧取得
-            $real_estate_info = $this->getEditList($request);
-            $real_estate_list = $real_estate_info[0];
+            $room_info = $this->getEditList($request);
+            $room_list = $room_info[0];
 
             $common = new Common();
 
             // 家主一覧
-            $owner_list = $common->getOwnerList();
+            $real_estate_list = $common->getRealEstateList();
+
+            // 部屋種別
+            $room_type_list = $common->getRoomTypeList();
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -266,7 +237,7 @@ class BackRoomController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRealEstateEdit' ,compact('real_estate_list' ,'owner_list'));
+        return view('back.backRoomEdit' ,compact('room_list','real_estate_list' ,'room_type_list'));
     }
 
     /**
@@ -275,17 +246,33 @@ class BackRoomController extends Controller
      * @return void
      */
     private function getEditList(Request $request){
+
         Log::debug('start:' .__FUNCTION__);
 
         try{
             // 値設定
-            $real_estate_id = $request->input('real_estate_id');
+            $room_id = $request->input('room_id');
 
             // sql
-            $str = "select * "
-            ."from real_estates "
-            ."where "
-            ."real_estate_id = $real_estate_id ";
+            $str = "select "
+            ."rooms.room_id, "
+            ."rooms.room_name, "
+            ."rooms.room_size, "
+            ."rooms.real_estate_id, "
+            ."real_estates.real_estate_name, "
+            ."rooms.room_type_id, "
+            ."room_types.room_type_name, "
+            ."rooms.entry_user_id, "
+            ."rooms.entry_date, "
+            ."rooms.update_user_id, "
+            ."rooms.update_date "
+            ."from rooms "
+            ."left join room_types on "
+            ."room_types.room_type_id = rooms.room_type_id "
+            ."left join real_estates on "
+            ."real_estates.real_estate_id = rooms.real_estate_id "
+            ."where rooms.room_id = $room_id; ";
+
             Log::debug('sql:' .$str);
             
             $ret = DB::select($str);

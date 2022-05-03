@@ -355,8 +355,9 @@ padding-left: 0px;
 padding-top: 20px;
 }
 
+/* サイドメニューとメインの余白 */
 .page-wrapper .page-content > div {
-/* padding: 20px 40px; */
+padding: 20px 40px;
 }
 
 .page-wrapper .page-content {

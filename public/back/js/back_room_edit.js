@@ -1,98 +1,4 @@
-
-
 $(function(){
-
-    /**
-     * イニシャライズ
-     */
-    $(window).on('load', function(){
-
-        clearProc();
-
-    });
-
-    /**
-     * 初期化
-     */
-    function clearProc() {
-
-        // 名前
-        $('#owner_name').val('');
-
-        // 郵便番号
-        $('#owner_post_number').val('');
-
-        // 住所
-        $('#owner_address').val('');
-
-        // 電話番号
-        $('#owner_tel').val('');
-
-        // FAX
-        $('#owner_fax').val('');
-    }
-
-    /**
-     * 家主コンボボックス変更
-     */
-    $("#owner_name").change(function(e) {
-        console.log('家主名変更の処理');
-
-        e.preventDefault();
-
-        // ローディング画面
-        $("#overlay").fadeIn(300);
-
-        // id
-        let owner_id = $("#owner_name").val();
-        console.log(owner_id);
-
-        // 送信データ設定
-        var sendData = new FormData();
-        
-        sendData.append('owner_id', owner_id);
-        
-        // ajaxヘッダー
-        $.ajaxSetup({
-            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
-        });
-
-        $.ajax({
-            type: 'post',
-            url: 'backOwnerNameChange',
-            dataType: 'json',
-            data: sendData,
-            cache:false,
-            processData : false,
-            contentType : false,
-
-        // 接続が出来た場合の処理
-        }).done(function(data) {
-
-            $('#owner_post_number').val(data.owner_list[0]['owner_post_number']);
-            $('#owner_address').val(data.owner_list[0]['owner_address']);
-            $('#owner_tel').val(data.owner_list[0]['owner_tel']);
-            $('#owner_fax').val(data.owner_list[0]['owner_fax']);
-
-            // ローディング画面終了の処理
-            setTimeout(function(){
-                $("#overlay").fadeOut(300);
-            },500);
-
-        // ajax接続が出来なかった場合の処理
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
-
-            // ローディング画面終了の処理
-            setTimeout(function(){
-                $("#overlay").fadeOut(300);
-            },500);
-            
-        });
-    });
 
     /**
      * 登録
@@ -171,38 +77,41 @@ $(function(){
             return false;
         }
 
-        // 家主id
-        let owner_id = $("#owner_name").val();
+        // 部屋id
+        let room_id = $("#owner_nameroom_id").val();
 
         // 不動産id
-        let real_estate_id = $("#real_estate_id").val();
-        
-        // 不動産名
         let real_estate_name = $("#real_estate_name").val();
+        
+        // 号室
+        let roon_name = $("#roon_name").val();
 
-        // 郵便番号
-        let real_estate_post_number = $("#real_estate_post_number").val();
+        // 部屋種別
+        let room_type_id = $("#room_type_id").val();
 
-        // 住所
-        let real_estate_address = $("#real_estate_address").val();
+        // 専有面積
+        let room_size = $("#room_size").val();
 
         // 送信データインスタンス化
         var sendData = new FormData();
         
-        sendData.append('real_estate_id', real_estate_id);
+        sendData.append('room_id', room_id);
         sendData.append('real_estate_name', real_estate_name);
-        sendData.append('real_estate_post_number', real_estate_post_number);
-        sendData.append('real_estate_address', real_estate_address);
-        sendData.append('owner_id', owner_id);
+        sendData.append('roon_name', roon_name);
+        sendData.append('room_type_id', room_type_id);
+        sendData.append('room_size', room_size);
         
         // ajaxヘッダー
         $.ajaxSetup({
+
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+        
         });
 
         $.ajax({
+            
             type: 'post',
-            url: 'backRealEstateEditEntry',
+            url: 'backRoomEditEntry',
             dataType: 'json',
             data: sendData,
             cache:false,
@@ -231,7 +140,7 @@ $(function(){
                     .then(function(val) {
                     if (val) {
 
-                        location.href = 'backRealEstateInit';
+                        location.href = 'backRoomInit';
                     };
                 });
 
@@ -284,6 +193,7 @@ $(function(){
 
                             // 表示箇所のMessageのkey取得
                             let msg_key = "#" + data.errkeys[i] + "_error"
+                            
                             // error_messageテキスト追加
                             $(msg_key).text(data.messages[i]);
                             $(msg_key).show();

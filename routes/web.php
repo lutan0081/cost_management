@@ -80,3 +80,9 @@ Route::any('backRoomInit', 'Back\Room\BackRoomController@backRoomInit')->middlew
 
 // 新規表示
 Route::get('backRoomNewInit', 'Back\Room\BackRoomController@backRoomNewInit')->middleware("cost_auth");
+
+// 編集表示
+Route::get('backRoomEditInit', 'Back\Room\BackRoomController@backRoomEditInit')->middleware("cost_auth");
+
+// 登録分岐
+Route::post('backRoomEditEntry', 'Back\Room\BackRoomController@backRoomEditEntry')->middleware("cost_auth");
