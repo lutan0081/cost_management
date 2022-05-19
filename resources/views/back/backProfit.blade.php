@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-		<title>売上一覧/COSTS</title>
+		<title>売上詳細/COSTS</title>
 
 		<!-- head -->
         @component('component.backHead')
@@ -63,7 +63,7 @@
                             <!-- タイトル -->
                             
                             <div class="row">
-                                <form action="backBankInit" method="post">
+                                <form action="backProfitInit" method="post">
                                     {{ csrf_field() }}
                                     <div class="col-sm-12">
                                         <div class="card border border-0">
@@ -76,34 +76,32 @@
                                                 </div>
                                 
                                                 <!-- 物件名 -->
-                                                <div class="col-12 col-md-8 col-lg-4 mt-1">
+                                                <div class="col-12 col-md-8 col-lg-3 mt-1">
                                                     <label class="" for="textBox"></label>物件名
                                                     
-                                                    <select class="form-select" name="contract_progress_id" id="contract_progress_id">
+                                                    <select class="form-select" name="real_estate_id" id="real_estate_id">
                                                         <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                                         <option></option>
-                                            
+                                                        @foreach($real_estate_list as $real_estates)
+                                                            <option value="{{ $real_estates->real_estate_id }}">{{ $real_estates->real_estate_name }}</option>
+                                                        @endforeach
                                                     </select>
                                                 </div>
                                                 <!-- 物件名 -->
 
                                                 <!-- 売上担当 -->
-                                                <div class="col-12 col-md-8 col-lg-2 mt-1">
+                                                <div class="col-12 col-md-8 col-lg-3 mt-1">
                                                     <label class="" for="textBox"></label>担当
                                                     
-                                                    <select class="form-select" name="contract_progress_id" id="contract_progress_id">
+                                                    <select class="form-select" name="create_user_id" id="create_user_id">
                                                         <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                                         <option></option>
-                                            
+                                                        @foreach($create_user_list as $create_users)
+                                                            <option value="{{ $create_users->create_user_id }}">{{ $create_users->create_user_name }}</option>
+                                                        @endforeach
                                                     </select>
                                                 </div>
                                                 <!-- 売上担当 -->
-
-                                                <!-- 検索ボタン -->
-                                                <div class="col-5 col-md-4 col-lg-2 mt-2">
-                                                    <input type="submit" class="btn btn-default btn-outline-primary float-end" value="検索">
-                                                </div>
-                                                <!-- 検索ボタン -->
 
                                                 <!-- 改行 -->
                                                 <div class="w-100"></div>
@@ -111,17 +109,34 @@
                                                 <!-- 日付始期 -->
                                                 <div class="col-6 col-md-6 col-lg-2 mt-2">
                                                     <label for="">日付始期</label>
-                                                    <input type="text" class="form-control" id="start_date" name="start_date">
+                                                    <input type="text" class="form-control" id="start_date" name="start_date" autocomplete="off">
                                                 </div>
 
                                                 <!-- 日付終期 -->
                                                 <div class="col-6 col-md-6 col-lg-2 mt-2">
                                                     <label for="">日付終期</label>
-                                                    <input type="text" class="form-control" id="end_date" name="end_date">
+                                                    <input type="text" class="form-control" id="end_date" name="end_date" autocomplete="off">
                                                 </div>
 
+                                                <!-- 勘定項目 -->
+                                                <div class="col-12 col-md-8 col-lg-3 mt-1">
+                                                    <label class="" for="textBox"></label>勘定項目
+                                                    
+                                                    <select class="form-select" name="profit_account_id" id="profit_account_id">
+                                                        <!-- タグ内に値を追加、値追加後同一の場合選択する -->
+                                                        <option></option>
+                                                        @foreach($profit_account_list as $profit_accounts)
+                                                            <option value="{{ $profit_accounts->profit_account_id }}">{{ $profit_accounts->profit_account_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <!-- 勘定項目 -->
 
-
+                                                <!-- 検索ボタン -->
+                                                <div class="col-5 col-md-4 col-lg-5 mt-2">
+                                                    <input type="submit" class="btn btn-default btn-outline-primary float-end" value="検索">
+                                                </div>
+                                                <!-- 検索ボタン -->
 
                                             </div>
                                         </div>
@@ -148,7 +163,7 @@
                                 <!-- カードボディ -->
                                 <div class="card-body">
                                     <!-- スクロール -->
-                                    <div class="overflow-auto" style="height:35rem;">
+                                    <div class="overflow-auto" style="height:30rem;">
                                         <div class="table-responsive">
                                             <table class="table table-hover table-condensed table-striped">
 
@@ -156,9 +171,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
-                                                        <th><input class="form-check-input me-3" type="checkbox" value="" id="flexCheckDefault">全選択</th>
-                                                        <th scope="col" id="legal_place_post_number">勘定科目</th>
+                                                        <th>選択</th>
                                                         <th scope="col" id="legal_place_address">勘定日</th>
+                                                        <th scope="col" id="legal_place_post_number">勘定科目</th>
                                                         <th scope="col" id="legal_place_name">担当</th>
                                                         <th scope="col" id="legal_place_address">物件名</th>
                                                         <th scope="col" id="legal_place_address">号室</th>
@@ -171,9 +186,15 @@
                                                 <tbody>
                                                     @foreach($res as $profit_list)
                                                         <tr>
-                                                            <td id="{{ $profit_list->profit_id }}" class="click_class" style="display:none"></td>
-                                                            <td id="{{ $profit_list->profit_id }}" class="click_class"><input id="{{ $profit_list->profit_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
-                                                            <td id="{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->create_user_name }}</td>
+                                                            <td id="id_{{ $profit_list->profit_id }}" class="click_class" style="display:none"></td>
+                                                            <td id="select_{{ $profit_list->profit_id }}" class="click_class"><input id="{{ $profit_list->profit_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
+                                                            <td id="date_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_date }}</td>
+                                                            <td id="account_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_account_name }}</td>
+                                                            <td id="account_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->create_user_name }}</td>
+                                                            <td id="realEstateName{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->real_estate_name }}</td>
+                                                            <td id="roomName{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->room_name }}</td>
+                                                            <td id="profitFee{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_fee }}</td>
+                                                            <td id="profitMemo{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_memo }}</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
@@ -196,8 +217,21 @@
                         </div>
                         <!-- テーブルcard -->
 
+                        <div class="col-12 col-md-6 col-lg-3 mt-3">
+                            <div class="row">
+
+                                <div class="col-12 col-md-8 col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">売上額</label>
+                                        <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($profit_fee_sum_list->profit_fee) }}" style="text-align:right" disabled>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
                         <!-- ボタン -->
-                        <div class="col-12 col-md-6 col-lg-12 mt-3 pt-3">
+                        <div class="col-12 col-md-6 col-lg-12 mt-3 pt-3 mb-3">
                             <div class="card border border-0">
                             <!-- row -->
                             <div class="row">
@@ -205,13 +239,13 @@
                                 <div class="col-12 col-md-6 col-lg-6">
                                     <div class="btn-group" role="group">
                                         <button type="button" class="btn btn-outline-primary float-start btn-default">CSV出力</button>
-                                        <button type="button" class="btn btn-outline-primary float-start btn-default" data-bs-toggle="modal" data-bs-target="#urlModal">URL発行</button>
                                     </div>
                                 </div>
+                                
                                 <!-- 新規、編集 -->
                                 <div class="col-12 col-md-6 col-lg-6">
                                     <div class="btn-group float-xl-end" role="group">
-                                        <button type="button" onclick="location.href='backAppNewInit'" class="btn btn-outline-primary float-end btn-default">新規登録</button>
+                                        <button type="button" onclick="location.href='backProfitNewInit'" class="btn btn-outline-primary float-end btn-default">新規登録</button>
                                         <button type="button" id="btn_edit" class="btn btn-outline-primary float-end btn-default">編集</button>
                                     </div>
                                 </div>

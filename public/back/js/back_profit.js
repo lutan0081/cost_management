@@ -1,15 +1,19 @@
-/**
- * 編集(ダブルクリックの処理)
- */
 $(function(){
+
+    /**
+     * 編集(ダブルクリックの処理)
+     */
     $(".click_class").on('dblclick', function(e) {
+
         console.log("ダブルクリックの処理.");
 
         // ローディング画面
         $("#overlay").fadeIn(300);
 
         // tdのidを配列に分解
-        var id = $(this).attr("id");
+        var id_info = $(this).attr("id");
+        id = id_info.split('_')[1];
+
         console.log(id);
 
         setTimeout(function(){
@@ -17,10 +21,13 @@ $(function(){
         },500);
 
         // idをパラメーターでControllerに渡す
-        location.href = "backBankEditInit?bank_id=" + id;
+        location.href = "backProfitEditInit?profit_id=" + id;
+
     });
 
-    // 編集(ラジオボタンの処理)
+    /**
+     * 編集(ラジオボタンの処理)
+     */
     $("#btn_edit").on('click', function(e) {
         console.log("編集ボタンの処理");
 
@@ -53,4 +60,5 @@ $(function(){
         // idをパラメーターでControllerに渡す
         location.href = "backBankEditInit?bank_id=" + id;
     });
+    
 });

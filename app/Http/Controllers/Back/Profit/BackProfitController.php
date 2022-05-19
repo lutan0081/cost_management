@@ -41,8 +41,20 @@ class BackProfitController extends Controller
             // 売上一覧取得
             $profit_list = $this->getProfitList($request);
 
-            // 勘定科目一覧
-            
+            // 売上合計値取得
+            $profit_fee_sum_list = $this->getProfitSumList($request);
+            // dd($profit_fee_sum_list);
+
+            $common = new Common();
+
+            // 不動産一覧
+            $real_estate_list = $common->getRealEstateList();
+
+            // 勘定科目id
+            $profit_account_list = $common->getProfitAccounts();
+
+            // アカウント一覧
+            $create_user_list = $common->getCreateUsers();
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -54,7 +66,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfit' ,$profit_list);
+        return view('back.backProfit' ,$profit_list ,compact('real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list'));
     }
 
     /**
@@ -77,9 +89,25 @@ class BackProfitController extends Controller
             Log::debug('$session_id:' .$session_id);
             
             // 勘定科目id
-            $free_word = $request->input('free_word');
-            Log::debug('$free_word:' .$free_word);
+            $profit_account_id = $request->input('profit_account_id');
+            Log::debug('$profit_account_id:' .$profit_account_id);
 
+            // 担当者id
+            $create_user_id = $request->input('create_user_id');
+            Log::debug('$create_user_id:' .$create_user_id);
+
+            // 不動産id
+            $real_estate_id = $request->input('real_estate_id');
+            Log::debug('$real_estate_id:' .$real_estate_id);
+
+            // 始期
+            $start_date = $request->input('start_date');
+            Log::debug('$start_date:' .$start_date);
+
+            // 終期
+            $end_date = $request->input('end_date');
+            Log::debug('$end_date:' .$end_date);
+            
             $str = "select "
             ."profits.profit_id, "
             ."profits.profit_person_id, "
@@ -90,7 +118,7 @@ class BackProfitController extends Controller
             ."rooms.room_name, "
             ."profits.profit_account_id, "
             ."profit_accounts.profit_account_name, "
-            ."profits.profit_account_date, "
+            ."profits.profit_date, "
             ."profits.profit_fee, "
             ."profits.profit_memo, "
             ."profits.entry_user_id, "
@@ -105,44 +133,75 @@ class BackProfitController extends Controller
             ."left join real_estates on "
             ."real_estates.real_estate_id = rooms.real_estate_id "
             ."left join profit_accounts on "
-            ."profit_accounts.profit_account_id = profits.profit_account_id ";
-
+            ."profit_accounts.profit_account_id = profits.profit_account_id "
+            ."where 1 = 1 ";
+            
             // where句
             $where = "";
 
             // フリーワード
             if($free_word !== null){
 
-                if($where == ""){
-
-                    $where = "where ";
-
-                }else{
-
-                    $where = "and ";
-                }
-
-                $where = $where ."ifnull(real_estate_name,'') like '%$free_word%'";
+                $where = $where ."and ifnull(real_estate_name,'') like '%$free_word%'";
                 $where = $where ."or ifnull(profit_memo,'') like '%$free_word%'";
+
             };
 
-            // 勘定科目id
-            if($where == ""){
+            // 勘定項目id
+            if($profit_account_id !== null){
 
-                $where = $where ."where "
-                ."profits.profit_account_id = '$session_id' ";
+                $where = $where ."and profits.profit_account_id = '$profit_account_id' ";
+            
+            };
 
-            }else{
+            // 担当者id
+            if($create_user_id !== null){
 
-                $where = $where ."and "
-                ."profits.profit_account_id = '$session_id' ";
-            }
+                $where = $where ."and profits.profit_person_id = '$create_user_id' ";
+            
+            };
+    
+            // 勘定日
+            // 始期・終期がnullでない場合
+            if(($start_date !== null) && ($end_date !== null)) {
+
+                Log::debug('始期・終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '$start_date') "
+                ."and" 
+                ."(profit_date <= '$end_date')";
+            };
+
+            // 始期がnullでない場合の処理
+            if(($start_date !== null) && ($end_date == null)) {
+
+                Log::debug('始期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '$start_date') "
+                ."and" 
+                ."(profit_date <= '9999/12/31')";
+                
+            };
+
+            // 終期がnullでない場合の処理
+            if(($start_date == null) && ($end_date !== null)) {
+
+                Log::debug('終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '1900/01/01') "
+                ."and" 
+                ."(profit_date <= '$end_date')";
+
+            };
 
             // order by句
-            $order_by = "order by profit_id ";
+            $order_by = "order by profit_id desc";
 
             $str = $str .$where .$order_by;
-            Log::debug('$sql:' .$str);
+            Log::debug('$str:' .$str);
 
             // query
             $alias = DB::raw("({$str}) as alias");
@@ -165,30 +224,155 @@ class BackProfitController extends Controller
         Log::debug('log_end:'.__FUNCTION__);
 
         return $ret;
-    }  
+    }
+    
+    /**
+     * 合計値取得(sql)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function getProfitSumList(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
 
+        try{
+
+            // フリーワード
+            $free_word = $request->input('free_word');
+            Log::debug('$free_word:' .$free_word);
+
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('$session_id:' .$session_id);
+            
+            // 勘定科目id
+            $profit_account_id = $request->input('profit_account_id');
+            Log::debug('$profit_account_id:' .$profit_account_id);
+
+            // 担当者id
+            $create_user_id = $request->input('create_user_id');
+            Log::debug('$create_user_id:' .$create_user_id);
+
+            // 不動産id
+            $real_estate_id = $request->input('real_estate_id');
+            Log::debug('$real_estate_id:' .$real_estate_id);
+
+            // 始期
+            $start_date = $request->input('start_date');
+            Log::debug('$start_date:' .$start_date);
+
+            // 終期
+            $end_date = $request->input('end_date');
+            Log::debug('$end_date:' .$end_date);
+
+            // where句
+            $where = "";
+
+            // 勘定項目id
+            if($profit_account_id !== null){
+
+                $where = $where ."and profits.profit_account_id = '$profit_account_id' ";
+            
+            };
+
+            // 担当者id
+            if($create_user_id !== null){
+
+                $where = $where ."and profits.profit_person_id = '$create_user_id' ";
+            
+            };
+    
+            // 勘定日
+            // 始期・終期がnullでない場合
+            if(($start_date !== null) && ($end_date !== null)) {
+
+                Log::debug('始期・終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '$start_date') "
+                ."and" 
+                ."(profit_date <= '$end_date')";
+            };
+
+            // 始期がnullでない場合の処理
+            if(($start_date !== null) && ($end_date == null)) {
+
+                Log::debug('始期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '$start_date') "
+                ."and" 
+                ."(profit_date <= '9999/12/31')";
+                
+            };
+
+            // 終期がnullでない場合の処理
+            if(($start_date == null) && ($end_date !== null)) {
+
+                Log::debug('終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '1900/01/01') "
+                ."and" 
+                ."(profit_date <= '$end_date')";
+
+            };
+
+            $str = "select "
+            ."count(*) as row_count, "
+            ."sum(profit_fee) as profit_fee "
+            ."from ( "
+            ."select * "
+            ."from profits "
+            ."where 1 = 1 "
+            ."$where "
+            .") as t; ";
+
+            // query
+            Log::debug('str:'.$str);
+            $ret = DB::select($str)[0];
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
+    
     /**
      *  新規(表示)
      *
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backRoomNewInit(Request $request){   
+    public function backProfitNewInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
 
-            // 不動産一覧
-            $room_list = $this->getNewList($request);
+            // 売上一覧
+            $profit_list = $this->getNewList($request);
 
             $common = new Common();
 
-            // 家主一覧
+            // 不動産一覧
             $real_estate_list = $common->getRealEstateList();
 
-            // 部屋種別
-            $room_type_list = $common->getRoomTypeList();
-            
+            // 勘定科目id
+            $profit_account_list = $common->getProfitAccounts();
+
+            // アカウント一覧
+            $create_user_list = $common->getCreateUsers();
+
+            // 新規表示の場合、号室不要の為から配列を渡す
+            $room_list = [];
+    
         // 例外処理
         } catch (\Throwable $e) {
 
@@ -199,7 +383,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRoomEdit' ,compact('room_list','real_estate_list' ,'room_type_list'));
+        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list'));
     }
 
     /**
@@ -212,12 +396,14 @@ class BackProfitController extends Controller
         
         $obj = new \stdClass();
         
-        $obj->room_id  = '';
-        $obj->room_name = '';
-        $obj->room_size = '';
-        $obj->room_type_id = '';
+        $obj->profit_id  = '';
+        $obj->profit_person_id = '';
+        $obj->room_id = '';
+        $obj->profit_account_id = '';
+        $obj->profit_date  = '';
+        $obj->profit_fee = '';
+        $obj->profit_memo = '';
         $obj->real_estate_id = '';
-
 
         $ret = [];
         $ret = $obj;
@@ -227,37 +413,144 @@ class BackProfitController extends Controller
     }
 
     /**
+     * 不動産のコンボボックスを変更した場合の号室取得
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function backRealEstateChangeInit(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+        
+        // return初期値
+        $response = [];
+
+        /**
+         * status:OK=1 NG=0
+         */
+        $room_list = $this->getRoom($request);
+
+        /**
+         * returnのステータス
+         * room_list,status
+         */
+        $response['room_list'] = $room_list['room_list'];
+
+        // js側での判定のステータス(true:OK/false:NG)
+        $response["status"] = $room_list['status'];
+
+        // 配列デバック
+        $arrString = print_r($response , true);
+        Log::debug('messages:'.$arrString);
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * 号室取得
+     *
+     * @param Request $request(edit.blade.phpの各項目)
+     * @return ret(true:登録OK/false:登録NG、maxId(contract_id)、session_id(create_user_id))
+     */
+    private function getRoom(Request $request){
+        
+        Log::debug('log_start:' .__FUNCTION__);
+
+        try {
+
+            // retrun初期値
+            $ret = [];
+
+            /**
+             * 不動産id
+             */
+            $real_estate_id = $request->input('real_estate_id');
+
+            // sql
+            $str = "select * from rooms "
+            ."where rooms.real_estate_id = $real_estate_id "
+            ."order by room_name asc, room_id desc";
+
+            Log::debug('str:' . $str);
+
+            // 値格納
+            $ret['room_list'] = DB::select($str);
+
+            // 戻り値
+            $ret['status'] = 1;
+            
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            $ret['status'] = 0;
+
+        // status:OK=1/NG=0
+        } finally {
+
+            if($ret['status'] == 1){
+
+                Log::debug('status:trueの処理');
+                $ret['status'] = true;
+
+            }else{
+
+                Log::debug('status:falseの処理');
+                $ret['status'] = false;
+            }
+
+            Log::debug('log_end:'.__FUNCTION__);
+            return $ret;
+        }
+    }
+
+    /**
      *  編集(表示)
      *
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backRoomEditInit(Request $request){   
+    public function backProfitEditInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
 
             // 一覧取得
-            $room_info = $this->getEditList($request);
-            $room_list = $room_info[0];
+            $profit_info = $this->getEditList($request);
+            $profit_list = $profit_info[0];
+
+            $room_id = $profit_list->room_id;
+            Log::debug('room_id:'.$room_id);
 
             $common = new Common();
 
-            // 家主一覧
+            // 不動産一覧
             $real_estate_list = $common->getRealEstateList();
 
-            // 部屋種別
-            $room_type_list = $common->getRoomTypeList();
+            // 勘定科目id
+            $profit_account_list = $common->getProfitAccounts();
+
+            // アカウント一覧
+            $create_user_list = $common->getCreateUsers();
+
+            // 号室
+            $room_list = $common->getRoomList($room_id);
+            // 配列デバック
+            $arrString = print_r($room_list , true);
+            Log::debug('room_list:'.$arrString);
 
         // 例外処理
         } catch (\Throwable $e) {
+
             Log::debug('error:'.$e);
+
         } finally {
 
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRoomEdit' ,compact('room_list','real_estate_list' ,'room_type_list'));
+        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list'));
     }
 
     /**
@@ -271,27 +564,30 @@ class BackProfitController extends Controller
 
         try{
             // 値設定
-            $room_id = $request->input('room_id');
+            $profit_id = $request->input('profit_id');
 
             // sql
             $str = "select "
-            ."rooms.room_id, "
+            ."profits.profit_id, "
+            ."profits.profit_person_id, "
+            ."profits.room_id, "
             ."rooms.room_name, "
-            ."rooms.room_size, "
+            ."profits.profit_account_id, "
+            ."profits.profit_date, "
+            ."profits.profit_fee, "
+            ."profits.profit_memo, "
+            ."profits.entry_user_id, "
+            ."profits.entry_date, "
+            ."profits.update_user_id, "
+            ."profits.update_date, "
             ."rooms.real_estate_id, "
-            ."real_estates.real_estate_name, "
-            ."rooms.room_type_id, "
-            ."room_types.room_type_name, "
-            ."rooms.entry_user_id, "
-            ."rooms.entry_date, "
-            ."rooms.update_user_id, "
-            ."rooms.update_date "
-            ."from rooms "
-            ."left join room_types on "
-            ."room_types.room_type_id = rooms.room_type_id "
+            ."real_estates.real_estate_name "
+            ."from profits "
+            ."left join rooms on "
+            ."rooms.room_id = profits.room_id "
             ."left join real_estates on "
             ."real_estates.real_estate_id = rooms.real_estate_id "
-            ."where rooms.room_id = $room_id; ";
+            ."where profit_id = $profit_id ";
 
             Log::debug('sql:' .$str);
             

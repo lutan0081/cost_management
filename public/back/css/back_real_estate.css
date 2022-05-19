@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 .text_red{
     color: #F00;
 }
@@ -10,16 +12,15 @@
 テーブルの設定
 ===================================*/
 /* 行間 */
-.table-condensed > thead > tr > th,
-.table-condensed > tbody > tr > th,
-.table-condensed > tfoot > tr > th,
-.table-condensed > thead > tr > td,
-.table-condensed > tbody > tr > td,
-.table-condensed > tfoot > tr > td {
-  padding: 10px;  /* 5px の値を変更 */
-}
+.table-responsive > .table-condensed > thead > tr > th,
+.table-responsive > .table-condensed > tbody > tr > th,
+.table-responsive > .table-condensed > tfoot > tr > th,
+.table-responsive > .table-condensed > thead > tr > td,
+.table-responsive > .table-condensed > tbody > tr > td,
+.table-responsive > .table-condensed > tfoot > tr > td {
+    
+    padding: 10px;  /* 5px の値を変更 */
 
-table, td, th {
     /* 見出し線、テーブル線のカスタマイズ */
     border-bottom: 1px solid #dee2e6!important;
     /* はみ出た部分を隠す */

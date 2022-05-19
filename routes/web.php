@@ -93,4 +93,14 @@ Route::post('backRoomDeleteEntry', 'Back\Room\BackRoomController@backRoomDeleteE
 /**
  * 売上管理
  */
+// 一覧表示
 Route::any('backProfitInit', 'Back\Profit\BackProfitController@backProfitInit')->middleware("cost_auth");
+
+// 新規表示
+Route::get('backProfitNewInit', 'Back\Profit\BackProfitController@backProfitNewInit')->middleware("cost_auth");
+
+// 編集表示
+Route::get('backProfitEditInit', 'Back\Profit\BackProfitController@backProfitEditInit')->middleware("cost_auth");
+
+// 不動産のコンボボックスを変更した場合の号室取得
+Route::post('backRealEstateChangeInit', 'Back\Profit\BackProfitController@backRealEstateChangeInit')->middleware("cost_auth");

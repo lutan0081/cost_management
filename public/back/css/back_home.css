@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 body {
     /* font-family: "Hiragino Sans"; */
     /* letter-spacing: 0.1rem; */
@@ -102,23 +104,22 @@ body {
 
 /*-----------------------------お知らせ、アップデート情報-------------------------------------------------*/
 /* 行間 */
-.table-condensed > thead > tr > th,
-.table-condensed > tbody > tr > th,
-.table-condensed > tfoot > tr > th,
-.table-condensed > thead > tr > td,
-.table-condensed > tbody > tr > td,
-.table-condensed > tfoot > tr > td {
-    padding: 10px;  /* 5px の値を変更 */    
-}
+.table-responsive > .table-condensed > thead > tr > th,
+.table-responsive > .table-condensed > tbody > tr > th,
+.table-responsive > .table-condensed > tfoot > tr > th,
+.table-responsive > .table-condensed > thead > tr > td,
+.table-responsive > .table-condensed > tbody > tr > td,
+.table-responsive > .table-condensed > tfoot > tr > td {
+    
+    padding: 10px;  /* 5px の値を変更 */ 
 
-table, td, th {
     /* 見出し線、テーブル線のカスタマイズ */
     border-bottom: 1px solid #dee2e6!important;
     /* はみ出た部分を隠す */
     overflow: hidden;
     /* 折り返し無し */
     white-space: nowrap;
-} 
+}
 
 /* テーブル上のhrのmargin_bottom */
 .info_hr{

@@ -60,6 +60,63 @@ class Common
     }
 
     /**
+     * 号室
+     *
+     * @return $ret
+     */
+    public function getRoomList($room_id){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from rooms "
+        ."where rooms.room_id = $room_id "
+        ."order by room_id asc ";
+        
+        Log::debug('str:'.$str);
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
+
+    /**
+     * 勘定科目
+     *
+     * @return void
+     */
+    public function getProfitAccounts(){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from profit_accounts "
+        ."order by profit_account_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
+    /**
+     * アカウント一覧
+     *
+     * @return void
+     */
+    public function getCreateUsers(){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from create_users "
+        ."order by create_user_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
+
+
+    /**
      * 月度
      *
      * @return void
@@ -135,5 +192,10 @@ class Common
     // 年-月-日
     public static function format_date_hy($date){
         return self::format_date($date,'Y-m-d');
+    }
+
+    // 数値を三桁区切り
+    public static function format_three_digit_separator($money){
+        return number_format($money);
     }
 }
