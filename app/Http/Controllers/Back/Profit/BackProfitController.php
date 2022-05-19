@@ -127,7 +127,7 @@ class BackProfitController extends Controller
             ."profits.update_date "
             ."from profits "
             ."left join create_users on "
-            ."create_users.create_user_id = profits.entry_user_id "
+            ."create_users.create_user_id = profits.profit_person_id "
             ."left join rooms on "
             ."rooms.room_id = profits.room_id "
             ."left join real_estates on "
@@ -612,7 +612,7 @@ class BackProfitController extends Controller
      * @param $request(edit.blade.phpの各項目)
      * @return $response(status:true=OK/false=NG)
      */
-    public function backRoomEditEntry(Request $request){
+    public function backProfitEditEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
         
         // return初期値
@@ -633,7 +633,7 @@ class BackProfitController extends Controller
          * id=有:update
          */
         // 新規登録
-        if($request->input('room_id') == ""){
+        if($request->input('profit_id') == ""){
 
             Log::debug('新規の処理');
 
@@ -675,16 +675,18 @@ class BackProfitController extends Controller
          * rules
          */
         $rules = [];
-        $rules['roon_name'] = "required|max:10";
-        $rules['room_size'] = "nullable|max:100";
+        $rules['profit_account_date'] = "required|date";
+        $rules['profit_fee'] = "required";
+        $rules['profit_memo'] = "nullable|max:100";
 
         /**
          * messages
          */
         $messages = [];
-        $messages['roon_name.required'] = "号室は必須です。";
-        $messages['roon_name.max'] = "号室の文字数が超過しています。";
-        $messages['room_size.max'] = "専有面積の文字数が超過しています。";
+        $messages['profit_account_date.required'] = "勘定日は必須です。";
+        $messages['profit_account_date.date'] = "勘定日の形式が不正です。";
+        $messages['profit_fee.required'] = "利益額は必須です。";
+        $messages['profit_memo.max'] = "備考の文字数が超過しています。";
     
         // validation判定
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -747,7 +749,7 @@ class BackProfitController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $bank_info = $this->insertRoom($request);
+            $bank_info = $this->insertProfit($request);
 
             // returnのステータスにtrueを設定
             $ret['status'] = $bank_info['status'];
@@ -784,7 +786,7 @@ class BackProfitController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function insertRoom(Request $request){
+    private function insertProfit(Request $request){
         
         Log::debug('log_start:' .__FUNCTION__);
 
@@ -794,59 +796,79 @@ class BackProfitController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
+            $profit_person_id = $request->input('profit_person_id');
+            $profit_account_id = $request->input('profit_account_id');
+            $profit_account_date = $request->input('profit_account_date');
+            $profit_fee = $request->input('profit_fee');
+            $real_estate_id = $request->input('real_estate_id');
             $room_id = $request->input('room_id');
-            $real_estate_id = $request->input('real_estate_name');
-            $roon_name = $request->input('roon_name');
-            $room_type_id = $request->input('room_type_id');
-            $room_size = $request->input('room_size');
+            $profit_memo = $request->input('profit_memo');
 
             // 現在の日付取得
             $date = now() .'.000';
     
-            // 物件名
+            // 売上担当id
+            if($profit_person_id == null){
+                $profit_person_id = 0;
+            }
+
+            // 勘定科目id
+            if($profit_account_id == null){
+                $profit_account_id = 0;
+            }
+
+            // 勘定日
+            if($profit_account_date == null){
+                $profit_account_date = '';
+            }
+
+            // 利益額
+            if($profit_fee == null){
+                $profit_fee = 0;
+            }
+
+            // 不動産id
             if($real_estate_id == null){
-                $real_estate_id =0;
+                $real_estate_id = 0;
             }
 
-            // 号室
-            if($roon_name == null){
-                $roon_name ='';
+            // 号室id
+            if($room_id == null){
+                $room_id = 0;
             }
 
-            // 種別
-            if($room_type_id == null){
-                $room_type_id =0;
+            // 備考
+            if($profit_memo == null){
+                $profit_memo = '';
             }
 
-            // 専有面積
-            if($room_size == null){
-                $room_size = '';
-            }
-
-            // 登録
             $str = "insert "
             ."into "
-            ."rooms "
+            ."cost_management.profits "
             ."( "
-            ."real_estate_id, "
-            ."room_name, "
-            ."room_size, "
-            ."room_type_id, "
+            ."profit_person_id, "
+            ."room_id, "
+            ."profit_account_id, "
+            ."profit_date, "
+            ."profit_fee, "
+            ."profit_memo, "
             ."entry_user_id, "
             ."entry_date, "
             ."update_user_id, "
             ."update_date "
             .")values( "
-            ."$real_estate_id, "
-            ."'$roon_name', "
-            ."'$room_size', "
-            ."$room_type_id, "
+            ."$profit_person_id, "
+            ."$room_id, "
+            ."$profit_account_id, "
+            ."'$profit_account_date', "
+            ."'$profit_fee', "
+            ."'$profit_memo', "
             ."$session_id, "
             ."'$date', "
             ."$session_id, "
             ."'$date' "
             ."); ";
-            
+
             Log::debug('sql:'.$str);
 
             // OK=1/NG=0
@@ -884,10 +906,10 @@ class BackProfitController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $room_info = $this->updateRoom($request);
+            $profit_info = $this->updateProfit($request);
 
             // returnのステータスにtrueを設定
-            $ret['status'] = $room_info['status'];
+            $ret['status'] = $profit_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -921,7 +943,7 @@ class BackProfitController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function updateRoom(Request $request){
+    private function updateProfit(Request $request){
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
@@ -930,48 +952,68 @@ class BackProfitController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
+            $profit_id = $request->input('profit_id');
+            $profit_person_id = $request->input('profit_person_id');
+            $profit_account_id = $request->input('profit_account_id');
+            $profit_account_date = $request->input('profit_account_date');
+            $profit_fee = $request->input('profit_fee');
+            $real_estate_id = $request->input('real_estate_id');
             $room_id = $request->input('room_id');
-            $real_estate_id = $request->input('real_estate_name');
-            $roon_name = $request->input('roon_name');
-            $room_type_id = $request->input('room_type_id');
-            $room_size = $request->input('room_size');
+            $profit_memo = $request->input('profit_memo');
 
             // 現在の日付取得
             $date = now() .'.000';
+    
+            // 売上担当id
+            if($profit_person_id == null){
+                $profit_person_id = 0;
+            }
 
-            // 物件名
+            // 勘定科目id
+            if($profit_account_id == null){
+                $profit_account_id = 0;
+            }
+
+            // 勘定日
+            if($profit_account_date == null){
+                $profit_account_date = '';
+            }
+
+            // 利益額
+            if($profit_fee == null){
+                $profit_fee = 0;
+            }
+
+            // 不動産id
             if($real_estate_id == null){
-                $real_estate_id =0;
+                $real_estate_id = 0;
             }
 
-            // 号室
-            if($roon_name == null){
-                $roon_name ='';
+            // 号室id
+            if($room_id == null){
+                $room_id = 0;
             }
 
-            // 種別
-            if($room_type_id == null){
-                $room_type_id =0;
-            }
-
-            // 専有面積
-            if($room_size == null){
-                $room_size = '';
+            // 備考
+            if($profit_memo == null){
+                $profit_memo = '';
             }
 
             $str = "update "
-            ."rooms "
+            ."cost_management.profits "
             ."set "
-            ."real_estate_id = $real_estate_id, "
-            ."room_name = '$roon_name', "
-            ."room_size = '$room_size', "
-            ."room_type_id = $room_type_id, "
+            ."profit_person_id = $profit_person_id, "
+            ."room_id = $room_id, "
+            ."profit_account_id = $profit_account_id, "
+            ."profit_date = '$profit_account_date', "
+            ."profit_fee = $profit_fee, "
+            ."profit_memo = '$profit_memo', "
             ."entry_user_id = $session_id, "
             ."entry_date = '$date', "
             ."update_user_id = $session_id, "
             ."update_date = '$date' "
             ."where "
-            ."room_id = $room_id ";
+            ."profit_id = $profit_id; ";
             
             Log::debug('sql:'.$str);
 
@@ -998,7 +1040,7 @@ class BackProfitController extends Controller
      * @param Request $request
      * @return void
      */
-    public function backRoomDeleteEntry(Request $request){
+    public function backProfitDeleteEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{

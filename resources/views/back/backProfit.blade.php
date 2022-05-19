@@ -190,10 +190,10 @@
                                                             <td id="select_{{ $profit_list->profit_id }}" class="click_class"><input id="{{ $profit_list->profit_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
                                                             <td id="date_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_date }}</td>
                                                             <td id="account_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_account_name }}</td>
-                                                            <td id="account_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->create_user_name }}</td>
+                                                            <td id="user_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->create_user_name }}</td>
                                                             <td id="realEstateName{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->real_estate_name }}</td>
                                                             <td id="roomName{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->room_name }}</td>
-                                                            <td id="profitFee{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_fee }}</td>
+                                                            <td id="profitFee{{ $profit_list->profit_id }}" class="click_class">{{ Common::format_three_digit_separator($profit_list->profit_fee) }}</td>
                                                             <td id="profitMemo{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_memo }}</td>
                                                         </tr>
                                                     @endforeach

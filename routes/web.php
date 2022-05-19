@@ -104,3 +104,9 @@ Route::get('backProfitEditInit', 'Back\Profit\BackProfitController@backProfitEdi
 
 // 不動産のコンボボックスを変更した場合の号室取得
 Route::post('backRealEstateChangeInit', 'Back\Profit\BackProfitController@backRealEstateChangeInit')->middleware("cost_auth");
+
+// 登録分岐（新規/編集）
+Route::post('backProfitEditEntry', 'Back\Profit\BackProfitController@backProfitEditEntry')->middleware("cost_auth");
+
+// 削除
+Route::post('backProfitDeleteEntry', 'Back\Profit\BackProfitController@backProfitDeleteEntry')->middleware("cost_auth");

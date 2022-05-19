@@ -75,7 +75,7 @@
                                                         <!-- 売上担当 -->
                                                         <div class="col-12 col-md-12 col-lg-3 mt-3">
                                                             <label class="label_required mb-2" for="textBox"></label>売上担当
-                                                            <select class="form-select" name="profit_person_id" id="profit_person_id" >
+                                                            <select class="form-select" name="profit_person_id" id="profit_person_id" required>
                                                                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                                                 <option></option>
                                                                 @foreach($create_user_list as $create_users)
@@ -91,7 +91,7 @@
                                                         <!-- 勘定科目 -->
                                                         <div class="col-12 col-md-12 col-lg-3 mt-3">
                                                             <label class="label_required mb-2" for="textBox"></label>勘定科目
-                                                            <select class="form-select" name="profit_account_id" id="profit_account_id" value="{{ $profit_list->profit_account_id }}">
+                                                            <select class="form-select" name="profit_account_id" id="profit_account_id" value="{{ $profit_list->profit_account_id }}" required>
                                                                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                                                 <option></option>
                                                                 @foreach($profit_account_list as $profit_accounts)

@@ -77,33 +77,41 @@ $(function(){
             return false;
         }
 
-        // 家主id
-        let owner_id = $("#owner_id").val();
+        // 売上担当id
+        let profit_person_id = $("#profit_person_id").val();
 
-        // 家主名
-        let owner_name = $("#owner_name").val();
+        // 勘定科目
+        let profit_account_id = $("#profit_account_id").val();
 
-        // 郵便番号
-        let owner_post_number = $("#owner_post_number").val();
+        // 勘定日
+        let profit_account_date = $("#profit_account_date").val();
 
-        // 住所
-        let owner_address = $("#owner_address").val();
+        // 利益額
+        let profit_fee = $("#profit_fee").val();
 
-        // TEL
-        let owner_tel = $("#owner_tel").val();
+        // 物件名
+        let real_estate_id = $("#real_estate_id").val();
 
-        // FAX
-        let owner_fax = $("#owner_fax").val();
+        // 号室
+        let room_id = $("#room_id").val();
 
+        // 備考
+        let profit_memo = $("#profit_memo").val();
+        
+        // id
+        let profit_id = $("#profit_id").val();
+        
         // 送信データインスタンス化
         var sendData = new FormData();
         
-        sendData.append('owner_id', owner_id);
-        sendData.append('owner_name', owner_name);
-        sendData.append('owner_post_number', owner_post_number);
-        sendData.append('owner_address', owner_address);
-        sendData.append('owner_tel', owner_tel);
-        sendData.append('owner_fax', owner_fax);
+        sendData.append('profit_person_id', profit_person_id);
+        sendData.append('profit_account_id', profit_account_id);
+        sendData.append('profit_account_date', profit_account_date);
+        sendData.append('profit_fee', profit_fee);
+        sendData.append('real_estate_id', real_estate_id);
+        sendData.append('room_id', room_id);
+        sendData.append('profit_memo', profit_memo);
+        sendData.append('profit_id', profit_id);
         
         // ajaxヘッダー
         $.ajaxSetup({
@@ -112,7 +120,7 @@ $(function(){
 
         $.ajax({
             type: 'post',
-            url: 'backOwnerEditEntry',
+            url: 'backProfitEditEntry',
             dataType: 'json',
             data: sendData,
             cache:false,
@@ -141,7 +149,7 @@ $(function(){
                     .then(function(val) {
                     if (val) {
 
-                        location.href = 'backOwnerInit';
+                        location.href = 'backProfitInit';
                     };
                 });
 
@@ -246,8 +254,8 @@ $(function(){
         };
 
         // 値取得
-        let owner_id = $("#owner_id").val();
-        console.log(owner_id);
+        let profit_id = $("#profit_id").val();
+        console.log(profit_id);
         
         // then() OKを押した時の処理
         swal(options)
@@ -267,7 +275,7 @@ $(function(){
                 // 送信用データ
                 let sendData = {
 
-                    "owner_id": owner_id,
+                    "profit_id": profit_id,
                 };
 
                 console.log(sendData);
@@ -279,7 +287,7 @@ $(function(){
                 $.ajax({
 
                     type: 'post',
-                    url: 'backOwnerDeleteEntry',
+                    url: 'backProfitDeleteEntry',
                     dataType: 'json',
                     data: sendData,
                 
@@ -301,7 +309,7 @@ $(function(){
                         .then(function(val) {
                         if (val) {
 
-                            location.href="backOwnerInit"
+                            location.href="backProfitInit"
                             
                         }
                     });
@@ -323,87 +331,8 @@ $(function(){
     });
 
     /**
-     * 住所検索
+     * 不動産コンボボックス変更の際、号室取得の処理
      */
-    $(".btn_zip").on('click', function(e) {
-
-        console.log("btn_zipクリックされています");
-
-        e.preventDefault();
-
-        // ローディング画面
-        $("#overlay").fadeIn(300);
-
-        // 住所検索ボタンのid取得
-        var post_number_id = $(this).attr('id');
-        console.log(post_number_id);
-
-        // 郵便番号初期値
-        let post_number = '';
-
-        post_number = $('#owner_post_number').val();
-
-        // 郵便番号が空白の場合のプログラム終了
-        if(post_number==""){
-
-            // ローディング画面停止
-            setTimeout(function(){
-                $("#overlay").fadeOut(300);
-            },500);
-
-            return false;
-        }
-
-        // url指定
-        let zipUrl = "https://zipcloud.ibsnet.co.jp/api/search?zipcode="+ post_number;
-
-        $.ajaxSetup({
-            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
-        });
-
-        $.ajax({
-            type: 'get',
-            url: zipUrl,
-            // 自身のサイトの場合json,他のサイトの場合jsonp
-            dataType: 'jsonp'
-
-        // 接続が出来た場合の処理
-        }).done(function(data) {
-            console.log(data);
-            
-            // ローディング画面終了の処理
-            setTimeout(function(){
-                $("#overlay").fadeOut(300);
-            },500);
-
-            //取得結果がNGの場合、メッセージを追加する
-            if(data.results == null){
-                console.log(data.message);
-            }
-
-            // 取得結果がOKの場合、ifで入力データをもとに分岐し住所を設定する
-            if(data.results !== null){
-
-                if(post_number_id == 'owner-btn-zip'){
-                    let address = data.results[0].address1 + data.results[0].address2 + data.results[0].address3;
-                    console.log(address);
-                    $('#owner_address').val(address);
-                }
-
-            }
-
-        // ajax接続が出来なかった場合の処理
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
-
-        });
-
-    });
-
-    // 不動産コンボボックス変更の際、号室取得の処理
     $("#real_estate_id").change(function(e) {
 
         console.log('不動産変更の処理');
