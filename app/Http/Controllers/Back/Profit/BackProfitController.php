@@ -55,6 +55,25 @@ class BackProfitController extends Controller
 
             // アカウント一覧
             $create_user_list = $common->getCreateUsers();
+
+            // フリーワード
+            $free_word = $request->input('free_word');
+            
+            // 勘定科目id
+            $profit_account_id = $request->input('profit_account_id');
+            
+            // 担当者id
+            $create_user_id = $request->input('create_user_id');
+            Log::debug('end:' .__FUNCTION__);
+
+            // 不動産id
+            $real_estate_id = $request->input('real_estate_id');
+
+            // 始期
+            $start_date = $request->input('start_date');
+
+            // 終期
+            $end_date = $request->input('end_date');
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -66,7 +85,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfit' ,$profit_list ,compact('real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list'));
+        return view('back.backProfit' ,$profit_list ,compact('real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list', 'free_word', 'profit_account_id', 'create_user_id', 'real_estate_id', 'start_date', 'end_date'));
     }
 
     /**
@@ -111,6 +130,7 @@ class BackProfitController extends Controller
             $str = "select "
             ."profits.profit_id, "
             ."profits.profit_person_id, "
+            ."profits.customer_name, "
             ."create_users.create_user_name, "
             ."rooms.real_estate_id, "
             ."real_estates.real_estate_name, "
@@ -144,7 +164,7 @@ class BackProfitController extends Controller
 
                 $where = $where ."and ifnull(real_estate_name,'') like '%$free_word%'";
                 $where = $where ."or ifnull(profit_memo,'') like '%$free_word%'";
-
+                $where = $where ."or ifnull(customer_name,'') like '%$free_word%'";
             };
 
             // 勘定項目id
@@ -404,7 +424,8 @@ class BackProfitController extends Controller
         $obj->profit_fee = '';
         $obj->profit_memo = '';
         $obj->real_estate_id = '';
-
+        $obj->customer_name = '';
+        
         $ret = [];
         $ret = $obj;
 
@@ -570,6 +591,7 @@ class BackProfitController extends Controller
             $str = "select "
             ."profits.profit_id, "
             ."profits.profit_person_id, "
+            ."profits.customer_name, "
             ."profits.room_id, "
             ."rooms.room_name, "
             ."profits.profit_account_id, "
@@ -665,6 +687,11 @@ class BackProfitController extends Controller
      */
     private function editValidation(Request $request){
 
+        /**
+         * 値取得
+         */
+        $guarantor_flag = $request->input('guarantor_flag');
+
         // returnの出力値
         $response = [];
 
@@ -676,17 +703,24 @@ class BackProfitController extends Controller
          */
         $rules = [];
         $rules['profit_account_date'] = "required|date";
-        $rules['profit_fee'] = "required";
+        $rules['profit_fee'] = "required|integer";
         $rules['profit_memo'] = "nullable|max:100";
+        $rules['customer_name'] = "nullable|max:50";
 
         /**
          * messages
          */
         $messages = [];
+
         $messages['profit_account_date.required'] = "勘定日は必須です。";
         $messages['profit_account_date.date'] = "勘定日の形式が不正です。";
+
         $messages['profit_fee.required'] = "利益額は必須です。";
-        $messages['profit_memo.max'] = "備考の文字数が超過しています。";
+        $messages['profit_fee.integer'] = "利益額の形式が不正です。";
+
+        $messages['profit_memo.max'] = "備考の形式が不正です。";
+
+        $messages['customer_name.max'] = "取引先の文字数が超過しています。";
     
         // validation判定
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -803,6 +837,7 @@ class BackProfitController extends Controller
             $real_estate_id = $request->input('real_estate_id');
             $room_id = $request->input('room_id');
             $profit_memo = $request->input('profit_memo');
+            $customer_name = $request->input('customer_name');
 
             // 現在の日付取得
             $date = now() .'.000';
@@ -842,11 +877,18 @@ class BackProfitController extends Controller
                 $profit_memo = '';
             }
 
+            // 取引先
+            if($customer_name == null){
+                $customer_name = '';
+            }
+
+
             $str = "insert "
             ."into "
             ."cost_management.profits "
             ."( "
             ."profit_person_id, "
+            ."customer_name, "
             ."room_id, "
             ."profit_account_id, "
             ."profit_date, "
@@ -858,6 +900,7 @@ class BackProfitController extends Controller
             ."update_date "
             .")values( "
             ."$profit_person_id, "
+            ."'$customer_name', "
             ."$room_id, "
             ."$profit_account_id, "
             ."'$profit_account_date', "
@@ -960,10 +1003,16 @@ class BackProfitController extends Controller
             $real_estate_id = $request->input('real_estate_id');
             $room_id = $request->input('room_id');
             $profit_memo = $request->input('profit_memo');
+            $customer_name = $request->input('customer_name');
 
             // 現在の日付取得
             $date = now() .'.000';
-    
+
+            // 取引先
+            if($customer_name == null){
+                $customer_name = '';
+            }
+
             // 売上担当id
             if($profit_person_id == null){
                 $profit_person_id = 0;
@@ -1003,6 +1052,7 @@ class BackProfitController extends Controller
             ."cost_management.profits "
             ."set "
             ."profit_person_id = $profit_person_id, "
+            ."customer_name = '$customer_name', "
             ."room_id = $room_id, "
             ."profit_account_id = $profit_account_id, "
             ."profit_date = '$profit_account_date', "
@@ -1048,10 +1098,10 @@ class BackProfitController extends Controller
             // return初期値
             $response = [];
 
-            $room_info = $this->deleteRoom($request);
+            $profit_info = $this->deleteProfit($request);
 
             // js側での判定のステータス(true:OK/false:NG)
-            $response['status'] = $room_info['status'];
+            $response['status'] = $profit_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -1086,7 +1136,7 @@ class BackProfitController extends Controller
      * @param Request $request
      * @return void
      */
-    private function deleteRoom(Request $request){
+    private function deleteProfit(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -1094,13 +1144,13 @@ class BackProfitController extends Controller
             $ret = [];
 
             // 値取得
-            $room_id = $request->input('room_id');
+            $profit_id = $request->input('profit_id');
 
             $str = "delete "
             ."from "
-            ."rooms "
+            ."profits "
             ."where "
-            ."room_id = $room_id; ";
+            ."profit_id = $profit_id; ";
             Log::debug('str:'.$str);
 
             // OK=1/NG=0

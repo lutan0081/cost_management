@@ -132,9 +132,22 @@
                                                             <hr>
                                                         </div>
 
+                                                        <!-- 取引先 -->
+                                                        <div class="col-12 col-md-12 col-lg-6 mt-3">
+                                                            <label class="label_any mb-2" for="textBox"></label>取引先
+                                                            <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="例：株式会社〇〇〇〇不動産" value="{{ $profit_list->customer_name }}">
+                                                            <!-- エラーメッセージ -->
+                                                            <div class="invalid-feedback" id ="customer_name_error">
+                                                                取引先は必須です。
+                                                            </div>
+                                                        </div>
+                                                        <!-- 取引先 -->
+
+                                                        <div class="w-100"></div>
+
                                                         <!-- 物件名 -->
                                                         <div class="col-12 col-md-8 col-lg-6 mt-3">
-                                                            <label class="label_any" for="textBox"></label>物件名
+                                                            <label class="label_any mb-2" for="textBox"></label>物件名
                                                             <div class="input-group">
                                                                 <select class="form-select" name="real_estate_id" id="real_estate_id" class="real_estate_id">
                                                                     <!-- タグ内に値を追加、値追加後同一の場合選択する -->
@@ -154,7 +167,7 @@
 
                                                         <!-- 部屋番号 -->
                                                         <div class="col-12 col-md-8 col-lg-2 mt-3">
-                                                            <label class="label_any" for="textBox"></label>号室
+                                                            <label class="label_any mb-2" for="textBox"></label>号室
                                                             
                                                             <select class="form-select" name="room_id" id="room_id">
                                                                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->

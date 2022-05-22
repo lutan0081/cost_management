@@ -198,4 +198,5 @@ class Common
     public static function format_three_digit_separator($money){
         return number_format($money);
     }
+
 }

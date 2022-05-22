@@ -9,6 +9,10 @@ Route::get('/', 'Login\LoginController@loginInit');
 // 登録
 Route::post('loginEntry', 'Login\LoginController@loginEntry');
 
+// ログアウト
+Route::get('logOut', 'Common\LogOut\LogOutController@logOut');
+
+
 /**
  * ホーム
  */
@@ -110,3 +114,9 @@ Route::post('backProfitEditEntry', 'Back\Profit\BackProfitController@backProfitE
 
 // 削除
 Route::post('backProfitDeleteEntry', 'Back\Profit\BackProfitController@backProfitDeleteEntry')->middleware("cost_auth");
+
+/**
+ * CSV
+ */
+// 売上一覧出力
+Route::get('csvDownload', 'Common\Csv\CsvController@csvDownload')->middleware("cost_auth");

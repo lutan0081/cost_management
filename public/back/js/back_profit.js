@@ -55,10 +55,46 @@ $(function(){
 
         // id取得
         var id = $('input[name=flexRadioDisabled]:checked').attr('id');
+        
         console.log(id);
 
         // idをパラメーターでControllerに渡す
-        location.href = "backBankEditInit?bank_id=" + id;
+        location.href = "backProfitEditInit?profit_id=" + id;
     });
-    
+
+    /**
+     * csv出力
+     */
+    $("#btn_csv").on('click', function(e) {
+
+        console.log("csvボタンの処理");
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);
+
+        e.preventDefault();
+
+        // フリーワード
+        let free_word = $('#free_word').val();
+        
+        let real_estate_id = $('#real_estate_id').val();
+
+        let create_user_id = $('#create_user_id').val();
+
+        let start_date = $('#start_date').val();
+
+        let end_date = $('#end_date').val();
+
+        let profit_account_id = $('#profit_account_id').val();
+
+        // 5秒遅延
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },3000);
+
+        // csvDownload
+        location.href = "csvDownload?free_word=" + free_word + "&real_estate_id=" + real_estate_id + "&profit_account_id=" + profit_account_id+ "&create_user_id=" + create_user_id + "&start_date=" + start_date + "&end_date=" + end_date+ "&profit_account_id=" + profit_account_id;
+
+    });
+
 });

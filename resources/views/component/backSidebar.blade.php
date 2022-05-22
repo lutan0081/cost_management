@@ -140,7 +140,7 @@
         </a>
 
         <!-- ログアウト -->
-        <a href="#">
+        <a href="logOut">
             <i class="fa fa-power-off"></i>
         </a>
 

@@ -89,6 +89,9 @@ $(function(){
         // 利益額
         let profit_fee = $("#profit_fee").val();
 
+        // 取引先
+        let customer_name = $("#customer_name").val();
+
         // 物件名
         let real_estate_id = $("#real_estate_id").val();
 
@@ -112,6 +115,7 @@ $(function(){
         sendData.append('room_id', room_id);
         sendData.append('profit_memo', profit_memo);
         sendData.append('profit_id', profit_id);
+        sendData.append('customer_name', customer_name);
         
         // ajaxヘッダー
         $.ajaxSetup({
