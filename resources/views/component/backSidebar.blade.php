@@ -57,6 +57,23 @@
 
                 <li class="sidebar-dropdown">
                     <a href="#">
+                        <i class="fas bi bi-piggy-bank-fill"></i>                  
+                        <span>収支管理</span>
+                    </a>
+                    <div class="sidebar-submenu">
+                        <ul>
+                            <li>
+                                <a href="backProfitInit">売上一覧</a>
+                            </li>
+                            <li>
+                                <a href="adminAppInit">経費一覧</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="sidebar-dropdown">
+                    <a href="#">
                         <i class="fas fa-key me-2"></i>
                         <span>マスタ</span>
                         <span class="badge badge-pill badge-danger"></span>
@@ -74,23 +91,6 @@
                             </li>
                             <li>
                                 <a href="backBankInit">銀行一覧</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-
-                <li class="sidebar-dropdown">
-                    <a href="#">
-                        <i class="fas bi bi-piggy-bank-fill"></i>                  
-                        <span>収支管理</span>
-                    </a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li>
-                                <a href="backProfitInit">売上一覧</a>
-                            </li>
-                            <li>
-                                <a href="adminAppInit">経費一覧</a>
                             </li>
                         </ul>
                     </div>
