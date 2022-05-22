@@ -35,7 +35,13 @@ class CsvController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function csvDownload(Request $request){   
+    public function csvDownload(Request $request){
+
+        // 始期
+        $start_date = $request->input('start_date');
+
+        // 終期
+        $end_date = $request->input('end_date');
 
         // 売上一覧取得(オブジェクトで受けている)
         $profit_list = $this->getProfitList($request);
@@ -91,12 +97,6 @@ class CsvController extends Controller
 
             $profit_memo = $profit->profit_memo;
 
-            // 始期
-            $start_date = $request->input('start_date');
-
-            // 終期
-            $end_date = $request->input('end_date');
-
             // 配列内に格納
             $arr = [];
             $arr[] = $profit_id;
@@ -128,6 +128,7 @@ class CsvController extends Controller
         $arr_total[] = '';
         $arr_total[] = '合計値';
         $arr_total[] = $profit_sum;
+
         fputcsv($stream, $arr_total);
 
         // phpの改行コードを\r\nに変換
