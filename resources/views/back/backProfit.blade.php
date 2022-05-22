@@ -240,7 +240,7 @@
 
                                 <div class="col-12 col-md-6 col-lg-6">
                                     <div class="btn-group" role="group">
-                                        <button type="button" id="btn_csv" class="btn btn-outline-primary float-start btn-default">CSV出力</button>
+                                        <button type="button" id="btn_csv" class="btn btn-outline-primary float-start btn-default">CSV</button>
                                     </div>
                                 </div>
                                 

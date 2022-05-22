@@ -225,7 +225,7 @@
                                     <!-- ボタン -->
 
                                 <!-- id -->
-                                <input type="text" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
+                                <input type="hidden" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
 
                                 </div>
                                 <!-- カード -->

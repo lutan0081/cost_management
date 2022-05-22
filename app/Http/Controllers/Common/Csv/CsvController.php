@@ -91,6 +91,12 @@ class CsvController extends Controller
 
             $profit_memo = $profit->profit_memo;
 
+            // 始期
+            $start_date = $request->input('start_date');
+
+            // 終期
+            $end_date = $request->input('end_date');
+
             // 配列内に格納
             $arr = [];
             $arr[] = $profit_id;
@@ -130,12 +136,12 @@ class CsvController extends Controller
         // 文字形式指定
         $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
 
-        // ファイル名変更
+        $file_name = 'profit_'. $start_date. '_'. $end_date. '.csv';
 
         $headers = array(
 
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="users.csv"',
+            'Content-Disposition' => 'attachment; filename='. "$file_name",
 
         );
 

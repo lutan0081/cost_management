@@ -60,6 +60,11 @@ $(function(){
 
         // idをパラメーターでControllerに渡す
         location.href = "backProfitEditInit?profit_id=" + id;
+
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },300);
+        
     });
 
     /**
