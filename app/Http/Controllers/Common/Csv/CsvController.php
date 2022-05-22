@@ -102,8 +102,8 @@ class CsvController extends Controller
             $arr[] = $profit_id;
             $arr[] = $profit_date;
             $arr[] = $profit_account_name;
-            $arr[] = $customer_name;
             $arr[] = $create_user_name;
+            $arr[] = $customer_name;
             $arr[] = $real_estate_name;
             $arr[] = $room_name;
             $arr[] = $profit_fee;
