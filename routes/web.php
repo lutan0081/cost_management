@@ -116,7 +116,16 @@ Route::post('backProfitEditEntry', 'Back\Profit\BackProfitController@backProfitE
 Route::post('backProfitDeleteEntry', 'Back\Profit\BackProfitController@backProfitDeleteEntry')->middleware("cost_auth");
 
 /**
+ * 経費管理
+ */
+// 一覧表示
+Route::any('backCostInit', 'Back\Cost\BackCostController@backCostInit')->middleware("cost_auth");
+
+/**
  * CSV
  */
-// 売上一覧出力
+// 売上出力
 Route::get('csvDownload', 'Common\Csv\CsvController@csvDownload')->middleware("cost_auth");
+
+// 経費Import
+Route::post('csvImport', 'Common\Csv\CsvController@csvImport')->middleware("cost_auth");

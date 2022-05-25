@@ -219,7 +219,7 @@
                         </div>
                         <!-- テーブルcard -->
 
-                        <div class="col-12 col-md-6 col-lg-3 mt-3">
+                        <div class="col-12 col-md-6 col-lg-3">
                             <div class="row">
 
                                 <div class="col-12 col-md-8 col-lg-12">

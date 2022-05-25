@@ -2,6 +2,10 @@
  * 編集(ダブルクリックの処理)
  */
 $(function(){
+
+    // ページネーションセンター
+    $(".pagination").addClass("justify-content-center");
+    $("#links").show();
     
     $(".click_class").on('dblclick', function(e) {
         console.log("ダブルクリックの処理.");

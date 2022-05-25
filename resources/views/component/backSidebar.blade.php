@@ -66,7 +66,7 @@
                                 <a href="backProfitInit">売上一覧</a>
                             </li>
                             <li>
-                                <a href="adminAppInit">経費一覧</a>
+                                <a href="backCostInit">経費一覧</a>
                             </li>
                         </ul>
                     </div>

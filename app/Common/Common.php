@@ -81,7 +81,7 @@ class Common
 
 
     /**
-     * 勘定科目
+     * 勘定科目:売上
      *
      * @return void
      */
@@ -114,7 +114,62 @@ class Common
         return $ret; 
     }
 
+    /**
+     * 勘定科目:経費
+     *
+     * @return void
+     */
+    public function getCostAccounts(){
 
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from cost_accounts "
+        ."order by sort_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+
+    }
+
+    /**
+     * 銀行一覧取得
+     *
+     * @return void
+     */
+    public function getBanks(){
+
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from banks "
+        ."order by bank_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+
+    }
+
+    /**
+     * 取引区分取得
+     *
+     * @return void
+     */
+    public function getPrivateOrBanks(){
+
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from private_or_banks "
+        ."order by sort_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+
+    }
 
     /**
      * 月度
@@ -198,5 +253,4 @@ class Common
     public static function format_three_digit_separator($money){
         return number_format($money);
     }
-
 }

@@ -1,3 +1,7 @@
+// ページネーションセンター
+$(".pagination").addClass("justify-content-center");
+$("#links").show();
+
 /**
  * 編集(ダブルクリックの処理)
  */
