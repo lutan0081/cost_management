@@ -107,8 +107,8 @@ $(function(){
 
         e.preventDefault();
 
-        // // ローディング画面
-        // $("#overlay").fadeIn(300);
+        // ローディング画面
+        $("#overlay").fadeIn(300);
 
         // バリデーション
         // formの値数を取得
@@ -258,13 +258,6 @@ $(function(){
                         // location.href = 'backCostInit';
                     };
                 });
-
-                // ローディング画面終了の処理
-                setTimeout(function(){
-                    $("#overlay").fadeOut(300);
-                },500);
-                
-                return false;
             };
 
              // falseの処理->アラートでエラーメッセージを表示
@@ -293,11 +286,15 @@ $(function(){
                     if (val == 'OK' || val == null) {
 
                         // エラーメッセージをExcelに出力
-
-                        return false;
+                        message_export(data);
                     };
                 });
             }
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
 
         // ajax接続が出来なかった場合の処理
         }).fail(function(jqXHR, textStatus, errorThrown) {
