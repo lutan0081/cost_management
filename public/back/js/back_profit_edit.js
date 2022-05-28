@@ -151,8 +151,7 @@ $(function(){
                 // then() OKを押した時の処理
                 swal(options)
                     .then(function(val) {
-                    if (val) {
-
+                    if (val == 'OK' || val == null) {
                         location.href = 'backProfitInit';
                     };
                 });

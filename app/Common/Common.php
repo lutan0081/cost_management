@@ -253,4 +253,15 @@ class Common
     public static function format_three_digit_separator($money){
         return number_format($money);
     }
+
+    // 文字コードのエンコード・カンマ・余白除去
+    public static function format_csv_colmun($val){
+
+        $val = trim(mb_convert_encoding($val, 'UTF-8', 'SJIS'));
+        $val = str_replace(',','', $val);
+        $val = str_replace('\\','', $val);
+
+        return $val;
+    }
+
 }

@@ -344,8 +344,8 @@ class CsvController extends Controller
                     $response = $this->importKagawaCsv($request);
 
                     // 配列デバック
-                    $arrString = print_r($response , true);
-                    Log::debug('importKagawaCsv:'.$arrString);
+                    // $arrString = print_r($response , true);
+                    // Log::debug('importKagawaCsv:'.$arrString);
                     break;
 
                 case 3:
@@ -384,10 +384,13 @@ class CsvController extends Controller
 
             }
 
+            // 配列デバック
+            $arrString = print_r($response , true);
+            Log::debug('importKagawaCsv:'.$arrString);
+
             Log::debug('log_end:' .__FUNCTION__);
             return response()->json($response);
         }
-
     }
     
     /**
@@ -541,19 +544,16 @@ class CsvController extends Controller
                 $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
                 
                 // 入金額
-                $income_fee = trim(mb_convert_encoding($line[3], 'UTF-8', 'SJIS'));
-                $income_fee = str_replace(',','', $income_fee);
-                $income_fee = str_replace('\\','', $income_fee);
+                $income_fee = Common::format_csv_colmun($line[3]);
+                Log::debug('income_fee:' .$income_fee);
                 
                 // 出金額
-                $outgo_fee = trim(mb_convert_encoding($line[4], 'UTF-8', 'SJIS'));
-                $outgo_fee = str_replace(',','', $outgo_fee);
-                $outgo_fee = str_replace('\\','', $outgo_fee);
-
+                $outgo_fee = Common::format_csv_colmun($line[4]);
+                Log::debug('income_fee:' .$income_fee);
+                
                 // 残高
-                $balance_fee = trim(mb_convert_encoding($line[5], 'UTF-8', 'SJIS'));
-                $balance_fee = str_replace(',','', $balance_fee);
-                $balance_fee = str_replace('\\','', $balance_fee);
+                $balance_fee = Common::format_csv_colmun($line[5]);
+                Log::debug('income_fee:' .$income_fee);
 
                 /**
                  * id
@@ -675,19 +675,16 @@ class CsvController extends Controller
                 $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
                 
                 // 入金額
-                $income_fee = trim(mb_convert_encoding($line[3], 'UTF-8', 'SJIS'));
-                $income_fee = str_replace(',','', $income_fee);
-                $income_fee = str_replace('\\','', $income_fee);
+                $income_fee = Common::format_csv_colmun($line[3]);
+                Log::debug('income_fee:' .$income_fee);
                 
                 // 出金額
-                $outgo_fee = trim(mb_convert_encoding($line[4], 'UTF-8', 'SJIS'));
-                $outgo_fee = str_replace(',','', $outgo_fee);
-                $outgo_fee = str_replace('\\','', $outgo_fee);
-
+                $outgo_fee = Common::format_csv_colmun($line[4]);
+                Log::debug('income_fee:' .$income_fee);
+                
                 // 残高
-                $balance_fee = trim(mb_convert_encoding($line[5], 'UTF-8', 'SJIS'));
-                $balance_fee = str_replace(',','', $balance_fee);
-                $balance_fee = str_replace('\\','', $balance_fee);
+                $balance_fee = Common::format_csv_colmun($line[5]);
+                Log::debug('income_fee:' .$income_fee);
 
                 // 日付
                 $date = now() .'.000';
@@ -795,8 +792,6 @@ class CsvController extends Controller
                 $count++;
             }
 
-            $ret['status'] = 1;
-
             $ret['message'] = $message;
 
             DB::commit();
@@ -821,4 +816,52 @@ class CsvController extends Controller
         
     }
 
+    /**
+     * エラーメッセージエクスポート
+     *
+     * @return void
+     */
+    public function csvMessageExport(Request $request){
+
+        Log::debug('log_start:' .__FUNCTION__);
+
+        // import時のエラーメッセージ
+        $messages = $request->input('message');
+
+        // ','で分割->配列で格納
+        $message_list = explode(",", $messages);
+
+        /**
+         * ファイル生成、書込み
+         */
+        // 保存先のパス生成
+        $file_path = storage_path('backup/import_backup.txt');
+
+        // テキストファイルを空にする
+        file_put_contents($file_path,'');
+        
+        // Storage::delete($file_path);
+
+        // メッセージ格納
+        foreach ($message_list as $message => $value) {
+
+            Log::debug('value:'.$value);
+
+            // ファイルがなければ作成、あれば上書きする
+            \File::append($file_path, $value. "\n");
+            
+        }
+        
+        // ファイルの種類宣言
+        $headers = ['Content-Type' => 'text/plain'];
+
+        // ファイル名
+        $filename = 'import_backup.txt';
+
+        Log::debug('log_end:' .__FUNCTION__);
+
+        // ダウンロード
+        return response()->download($file_path, $filename, $headers);
+
+    }
 } 

@@ -7,13 +7,30 @@ $(function(){
         $('#modal_img_file').val('');
     });
 
-
     /**
      * ページネーションセンター
      */
     $(".pagination").addClass("justify-content-center");
     $("#links").show();
     
+    /**
+     * エラーメッセージエクスポート
+     */
+    function message_export (data) {
+
+        console.log('data:' + data.message);
+
+        window.open('csvMessageExport?message=' + data.message, '_self');
+    }
+
+    // スリープ処理
+    function sleep(waitMsec) {
+        var startMsec = new Date();
+        
+        // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+        while (new Date() - startMsec < waitMsec);
+    }
+
     /**
      * 編集(ダブルクリックの処理)
      */
@@ -79,20 +96,6 @@ $(function(){
             $("#overlay").fadeOut(300);
         },300);
         
-    });
-
-    /**
-     * CSVインポート
-     */
-    $("#btn_modal_csv_import").on('click', function(e) {
-
-        console.log("csv読込ボタンの処理");
-
-        // ローディング画面
-        $("#overlay").fadeIn(300);
-
-        e.preventDefault();
-
     });
 
     /**
@@ -229,12 +232,13 @@ $(function(){
             if(data.status == true){
 
                 console.log("status:" + data.status);
-                console.log("messege:" + data.messege);
+                console.log("messege:" + data.message);
 
                 // alertの設定
                 var options = {
-                    title: "csvのインポートが完了しました。",
+                    title: "CSVのインポートが完了しました。",
                     icon: "success",
+                    text: "結果を出力しました。",
                     buttons: {
                         OK: true
                     }
@@ -243,9 +247,15 @@ $(function(){
                 // then() OKを押した時の処理
                 swal(options)
                     .then(function(val) {
-                    if (val) {
+                    if (val == 'OK' || val == null) {
 
-                        location.href = 'backCostInit';
+                        // エラーメッセージをExcelに出力
+                        message_export(data);
+
+                        sleep(1000);
+
+                        // 一覧に画面遷移
+                        // location.href = 'backCostInit';
                     };
                 });
 
@@ -261,12 +271,12 @@ $(function(){
             if(data.status == false){
 
                 console.log("status:" + data.status);
-                console.log("messege:" + data.messege);
+                console.log("messege:" + data.message);
 
                 // アラートボタン設定
                 var options = {
                     title: '入力箇所をご確認ください。',
-                    text: '※赤表示の箇所を修正し、再登録をしてください。',
+                    text: "メッセージ:" + data.message,
                     icon: 'error',
                     buttons: {
                         OK: 'OK'
@@ -282,11 +292,7 @@ $(function(){
                      */
                     if (val == 'OK' || val == null) {
 
-                        /**
-                         * formの全要素をerror_Messageを表示に変更
-                         * error数だけループ処理
-                         */
-                        console.log()
+                        // エラーメッセージをExcelに出力
 
                         return false;
                     };

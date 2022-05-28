@@ -129,3 +129,6 @@ Route::get('csvDownload', 'Common\Csv\CsvController@csvDownload')->middleware("c
 
 // 経費Import
 Route::post('csvImport', 'Common\Csv\CsvController@csvImport')->middleware("cost_auth");
+
+// message出力
+Route::get('csvMessageExport', 'Common\Csv\CsvController@csvMessageExport')->middleware("cost_auth");
