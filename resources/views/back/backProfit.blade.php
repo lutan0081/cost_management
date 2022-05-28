@@ -213,7 +213,7 @@
 
                             <!-- ぺージネーション -->   
                             <div id="links" style="display:none;" class="mt-3">
-                                {{ $res->links() }}
+                                {{ $res->appends($paginate_params)->links() }}
                             </div>
 
                         </div>

@@ -229,6 +229,7 @@ $(function(){
             if(data.status == true){
 
                 console.log("status:" + data.status);
+                console.log("messege:" + data.messege);
 
                 // alertの設定
                 var options = {
@@ -260,8 +261,7 @@ $(function(){
             if(data.status == false){
 
                 console.log("status:" + data.status);
-                console.log("messages:" + data.messages);
-                console.log("errorkeys:" + data.errkeys);
+                console.log("messege:" + data.messege);
 
                 // アラートボタン設定
                 var options = {
@@ -282,32 +282,11 @@ $(function(){
                      */
                     if (val == 'OK' || val == null) {
 
-                        console.log(val);
-
                         /**
                          * formの全要素をerror_Messageを表示に変更
                          * error数だけループ処理
                          */
-                        for (let i = 0; i < data.errkeys.length; i++) {
-                            
-                            // bladeの各divにclass指定
-                            let id_key = "#" + data.errkeys[i];
-                            $(id_key).addClass('is-invalid');
-                            console.log(id_key);
-
-                            // 表示箇所のMessageのkey取得
-                            let msg_key = "#" + data.errkeys[i] + "_error"
-
-                            // error_messageテキスト追加
-                            $(msg_key).text(data.messages[i]);
-                            $(msg_key).show();
-                            console.log(msg_key);
-
-                            // ローディング画面停止
-                            setTimeout(function(){
-                                $("#overlay").fadeOut(300);
-                            },500);
-                        };
+                        console.log()
 
                         return false;
                     };

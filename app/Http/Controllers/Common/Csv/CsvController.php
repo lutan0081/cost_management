@@ -311,64 +311,87 @@ class CsvController extends Controller
     public function csvImport(Request $request){
 
         Log::debug('log_start:'.__FUNCTION__);
-        
-        // return初期値
-        $response = [];
 
-        // バリデーション:OK=true NG=false
-        $response = $this->editValidation($request);
+        try {
 
-        if($response["status"] == false){
+            // return初期値
+            $response = [];
 
-            Log::debug('validator_status:falseのif文通過');
+            // バリデーション:OK=true NG=false
+            $response = $this->editValidation($request);
+
+            if($response["status"] == false){
+
+                Log::debug('validator_status:falseのif文通過');
+                return response()->json($response);
+
+            }
+
+            /**
+             * 値取得
+             */
+            // 照会口座id
+            $modal_bank_id = $request->input('modal_bank_id');
+            Log::debug('modal_bank_id:' .$modal_bank_id);
+
+            /**
+             * 分岐
+             */
+            switch($modal_bank_id){
+
+                case 2:
+                    Log::debug('香川銀行の処理');
+                    $response = $this->importKagawaCsv($request);
+
+                    // 配列デバック
+                    $arrString = print_r($response , true);
+                    Log::debug('importKagawaCsv:'.$arrString);
+                    break;
+
+                case 3:
+                    Log::debug('池田泉州銀行の処理');
+                    $response = $this->importIkedasenshuCsv($request);
+                    
+                    // 配列デバック
+                    $arrString = print_r($response , true);
+                    Log::debug('importKagawaCsv:'.$arrString);
+                    break;
+
+                default:
+                Log::debug('その他の処理');
+            }
+
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            $response['status'] = 0;
+
+        } finally {
+
+            if($response['status'] == 1){
+
+                Log::debug('status:trueの処理');
+
+                $response['status'] = true;
+
+
+            }else{
+
+                Log::debug('status:falseの処理');
+
+                $response['status'] = false;
+
+            }
+
+            Log::debug('log_end:' .__FUNCTION__);
             return response()->json($response);
-
         }
 
-        /**
-         * csvのインポート
-         */
-        $ret = $this->importCsv($request);
-
-        // 配列デバック
-        $arrString = print_r($ret , true);
-        Log::debug('ret:'.$arrString);
-
-
-
-
-
-        /**
-         * id=無:insert
-         * id=有:update
-         */
-        // 新規登録
-        if($request->input('real_estate_id') == ""){
-
-            Log::debug('新規の処理');
-
-            // $responseの値設定
-            $ret = $this->insertData($request);
-
-        // 編集登録
-        }else{
-
-            Log::debug('編集の処理');
-
-            // $responseの値設定
-            $ret = $this->updateData($request);
-
-        }
-
-        // js側での判定のステータス(true:OK/false:NG)
-        $response["status"] = $ret['status'];
-
-        Log::debug('log_end:' .__FUNCTION__);
-        return response()->json($response);
     }
     
     /**
-     * バリデーション
+     * バリデーション(csvインポート)
      *
      * @param Request $request(bladeの項目)
      * @return response(status=NG/msg="入力を確認して下さい/messages=$msgs/$errkeys=$keys)
@@ -435,192 +458,367 @@ class CsvController extends Controller
     }
 
     /**
+     * 香川銀行
      * csv読取->dbにinsert
      *
      * @param Request $request
      * @return void
      */
-    private function importCsv(Request $request){
+    private function importKagawaCsv(Request $request){
 
         Log::debug('log_start:' .__FUNCTION__);
-        
-        // 照会口座id
-        $modal_bank_id = $request->input('modal_bank_id');
-        Log::debug('modal_bank_id:' .$modal_bank_id);
 
-        // csvファイル取得
-        $file_path  = $request->file('modal_img_file');
-        Log::debug('file_path :' .$file_path );
+        try {
+            // トランザクション
+            DB::beginTransaction();
 
-        if($modal_bank_id == 1){
+            // returnの初期値
+            $ret = [];
 
-            Log::debug('香川銀行の処理');
-
-        };
-
-        $ret = [];
-
-        /**
-         * csv読取
-         */
-        $file = new \SplFileObject($file_path);
-
-        $file->setFlags(
-            // CSVとして行を読み込み
-            \SplFileObject::READ_CSV |
-            // 先読み／巻き戻しで読み込み
-            \SplFileObject::READ_AHEAD |
-            // 空行を読み飛ばす
-            \SplFileObject::SKIP_EMPTY |
-            // 行末の改行を読み飛ばす
-            \SplFileObject::DROP_NEW_LINE            
-        );
-
-        $message = [];
-
-        $count = 0;
-
-        // csvの配列の件数を取得
-        $file->seek(PHP_INT_MAX);
-        // 最終行が改行されている為、-1すると最終行をスキップする
-        $count_file = $file->key() - 1;
-        Log::debug('count_file:'. $count_file);
-
-        // エラーチェックのforeach
-        foreach($file as $line)
-        {
+            // returnの初期値
+            $ret['status'] = 1;
             
-            // 一行目はcontinue
-            if ($count == 0) {
-                Log::debug('一行目continueの処理');
+            // 照会口座id
+            $modal_bank_id = $request->input('modal_bank_id');
+            Log::debug('modal_bank_id:' .$modal_bank_id);
+
+            // csvファイル取得
+            $file_path  = $request->file('modal_img_file');
+            Log::debug('file_path :' .$file_path );
+
+            /**
+             * csv読取
+             */
+            $file = new \SplFileObject($file_path);
+
+            $file->setFlags(
+                // CSVとして行を読み込み
+                \SplFileObject::READ_CSV |
+                // 先読み／巻き戻しで読み込み
+                \SplFileObject::READ_AHEAD |
+                // 空行を読み飛ばす
+                \SplFileObject::SKIP_EMPTY |
+                // 行末の改行を読み飛ばす
+                \SplFileObject::DROP_NEW_LINE            
+            );
+
+            // messageの配列作成
+            $message = [];
+
+            // カウント初期値
+            $count = 0;
+
+            // csvの配列の件数を取得
+            $file->seek(PHP_INT_MAX);
+            // 最終行が改行されている為、-1すると最終行をスキップする
+            $count_file = $file->key() - 1;
+            Log::debug('count_file:'. $count_file);
+
+            // エラーチェックのforeach
+            foreach($file as $line){
+            
+                // 一行目はcontinue
+                if ($count == 0) {
+                    Log::debug('一行目continueの処理');
+                    $count++;
+                    continue;
+                }
+
+                // 最終行はstop
+                if ($count == $count_file) {
+                    Log::debug('最終行はstopの処理');
+                    break;
+                }
+                
+                // スペースを削除する
+                // id
+                $id = trim(mb_convert_encoding($line[0], 'UTF-8', 'SJIS'));
+                
+                // 勘定日
+                $account_date = trim(mb_convert_encoding($line[1], 'UTF-8', 'SJIS'));
+                
+                // 摘要・振込名義人
+                $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
+                
+                // 入金額
+                $income_fee = trim(mb_convert_encoding($line[3], 'UTF-8', 'SJIS'));
+                $income_fee = str_replace(',','', $income_fee);
+                $income_fee = str_replace('\\','', $income_fee);
+                
+                // 出金額
+                $outgo_fee = trim(mb_convert_encoding($line[4], 'UTF-8', 'SJIS'));
+                $outgo_fee = str_replace(',','', $outgo_fee);
+                $outgo_fee = str_replace('\\','', $outgo_fee);
+
+                // 残高
+                $balance_fee = trim(mb_convert_encoding($line[5], 'UTF-8', 'SJIS'));
+                $balance_fee = str_replace(',','', $balance_fee);
+                $balance_fee = str_replace('\\','', $balance_fee);
+
+                /**
+                 * id
+                 */
+                // 空白の場合
+                if($id == null){
+                    $message[] = $count. '行目のidが空白です';
+                }
+
+                /**
+                 * 日付チェック
+                 */
+                // 空白の場合
+                if($account_date == null){
+                    $message[] = $count. '行目の日付が空白です';
+                }
+
+                // 日付の形式でない場合
+                if(!preg_match('/^[1-9]{1}[0-9]{0,3}\/[0-9]{1,2}\/[0-9]{1,2}$/', $account_date)){
+                    $message[] = $count. '行目の日付の値が不正です';
+                }
+
+                /**
+                 * 摘要が空白の場合
+                 */
+                // 空白の場合
+                if($financial_name == null){
+                    $message[] = $count. '行目の金融機関名・摘要が空白です';
+                }
+
+                /**
+                 * 入金額
+                 */
+                // 空白でなく、数値に変換できない場合
+                if($income_fee !== ''){
+                    Log::debug('入金額が空白でない場合の処理');
+
+                    if(is_numeric($income_fee) == false){
+                        Log::debug('数値に変換できない場合の処理');
+                        $message[] = $count. '行目の入金額の値が不正です';
+                    }
+                }
+
+                /**
+                 * 出金額
+                 */
+                // 空白でなく、数値に変換できない場合
+                if($outgo_fee !== ''){
+                    Log::debug('出金額が空白でない場合の処理');
+
+                    if(is_numeric($outgo_fee) == false){
+                        Log::debug('数値に変換できない場合の処理');
+                        $message[] = $count. '行目の出金額の値が不正です';
+                    }
+
+                }
+
+                /**
+                 * 出金額
+                 */
+                // 空白でなく、数値に変換できない場合
+                if(is_numeric($balance_fee) == false){
+                    Log::debug('数値に変換できない場合の処理');
+                    $message[] = $count. '行目の残高の値が不正です';
+                }
+
+                // 行数のカウントを加算する
                 $count++;
-                continue;
             }
 
-            // 最終行はstop
-            if ($count == $count_file) {
-                Log::debug('最終行はstopの処理');
-                break;
-            }
-            
-            // スペースを削除する
-            // id
-            $id = trim(mb_convert_encoding($line[0], 'UTF-8', 'SJIS'));
-            
-            // 勘定日
-            $account_date = trim(mb_convert_encoding($line[1], 'UTF-8', 'SJIS'));
-            
-            // 摘要・振込名義人
-            $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
-            
-            // 入金額
-            $income_fee = trim(mb_convert_encoding($line[3], 'UTF-8', 'SJIS'));
-            $income_fee = str_replace(',','', $income_fee);
-            $income_fee = str_replace('\\','', $income_fee);
-            
-            // 出金額
-            $outgo_fee = trim(mb_convert_encoding($line[4], 'UTF-8', 'SJIS'));
-            $outgo_fee = str_replace(',','', $outgo_fee);
-            $outgo_fee = str_replace('\\','', $outgo_fee);
+            // エラーメッセージのカウント
+            $message_count = count($message);
+            Log::debug('message_count:'. $message_count);
 
-            // 残高
-            $balance_fee = trim(mb_convert_encoding($line[5], 'UTF-8', 'SJIS'));
-            $balance_fee = str_replace(',','', $balance_fee);
-            $balance_fee = str_replace('\\','', $balance_fee);
+            // エラーがある場合の処理
+            if($message_count >= 1 ){
 
-            Log::debug('id:' .$id);
-            Log::debug('account_date:' .$account_date);
-            Log::debug('financial_name:' .$financial_name);
-            Log::debug('income_fee:' .$income_fee);
-            Log::debug('outgo_fee:' .$outgo_fee);
-            Log::debug('balance_fee:' .$balance_fee);
-            
-            // 共通クラスをインスタンス化
-            $common = new Common();
+                Log::debug('CSVエラーが1個以上ある場合の処理');
 
-            /**
-             * id
-             */
-            // 空白の場合
-            if($id == null){
-                $message[] = $count. '行目のidが空白です';
+                $ret['status'] = 0;
+
+                $ret['messege'] = $message;
+
+                return $ret;
+                
             }
 
-            /**
-             * 日付チェック
-             */
-            // 空白の場合
-            if($account_date == null){
-                $message[] = $count. '行目の日付が空白です';
-            }
+            // session_id取得
+            $session_id = $request->session()->get('create_user_id');
 
-            // 日付の形式でない場合
-            if(!preg_match('/^[1-9]{1}[0-9]{0,3}\/[0-9]{1,2}\/[0-9]{1,2}$/', $account_date)){
-                $message[] = $count. '行目の日付の値が不正です';
-            }
+            // カウント初期化
+            $count = 0;
 
-            /**
-             * 摘要が空白の場合
-             */
-            // 空白の場合
-            if($financial_name == null){
-                $message[] = $count. '行目の金融機関名・摘要が空白です';
-            }
+            // insertのforeach
+            foreach($file as $line){
 
-            /**
-             * 入金額
-             */
-            // 空白でなく、数値に変換できない場合
-            if($income_fee !== ''){
-                Log::debug('入金額が空白でない場合の処理');
-
-                if(is_numeric($income_fee) == false){
-                    Log::debug('数値に変換できない場合の処理');
-                    $message[] = $count. '行目の入金額の値が不正です';
+                // 一行目はcontinue
+                if ($count == 0) {
+                    Log::debug('一行目continueの処理');
+                    $count++;
+                    continue;
                 }
 
-            }
-
-            /**
-             * 出金額
-             */
-            // 空白でなく、数値に変換できない場合
-            if($outgo_fee !== ''){
-                Log::debug('出金額が空白でない場合の処理');
-
-                if(is_numeric($outgo_fee) == false){
-                    Log::debug('数値に変換できない場合の処理');
-                    $message[] = $count. '行目の出金額の値が不正です';
+                // 最終行はstop
+                if ($count == $count_file) {
+                    Log::debug('最終行はstopの処理');
+                    break;
                 }
 
+                /**
+                 * csv値取得
+                 */
+                $id = trim(mb_convert_encoding($line[0], 'UTF-8', 'SJIS'));
+                
+                // 勘定日
+                $account_date = trim(mb_convert_encoding($line[1], 'UTF-8', 'SJIS'));
+                
+                // 摘要・振込名義人
+                $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
+                
+                // 入金額
+                $income_fee = trim(mb_convert_encoding($line[3], 'UTF-8', 'SJIS'));
+                $income_fee = str_replace(',','', $income_fee);
+                $income_fee = str_replace('\\','', $income_fee);
+                
+                // 出金額
+                $outgo_fee = trim(mb_convert_encoding($line[4], 'UTF-8', 'SJIS'));
+                $outgo_fee = str_replace(',','', $outgo_fee);
+                $outgo_fee = str_replace('\\','', $outgo_fee);
+
+                // 残高
+                $balance_fee = trim(mb_convert_encoding($line[5], 'UTF-8', 'SJIS'));
+                $balance_fee = str_replace(',','', $balance_fee);
+                $balance_fee = str_replace('\\','', $balance_fee);
+
+                // 日付
+                $date = now() .'.000';
+
+                // 勘定日
+                if($account_date == ''){
+                    $account_date ='';
+                }
+
+                // 金融機関名
+                if($financial_name == ''){
+                    $financial_name ='';
+                }
+
+                // 入金額
+                if($income_fee == ''){
+                    $income_fee =0;
+                }
+
+                // 出金額
+                if($outgo_fee == ''){
+                    $outgo_fee =0;
+                }
+
+                // 残高
+                if($balance_fee == ''){
+                    $balance_fee =0;
+                }
+
+                /**
+                 * DBと重複チェック
+                 */
+                $str = "select * from costs "
+                ."where "
+                ."(account_date = '$account_date') "
+                ."and "
+                ."(income_fee = $income_fee) "
+                ."and "
+                ."(outgo_fee = $outgo_fee) "
+                ."and "
+                ."(balance_fee = $balance_fee) "
+                ."and "
+                ."(financial_name = '$financial_name') ";
+
+                Log::debug('$str:' .$str);
+                $cost_list = DB::select($str);
+
+                // 重複がある場合は、カウントが1以上になる
+                $cost_list_count = count($cost_list);
+                Log::debug('cost_list_count:'. $cost_list_count);
+
+                // 重複がある場合は、次に行く
+                if($cost_list_count >= 1){
+                    Log::debug('DBに登録で重複がある場合の処理');
+                    $message[] = $count. '行目が重複しています。';
+                    $count++;
+                    continue;
+                }
+
+                /**
+                 * insert
+                 */
+                $str = "insert "
+                ."into "
+                ."costs "
+                ."( "
+                ."private_or_bank_id, "
+                ."bank_id, "
+                ."account_date, "
+                ."income_fee, "
+                ."outgo_fee, "
+                ."balance_fee, "
+                ."cost_type, "
+                ."cost_account_id, "
+                ."cost_memo, "
+                ."financial_name, "
+                ."financial_branch, "
+                ."financial_summary, "
+                ."entry_user_id, "
+                ."entry_date, "
+                ."update_user_id, "
+                ."update_date "
+                .")values( "
+                ."2, "
+                ."$modal_bank_id, "
+                ."'$account_date', "
+                ."$income_fee, "
+                ."$outgo_fee, "
+                ."$balance_fee, "
+                ."'出金', "
+                ."0, "
+                ."'', "
+                ."'$financial_name', "
+                ."'', "
+                ."'', "
+                ."$session_id, "
+                ."'$date', "
+                ."$session_id, "
+                ."'$date' "
+                ."); ";
+
+                Log::debug('sql_insert:'. $str);
+                $ret['status'] = DB::insert($str);
+
+                $count++;
             }
 
-            /**
-             * 出金額
-             */
-            // 空白でなく、数値に変換できない場合
-            if(is_numeric($balance_fee) == false){
-                Log::debug('数値に変換できない場合の処理');
-                $message[] = $count. '行目の残高の値が不正です';
-            }
+            $ret['status'] = 1;
 
-            // 行数のカウントを加算する
-            $count++;
+            $ret['message'] = $message;
+
+            DB::commit();
+
+            // スキップの件数、登録件数をmessageで表示する->messageで返す
+            
+        } catch (\Throwable  $e) {
+
+            // ロールバック
+            DB::rollback();
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            throw $e;
+
+        } finally {
+
+            Log::debug('log_end:' .__FUNCTION__);
+    
+            return $ret;
         }
-
-        // insertのforeach
-
-        // DBとファイルの重複チェックスキップする
-        // スキップの件数、登録件数をmessageで表示する->messageで返す
         
-        // var_dump($data);
-
-        Log::debug('log_end:' .__FUNCTION__);
-
-        $ret['messege'] = $message;
-
-        return $ret;
     }
-
 
 } 

@@ -173,8 +173,8 @@
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
                                                         <th>選択</th>
                                                         <th scope="col" id="bank_name">照会口座</th>
-                                                        <th scope="col" id="cost_type">出金区分</th>
                                                         <th scope="col" id="account_date">勘定日</th>
+                                                        <th scope="col" id="cost_type">出金区分</th>
                                                         <th scope="col" id="cost_account_name">勘定科目</th>
                                                         <th scope="col" id="outgo_fee">出金額</th>
                                                         <th scope="col" id="income_fee">入金額</th>
@@ -194,8 +194,8 @@
                                                             <td id="id_{{ $cost_list->cost_id }}" class="click_class" style="display:none"></td>
                                                             <td id="select_{{ $cost_list->cost_id }}" class="click_class"><input id="{{ $cost_list->cost_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
                                                             <td id="bankName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->bank_name. '_' .$cost_list->bank_number}}</td>
-                                                            <td id="privateOrBankName{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->private_or_bank_name }}</td>
                                                             <td id="accountDate_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->account_date }}</td>
+                                                            <td id="privateOrBankName{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->private_or_bank_name }}</td>
                                                             <td id="costAccountName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->cost_account_name }}</td>
                                                             <td id="outgoFee_{{ $cost_list->cost_id }}" class="click_class">{{ Common::format_three_digit_separator($cost_list->outgo_fee) }}</td>
                                                             <td id="incomeFee_{{ $cost_list->cost_id }}" class="click_class">{{ Common::format_three_digit_separator($cost_list->income_fee) }}</td>
@@ -221,7 +221,7 @@
 
                             <!-- ぺージネーション -->   
                             <div id="links" style="display:none;" class="mt-3">
-                                {{ $res->links() }}
+                                {{ $res->appends($paginate_params)->links() }}
                             </div>
 
                         </div>

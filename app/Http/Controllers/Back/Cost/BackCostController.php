@@ -77,6 +77,18 @@ class BackCostController extends Controller
 
             // 終期
             $end_date = $request->input('end_date');
+
+            // ★リクエストパラメータをページネーション用の連想配列に格納★
+            $paginate_params = [
+
+                'free_word' => $free_word,
+                'bank_id' => $bank_id,
+                'cost_account_id' => $cost_account_id,
+                'private_or_bank_id' => $private_or_bank_id,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+
+            ];
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -88,7 +100,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCost' ,$cost_list ,compact('outgo_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date'));
+        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date'));
     }
 
     /**
@@ -236,7 +248,7 @@ class BackCostController extends Controller
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->orderByRaw("cost_id desc")->paginate(10)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("cost_id desc")->paginate(20)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];
@@ -360,7 +372,24 @@ class BackCostController extends Controller
             ."sum(outgo_fee) as outgo_fee "
             ."from "
             ."( "
-            ."select * "
+            ."select "
+            ."costs.cost_id, "
+            ."costs.private_or_bank_id, "
+            ."costs.bank_id, "
+            ."costs.account_date, "
+            ."costs.income_fee, "
+            ."costs.outgo_fee, "
+            ."costs.balance_fee, "
+            ."costs.cost_type, "
+            ."costs.cost_account_id, "
+            ."costs.cost_memo, "
+            ."costs.financial_name, "
+            ."costs.financial_branch, "
+            ."costs.financial_summary, "
+            ."costs.entry_user_id, "
+            ."costs.entry_date, "
+            ."costs.update_user_id, "
+            ."costs.update_date "
             ."from costs "
             ."where 1 = 1 "
             ."$where "

@@ -75,6 +75,18 @@ class BackProfitController extends Controller
             // 終期
             $end_date = $request->input('end_date');
             
+            // ページネーションにキーワード
+            $paginate_params = [
+
+                'free_word' => $free_word,
+                'profit_account_id' => $profit_account_id,
+                'create_user_id' => $create_user_id,
+                'real_estate_id' => $real_estate_id,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+
+            ];
+            
         // 例外処理
         } catch (\Throwable $e) {
 
@@ -85,7 +97,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfit' ,$profit_list ,compact('real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list', 'free_word', 'profit_account_id', 'create_user_id', 'real_estate_id', 'start_date', 'end_date'));
+        return view('back.backProfit', $profit_list, compact('paginate_params' ,'real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list', 'free_word', 'profit_account_id', 'create_user_id', 'real_estate_id', 'start_date', 'end_date'));
     }
 
     /**
@@ -180,6 +192,13 @@ class BackProfitController extends Controller
                 $where = $where ."and profits.profit_person_id = '$create_user_id' ";
             
             };
+
+            // 不動産id
+            if($real_estate_id !== null){
+
+                $where = $where ."and rooms.real_estate_id = '$real_estate_id' ";
+            
+            };
     
             // 勘定日
             // 始期・終期がnullでない場合
@@ -227,7 +246,7 @@ class BackProfitController extends Controller
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->paginate(5)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->paginate(20)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];
@@ -301,6 +320,13 @@ class BackProfitController extends Controller
                 $where = $where ."and profits.profit_person_id = '$create_user_id' ";
             
             };
+
+            // 不動産id
+            if($real_estate_id !== null){
+
+                $where = $where ."and rooms.real_estate_id = '$real_estate_id' ";
+            
+            };
     
             // 勘定日
             // 始期・終期がnullでない場合
@@ -342,8 +368,22 @@ class BackProfitController extends Controller
             ."count(*) as row_count, "
             ."sum(profit_fee) as profit_fee "
             ."from ( "
-            ."select * "
+            ."select "
+            ."profits.profit_id, "
+            ."profits.profit_person_id, "
+            ."profits.customer_name, "
+            ."profits.room_id, "
+            ."profits.profit_account_id, "
+            ."profits.profit_date, "
+            ."profits.profit_fee, "
+            ."profits.profit_memo, "
+            ."profits.entry_user_id, "
+            ."profits.entry_date, "
+            ."profits.update_user_id, "
+            ."profits.update_date "
             ."from profits "
+            ."left join rooms on "
+            ."rooms.room_id = profits.room_id "
             ."where 1 = 1 "
             ."$where "
             .") as t; ";
