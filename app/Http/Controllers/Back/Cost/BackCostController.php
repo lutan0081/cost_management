@@ -42,8 +42,12 @@ class BackCostController extends Controller
             // 経費一覧取得
             $cost_list = $this->getCostList($request);
 
-            // 合計値取得
-            $outgo_fee_sum_list = $this->getCostSumList($request);
+            // 出金合計
+            $outgo_fee_sum_list = $this->getOutgoFeeSumList($request);
+
+            // 入金合計
+            $income_fee_sum_list = $this->getIncomeFeeSumList($request);
+            // dd($income_fee_sum_list);
             
             // 共通クラス
             $common = new Common();
@@ -100,7 +104,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date'));
+        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list', 'income_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date'));
     }
 
     /**
@@ -268,12 +272,12 @@ class BackCostController extends Controller
     }
     
     /**
-     * 合計値取得(sql)
+     * 出金合計(sql)
      *
      * @param Request $request
      * @return void
      */
-    private function getCostSumList(Request $request){
+    private function getOutgoFeeSumList(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -411,6 +415,296 @@ class BackCostController extends Controller
 
         return $ret;
     }
+
+    /**
+     * 入金額合計(sql)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function getIncomeFeeSumList(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            // フリーワード
+            $free_word = $request->input('free_word');
+            Log::debug('$free_word:' .$free_word);
+
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('$session_id:' .$session_id);
+            
+            // 照会口座id
+            $bank_id = $request->input('bank_id');
+            Log::debug('$bank_id:' .$bank_id);
+
+            // 勘定科目
+            $cost_account_id = $request->input('cost_account_id');
+            Log::debug('$cost_account_id:' .$cost_account_id);
+
+            // 取引区分
+            $private_or_bank_id = $request->input('private_or_bank_id');
+            Log::debug('$private_or_bank_id:' .$private_or_bank_id);
+
+            // 始期
+            $start_date = $request->input('start_date');
+            Log::debug('$start_date:' .$start_date);
+
+            // 終期
+            $end_date = $request->input('end_date');
+            Log::debug('$end_date:' .$end_date);
+
+            // where句
+            $where = "";
+
+            // フリーワード
+            if($free_word !== null){
+
+                $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
+                $where = $where ."or ifnull(summary,'') like '%$free_word%'";
+
+            };
+
+            // 勘定項目id
+            if($cost_account_id !== null){
+
+                $where = $where ."and costs.cost_account_id = '$cost_account_id' ";
+            
+            };
+
+            // 照会口座
+            if($bank_id !== null){
+
+                $where = $where ."and costs.bank_id = '$bank_id' ";
+            
+            };
+    
+            // 勘定日
+            // 始期・終期がnullでない場合
+            if(($start_date !== null) && ($end_date !== null)) {
+
+                Log::debug('始期・終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '$start_date') "
+                ."and" 
+                ."(account_date <= '$end_date')";
+            };
+
+            // 始期がnullでない場合の処理
+            if(($start_date !== null) && ($end_date == null)) {
+
+                Log::debug('始期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '$start_date') "
+                ."and" 
+                ."(account_date <= '9999/12/31')";
+                
+            };
+
+            // 終期がnullでない場合の処理
+            if(($start_date == null) && ($end_date !== null)) {
+
+                Log::debug('終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '1900/01/01') "
+                ."and" 
+                ."(account_date <= '$end_date')";
+
+            };
+
+            $str = "select "
+            ."count(*) as row_count, "
+            ."sum(income_fee) as income_fee "
+            ."from "
+            ."( "
+            ."select "
+            ."costs.cost_id, "
+            ."costs.private_or_bank_id, "
+            ."costs.bank_id, "
+            ."costs.account_date, "
+            ."costs.income_fee, "
+            ."costs.outgo_fee, "
+            ."costs.balance_fee, "
+            ."costs.cost_type, "
+            ."costs.cost_account_id, "
+            ."costs.cost_memo, "
+            ."costs.financial_name, "
+            ."costs.financial_branch, "
+            ."costs.financial_summary, "
+            ."costs.entry_user_id, "
+            ."costs.entry_date, "
+            ."costs.update_user_id, "
+            ."costs.update_date "
+            ."from costs "
+            ."where 1 = 1 "
+            ."$where "
+            .")as t ";
+
+            // query
+            Log::debug('str_sum:'.$str);
+            $ret = DB::select($str)[0];
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
+
+    /**
+     * 個人経費(sql)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function getPrivateFeeSumList(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            // フリーワード
+            $free_word = $request->input('free_word');
+            Log::debug('$free_word:' .$free_word);
+
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('$session_id:' .$session_id);
+            
+            // 照会口座id
+            $bank_id = $request->input('bank_id');
+            Log::debug('$bank_id:' .$bank_id);
+
+            // 勘定科目
+            $cost_account_id = $request->input('cost_account_id');
+            Log::debug('$cost_account_id:' .$cost_account_id);
+
+            // 取引区分
+            $private_or_bank_id = $request->input('private_or_bank_id');
+            Log::debug('$private_or_bank_id:' .$private_or_bank_id);
+
+            // 始期
+            $start_date = $request->input('start_date');
+            Log::debug('$start_date:' .$start_date);
+
+            // 終期
+            $end_date = $request->input('end_date');
+            Log::debug('$end_date:' .$end_date);
+
+            // where句
+            $where = "";
+
+            // フリーワード
+            if($free_word !== null){
+
+                $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
+                $where = $where ."or ifnull(summary,'') like '%$free_word%'";
+
+            };
+
+            // 勘定項目id
+            if($cost_account_id !== null){
+
+                $where = $where ."and costs.cost_account_id = '$cost_account_id' ";
+            
+            };
+
+            // 照会口座
+            if($bank_id !== null){
+
+                $where = $where ."and costs.bank_id = '$bank_id' ";
+            
+            };
+    
+            // 勘定日
+            // 始期・終期がnullでない場合
+            if(($start_date !== null) && ($end_date !== null)) {
+
+                Log::debug('始期・終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '$start_date') "
+                ."and" 
+                ."(account_date <= '$end_date')";
+            };
+
+            // 始期がnullでない場合の処理
+            if(($start_date !== null) && ($end_date == null)) {
+
+                Log::debug('始期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '$start_date') "
+                ."and" 
+                ."(account_date <= '9999/12/31')";
+                
+            };
+
+            // 終期がnullでない場合の処理
+            if(($start_date == null) && ($end_date !== null)) {
+
+                Log::debug('終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '1900/01/01') "
+                ."and" 
+                ."(account_date <= '$end_date')";
+
+            };
+
+            $str = "select "
+            ."count(*) as row_count, "
+            ."sum(income_fee) as income_fee "
+            ."from "
+            ."( "
+            ."select "
+            ."costs.cost_id, "
+            ."costs.private_or_bank_id, "
+            ."costs.bank_id, "
+            ."costs.account_date, "
+            ."costs.income_fee, "
+            ."costs.outgo_fee, "
+            ."costs.balance_fee, "
+            ."costs.cost_type, "
+            ."costs.cost_account_id, "
+            ."costs.cost_memo, "
+            ."costs.financial_name, "
+            ."costs.financial_branch, "
+            ."costs.financial_summary, "
+            ."costs.entry_user_id, "
+            ."costs.entry_date, "
+            ."costs.update_user_id, "
+            ."costs.update_date "
+            ."from costs "
+            ."where 1 = 1 "
+            ."$where "
+            .")as t ";
+
+            // query
+            Log::debug('str_sum:'.$str);
+            $ret = DB::select($str)[0];
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
     
     /**
      *  新規(表示)
@@ -418,27 +712,33 @@ class BackCostController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backProfitNewInit(Request $request){   
+    public function backCostNewInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
 
-            // 売上一覧
-            $profit_list = $this->getNewList($request);
+            // 経費一覧
+            $cost_list = $this->getNewList($request);
 
+            // 共通クラスインスタンス化
             $common = new Common();
 
-            // 不動産一覧
-            $real_estate_list = $common->getRealEstateList();
+            // 銀行一覧
+            $bank_list = $common->getBanks();
 
-            // 勘定科目id
-            $profit_account_list = $common->getProfitAccounts();
+            // 取引区分
 
-            // アカウント一覧
-            $create_user_list = $common->getCreateUsers();
+            // // 不動産一覧
+            // $real_estate_list = $common->getRealEstateList();
 
-            // 新規表示の場合、号室不要の為から配列を渡す
-            $room_list = [];
+            // // 勘定科目id
+            // $profit_account_list = $common->getProfitAccounts();
+
+            // // アカウント一覧
+            // $create_user_list = $common->getCreateUsers();
+
+            // // 新規表示の場合、号室不要の為から配列を渡す
+            // $room_list = [];
     
         // 例外処理
         } catch (\Throwable $e) {
@@ -450,7 +750,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list'));
+        return view('back.backCostEdit' ,compact('cost_list', 'bank_list'));
     }
 
     /**
@@ -463,15 +763,31 @@ class BackCostController extends Controller
         
         $obj = new \stdClass();
         
-        $obj->profit_id  = '';
-        $obj->profit_person_id = '';
-        $obj->room_id = '';
-        $obj->profit_account_id = '';
-        $obj->profit_date  = '';
-        $obj->profit_fee = '';
-        $obj->profit_memo = '';
-        $obj->real_estate_id = '';
-        $obj->customer_name = '';
+        $obj->cost_id= '';
+        $obj->private_or_bank_id= '';
+        $obj->private_or_bank_name= '';
+        $obj->bank_id= '';
+        $obj->bank_name= '';
+        $obj->bank_branch_name= '';
+        $obj->account_date= '';
+        $obj->income_fee= '';
+        $obj->outgo_fee= '';
+        $obj->balance_fee= '';
+        $obj->cost_account_id= '';
+        $obj->cost_account_name= '';
+        $obj->cost_memo= '';
+        $obj->financial_name= '';
+        $obj->financial_branch= '';
+        $obj->financial_summary= '';
+        $obj->approval_id= '';
+        $obj->create_user_name= '';
+        $obj->approval_date= '';
+        $obj->question_contents= '';
+        $obj->answer_contents= '';
+        $obj->entry_user_id= '';
+        $obj->entry_date= '';
+        $obj->update_user_id= '';
+        $obj->update_date= '';
         
         $ret = [];
         $ret = $obj;
@@ -585,11 +901,8 @@ class BackCostController extends Controller
         try {
 
             // 一覧取得
-            $profit_info = $this->getEditList($request);
-            $profit_list = $profit_info[0];
-
-            $room_id = $profit_list->room_id;
-            Log::debug('room_id:'.$room_id);
+            $cost_info = $this->getEditList($request);
+            $cost_list = $cost_info[0];
 
             $common = new Common();
 
@@ -632,31 +945,46 @@ class BackCostController extends Controller
 
         try{
             // 値設定
-            $profit_id = $request->input('profit_id');
+            $cost_id = $request->input('cost_id');
 
             // sql
             $str = "select "
-            ."profits.profit_id, "
-            ."profits.profit_person_id, "
-            ."profits.customer_name, "
-            ."profits.room_id, "
-            ."rooms.room_name, "
-            ."profits.profit_account_id, "
-            ."profits.profit_date, "
-            ."profits.profit_fee, "
-            ."profits.profit_memo, "
-            ."profits.entry_user_id, "
-            ."profits.entry_date, "
-            ."profits.update_user_id, "
-            ."profits.update_date, "
-            ."rooms.real_estate_id, "
-            ."real_estates.real_estate_name "
-            ."from profits "
-            ."left join rooms on "
-            ."rooms.room_id = profits.room_id "
-            ."left join real_estates on "
-            ."real_estates.real_estate_id = rooms.real_estate_id "
-            ."where profit_id = $profit_id ";
+            ."costs.cost_id, "
+            ."costs.private_or_bank_id, "
+            ."private_or_banks.private_or_bank_name, "
+            ."costs.bank_id, "
+            ."banks.bank_name, "
+            ."banks.bank_branch_name, "
+            ."costs.account_date, "
+            ."costs.income_fee, "
+            ."costs.outgo_fee, "
+            ."costs.balance_fee, "
+            ."costs.cost_account_id, "
+            ."cost_accounts.cost_account_name, "
+            ."costs.cost_memo, "
+            ."costs.financial_name, "
+            ."costs.financial_branch, "
+            ."costs.financial_summary, "
+            ."costs.approval_id, "
+            ."create_users.create_user_name, "
+            ."costs.approval_date, "
+            ."costs.question_contents, "
+            ."costs.answer_contents, "
+            ."costs.entry_user_id, "
+            ."costs.entry_date, "
+            ."costs.update_user_id, "
+            ."costs.update_date "
+            ."from "
+            ."costs "
+            ."left join private_or_banks on "
+            ."private_or_banks.private_or_bank_id = costs.private_or_bank_id "
+            ."left join banks on "
+            ."banks.bank_id = costs.bank_id "
+            ."left join create_users on "
+            ."create_users.create_user_id = costs.approval_id "
+            ."left join cost_accounts on "
+            ."cost_accounts.cost_account_id = costs.cost_account_id "
+            ."where cost_id = $cost_id ";
 
             Log::debug('sql:' .$str);
             

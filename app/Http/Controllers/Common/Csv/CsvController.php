@@ -519,11 +519,11 @@ class CsvController extends Controller
                     continue;
                 }
 
-                // 最終行はstop
-                if ($count == $count_file) {
-                    Log::debug('最終行はstopの処理');
-                    break;
-                }
+                // // 最終行はstop
+                // if ($count == $count_file) {
+                //     Log::debug('最終行はstopの処理');
+                //     break;
+                // }
                 
                 // スペースを削除する
                 // id
@@ -533,7 +533,7 @@ class CsvController extends Controller
                 $account_date = trim(mb_convert_encoding($line[1], 'UTF-8', 'SJIS'));
                 
                 // 摘要・振込名義人
-                $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
+                $financial_summary = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
                 
                 // 入金額
                 $income_fee = Common::format_csv_colmun($line[3]);
@@ -572,8 +572,8 @@ class CsvController extends Controller
                  * 摘要が空白の場合
                  */
                 // 空白の場合
-                if($financial_name == null){
-                    $message[] = $count. '行目の金融機関名・摘要が空白です';
+                if($financial_summary == null){
+                    $message[] = $count. '行目の摘要が空白です';
                 }
 
                 /**
@@ -627,7 +627,7 @@ class CsvController extends Controller
 
                 $ret['status'] = 0;
 
-                $ret['messege'] = $message;
+                $ret['message'] = $message;
 
                 return $ret;
                 
@@ -649,11 +649,11 @@ class CsvController extends Controller
                     continue;
                 }
 
-                // 最終行はstop
-                if ($count == $count_file) {
-                    Log::debug('最終行はstopの処理');
-                    break;
-                }
+                // // 最終行はstop
+                // if ($count == $count_file) {
+                //     Log::debug('最終行はstopの処理');
+                //     break;
+                // }
 
                 /**
                  * csv値取得
@@ -663,8 +663,8 @@ class CsvController extends Controller
                 // 勘定日
                 $account_date = trim(mb_convert_encoding($line[1], 'UTF-8', 'SJIS'));
                 
-                // 摘要・振込名義人
-                $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
+                // 摘要
+                $financial_summary = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
                 
                 // 入金額
                 $income_fee = Common::format_csv_colmun($line[3]);
@@ -686,9 +686,9 @@ class CsvController extends Controller
                     $account_date ='';
                 }
 
-                // 金融機関名
-                if($financial_name == ''){
-                    $financial_name ='';
+                // 摘要
+                if($financial_summary == ''){
+                    $financial_summary ='';
                 }
 
                 // 入金額
@@ -719,7 +719,7 @@ class CsvController extends Controller
                 ."and "
                 ."(balance_fee = $balance_fee) "
                 ."and "
-                ."(financial_name = '$financial_name') ";
+                ."(financial_summary = '$financial_summary') ";
 
                 Log::debug('$str:' .$str);
                 $cost_list = DB::select($str);
@@ -755,6 +755,9 @@ class CsvController extends Controller
                 ."financial_name, "
                 ."financial_branch, "
                 ."financial_summary, "
+                ."read_flag, "
+                ."question_contents, "
+                ."answer_contents, "
                 ."entry_user_id, "
                 ."entry_date, "
                 ."update_user_id, "
@@ -769,7 +772,10 @@ class CsvController extends Controller
                 ."'出金', "
                 ."0, "
                 ."'', "
-                ."'$financial_name', "
+                ."'', "
+                ."'', "
+                ."'$financial_summary', "
+                ."0, "
                 ."'', "
                 ."'', "
                 ."$session_id, "
@@ -872,33 +878,44 @@ class CsvController extends Controller
                     continue;
                 }
 
-                // 最終行はstop
-                if ($count == $count_file) {
-                    Log::debug('最終行はstopの処理');
-                    break;
-                }
+                // // 最終行はstop
+                // if ($count == $count_file) {
+                //     Log::debug('最終行はstopの処理');
+                //     break;
+                // }
                 
                 // スペースを削除する
                 // id
                 $id = trim(mb_convert_encoding($line[0], 'UTF-8', 'SJIS'));
-                
-                // 勘定日
-                $account_date = trim(mb_convert_encoding($line[1], 'UTF-8', 'SJIS'));
-                
-                // 摘要・振込名義人
-                $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
-                
-                // 入金額
-                $income_fee = Common::format_csv_colmun($line[3]);
-                Log::debug('income_fee:' .$income_fee);
-                
+                Log::debug('id:' .$id);
+
                 // 出金額
                 $outgo_fee = Common::format_csv_colmun($line[4]);
+                Log::debug('outgo_fee:' .$outgo_fee);
+
+                // 入金額
+                $income_fee = Common::format_csv_colmun($line[5]);
                 Log::debug('income_fee:' .$income_fee);
                 
                 // 残高
-                $balance_fee = Common::format_csv_colmun($line[5]);
-                Log::debug('income_fee:' .$income_fee);
+                $balance_fee = Common::format_csv_colmun($line[7]);
+                Log::debug('balance_fee:' .$balance_fee);
+
+                // 勘定日
+                $account_date = Common::format_csv_date($line[2]);
+                Log::debug('account_date:' .$account_date);
+                
+                // 金融機関名
+                $financial_name = trim(mb_convert_encoding($line[10], 'UTF-8', 'SJIS'));
+                Log::debug('financial_name:' .$financial_name);
+
+                // 支店名
+                $financial_branch = trim(mb_convert_encoding($line[11], 'UTF-8', 'SJIS'));
+                Log::debug('financial_branch:' .$financial_branch);
+
+                // 摘要・振込名義人
+                $financial_summary = trim(mb_convert_encoding($line[12], 'UTF-8', 'SJIS'));
+                Log::debug('financial_summary:' .$financial_summary);
 
                 /**
                  * id
@@ -922,11 +939,17 @@ class CsvController extends Controller
                 }
 
                 /**
-                 * 摘要が空白の場合
+                 * 出金額
                  */
-                // 空白の場合
-                if($financial_name == null){
-                    $message[] = $count. '行目の金融機関名・摘要が空白です';
+                // 空白でなく、数値に変換できない場合
+                if($outgo_fee !== ''){
+                    Log::debug('出金額が空白でない場合の処理');
+
+                    if(is_numeric($outgo_fee) == false){
+                        Log::debug('出金額が数値に変換できない場合の処理');
+                        $message[] = $count. '行目の出金額の値が不正です';
+                    }
+
                 }
 
                 /**
@@ -937,33 +960,29 @@ class CsvController extends Controller
                     Log::debug('入金額が空白でない場合の処理');
 
                     if(is_numeric($income_fee) == false){
-                        Log::debug('数値に変換できない場合の処理');
+                        Log::debug('入金額が数値に変換できない場合の処理');
                         $message[] = $count. '行目の入金額の値が不正です';
                     }
                 }
 
-                /**
-                 * 出金額
-                 */
-                // 空白でなく、数値に変換できない場合
-                if($outgo_fee !== ''){
-                    Log::debug('出金額が空白でない場合の処理');
-
-                    if(is_numeric($outgo_fee) == false){
-                        Log::debug('数値に変換できない場合の処理');
-                        $message[] = $count. '行目の出金額の値が不正です';
-                    }
-
-                }
 
                 /**
-                 * 出金額
+                 * 残高
                  */
                 // 空白でなく、数値に変換できない場合
                 if(is_numeric($balance_fee) == false){
-                    Log::debug('数値に変換できない場合の処理');
+                    Log::debug('残高が数値に変換できない場合の処理');
                     $message[] = $count. '行目の残高の値が不正です';
                 }
+
+                /**
+                 * 摘要が空白の場合
+                 */
+                // 空白の場合
+                if($financial_summary == null){
+                    $message[] = $count. '摘要が空白です';
+                }
+                
 
                 // 行数のカウントを加算する
                 $count++;
@@ -980,7 +999,7 @@ class CsvController extends Controller
 
                 $ret['status'] = 0;
 
-                $ret['messege'] = $message;
+                $ret['message'] = $message;
 
                 return $ret;
                 
@@ -1003,33 +1022,46 @@ class CsvController extends Controller
                 }
 
                 // 最終行はstop
-                if ($count == $count_file) {
-                    Log::debug('最終行はstopの処理');
-                    break;
-                }
+                // if ($count == $count_file) {
+                //     Log::debug('最終行はstopの処理');
+                //     break;
+                // }
 
                 /**
                  * csv値取得
                  */
+               // スペースを削除する
+                // id
                 $id = trim(mb_convert_encoding($line[0], 'UTF-8', 'SJIS'));
-                
-                // 勘定日
-                $account_date = trim(mb_convert_encoding($line[1], 'UTF-8', 'SJIS'));
-                
-                // 摘要・振込名義人
-                $financial_name = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
-                
-                // 入金額
-                $income_fee = Common::format_csv_colmun($line[3]);
-                Log::debug('income_fee:' .$income_fee);
-                
+                Log::debug('id:' .$id);
+
                 // 出金額
                 $outgo_fee = Common::format_csv_colmun($line[4]);
+                Log::debug('outgo_fee:' .$outgo_fee);
+
+                // 入金額
+                $income_fee = Common::format_csv_colmun($line[5]);
                 Log::debug('income_fee:' .$income_fee);
                 
                 // 残高
-                $balance_fee = Common::format_csv_colmun($line[5]);
-                Log::debug('income_fee:' .$income_fee);
+                $balance_fee = Common::format_csv_colmun($line[7]);
+                Log::debug('balance_fee:' .$balance_fee);
+
+                // 勘定日
+                $account_date = Common::format_csv_date($line[2]);
+                Log::debug('account_date:' .$account_date);
+                
+                // 金融機関名
+                $financial_name = trim(mb_convert_encoding($line[10], 'UTF-8', 'SJIS'));
+                Log::debug('financial_name:' .$financial_name);
+
+                // 支店名
+                $financial_branch = trim(mb_convert_encoding($line[11], 'UTF-8', 'SJIS'));
+                Log::debug('financial_branch:' .$financial_branch);
+
+                // 摘要・振込名義人
+                $financial_summary = trim(mb_convert_encoding($line[12], 'UTF-8', 'SJIS'));
+                Log::debug('financial_summary:' .$financial_summary);
 
                 // 日付
                 $date = now() .'.000';
@@ -1044,19 +1076,29 @@ class CsvController extends Controller
                     $financial_name ='';
                 }
 
+                // 支店名
+                if($financial_branch == ''){
+                    $financial_branch ='';
+                }
+    
+                // 摘要
+                if($financial_summary == ''){
+                    $financial_summary ='';
+                }
+
                 // 入金額
                 if($income_fee == ''){
-                    $income_fee =0;
+                    $income_fee = 0;
                 }
 
                 // 出金額
                 if($outgo_fee == ''){
-                    $outgo_fee =0;
+                    $outgo_fee = 0;
                 }
 
                 // 残高
                 if($balance_fee == ''){
-                    $balance_fee =0;
+                    $balance_fee = 0;
                 }
 
                 /**
@@ -1072,8 +1114,12 @@ class CsvController extends Controller
                 ."and "
                 ."(balance_fee = $balance_fee) "
                 ."and "
-                ."(financial_name = '$financial_name') ";
-
+                ."(financial_name = '$financial_name') "
+                ."and "
+                ."(financial_branch = '$financial_branch') "
+                ."and "
+                ."(financial_summary = '$financial_summary') ";
+                
                 Log::debug('$str:' .$str);
                 $cost_list = DB::select($str);
 
@@ -1108,6 +1154,9 @@ class CsvController extends Controller
                 ."financial_name, "
                 ."financial_branch, "
                 ."financial_summary, "
+                ."read_flag, "
+                ."question_contents, "
+                ."answer_contents, "
                 ."entry_user_id, "
                 ."entry_date, "
                 ."update_user_id, "
@@ -1123,6 +1172,9 @@ class CsvController extends Controller
                 ."0, "
                 ."'', "
                 ."'$financial_name', "
+                ."'$financial_branch', "
+                ."'$financial_summary', "
+                ."0, "
                 ."'', "
                 ."'', "
                 ."$session_id, "
@@ -1181,11 +1233,6 @@ class CsvController extends Controller
         // 保存先のパス生成
         $file_path = storage_path('backup/import_backup.txt');
 
-        // テキストファイルを空にする
-        file_put_contents($file_path,'');
-        
-        // Storage::delete($file_path);
-
         // メッセージ格納
         foreach ($message_list as $message => $value) {
 
@@ -1205,7 +1252,6 @@ class CsvController extends Controller
         Log::debug('log_end:' .__FUNCTION__);
 
         // ダウンロード
-        return response()->download($file_path, $filename, $headers);
-
+        return response()->download($file_path, $filename, $headers)->deleteFileAfterSend(true);
     }
 } 

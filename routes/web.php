@@ -121,6 +121,9 @@ Route::post('backProfitDeleteEntry', 'Back\Profit\BackProfitController@backProfi
 // 一覧表示
 Route::any('backCostInit', 'Back\Cost\BackCostController@backCostInit')->middleware("cost_auth");
 
+// 新規表示
+Route::get('backCostNewInit', 'Back\Cost\BackCostController@backCostNewInit')->middleware("cost_auth");
+
 /**
  * CSV
  */

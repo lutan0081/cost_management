@@ -1,0 +1,172 @@
+@charset "UTF-8";
+
+.text_red{
+    color: #F00;
+}
+
+/* リンク装飾無 */
+a{
+    text-decoration: none;
+}
+
+textarea {
+    resize: none;
+}
+
+/*==================================
+テキストボックス、コンボボックスの文字の大きさ
+===================================*/
+.form-control, .form-select, .btn, .dropdown-menu{
+    font-size: 0.9rem;
+}
+
+/*==================================
+ラベル(必須、任意)
+===================================*/
+label.label_required:after {
+    padding: 0px 6px 0px 6px;
+    font-size: 0.7rem;
+    margin-right: 0.5rem;
+    color: white;
+    background-color: #C44;
+    content: "必須";
+}
+
+/* ラベル(任意) */
+label.label_any:after {
+    padding: 0px 6px 0px 6px;
+    font-size: 0.7rem;
+    margin-right: 0.5rem;
+    color: white;
+    background-color: #5e5e5e;
+    content: "任意";
+}
+
+/*==================================
+上段の説明文
+===================================*/
+.top_explain{
+    font-size: 0.9rem;
+}
+
+.warning_info{
+    color: #F00;
+}
+
+.icon_blue{
+    color: #98a4c7;
+}
+
+/* テーブル上のhrのmargin_bottom */
+.info_title{
+    font-size: 1.1rem;
+    color: #6c757d;
+    /* letter-spacing: 0.1rem; */
+}
+
+/*==================================
+テーブルの設定
+===================================*/
+/* 行間 */
+.table-responsive > .table-condensed > thead > tr > th,
+.table-responsive > .table-condensed > tbody > tr > th,
+.table-responsive > .table-condensed > tfoot > tr > th,
+.table-responsive > .table-condensed > thead > tr > td,
+.table-responsive > .table-condensed > tbody > tr > td,
+.table-responsive > .table-condensed > tfoot > tr > td {
+
+    padding: 10px;  /* 5px の値を変更 */
+    /* 見出し線、テーブル線のカスタマイズ */
+    border-bottom: 1px solid #dee2e6!important;
+    /* はみ出た部分を隠す */
+    overflow: hidden;
+    /* 折り返し無し */
+    white-space: nowrap;
+
+}
+
+
+/*==================================
+入居者一覧のタイトル設定
+===================================*/
+.housemate_title{
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: #6c757d;
+    /* letter-spacing: 0.1rem; */
+}
+
+/*==================================
+アルバムのhr設定
+===================================*/
+.hr_album {
+    margin-top: 0.5rem;
+}
+
+/*==================================
+タブのエラー
+===================================*/
+.bg_tab_error {
+    background-color: #C44 !important;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+/*==================================
+進捗プログレスバー
+===================================*/
+.progressbar {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.progressbar li {
+    position: relative;
+    list-style-type: none;
+    text-align: center;
+    text-transform: uppercase;
+    width: 33.333%;
+    color: #999999;
+    font-weight: bold;
+}
+.progressbar li:before {
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin: 7px auto 20px auto;
+    content: '';
+    text-align: center;
+    border-radius: 50%;
+    background-color: #F5F5F5;
+}
+.progressbar li:after {
+    position: absolute;
+    z-index: -1;
+    top: 15px;
+    left: -50%;
+    width: 100%;
+    height: 2px;
+    content: '';
+    background-color: #F5F5F5;
+}
+.progressbar li:first-child:after {
+    content: none;
+}
+.progressbar li.active,
+.progressbar li.complete{
+    color: #0070BD;
+}
+.progressbar li.active:before,
+.progressbar li.complete:before {
+    background-color: #0070BD;
+}
+.progressbar li.active:after,
+.progressbar li.complete:after {
+    background-color: #0070BD;
+}
+
+
+

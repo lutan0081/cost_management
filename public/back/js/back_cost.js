@@ -18,8 +18,6 @@ $(function(){
      */
     function message_export (data) {
 
-        console.log('data:' + data.message);
-
         window.open('csvMessageExport?message=' + data.message, '_self');
     }
 
@@ -227,12 +225,13 @@ $(function(){
 
         // 接続が出来た場合の処理
         }).done(function(data) {
+            
+            console.log("status:" + data.status);
+            console.log("message:" + data.message);
+            console.log("typeof:" + typeof(data.message));
 
             // trueの処理->申込一覧に遷移
             if(data.status == true){
-
-                console.log("status:" + data.status);
-                console.log("messege:" + data.message);
 
                 // alertの設定
                 var options = {
@@ -249,10 +248,15 @@ $(function(){
                     .then(function(val) {
                     if (val == 'OK' || val == null) {
 
-                        // エラーメッセージをExcelに出力
-                        message_export(data);
+                        if (data.message != ''){
 
-                        sleep(1000);
+                            console.log('messegeがある場合の処理');
+
+                            // エラーメッセージが有る場合Excelに出力
+                            message_export(data); 
+                            
+                            sleep(1000);
+                        }
 
                         // 一覧に画面遷移
                         // location.href = 'backCostInit';
@@ -262,9 +266,6 @@ $(function(){
 
              // falseの処理->アラートでエラーメッセージを表示
             if(data.status == false){
-
-                console.log("status:" + data.status);
-                console.log("messege:" + data.message);
 
                 // アラートボタン設定
                 var options = {

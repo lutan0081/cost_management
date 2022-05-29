@@ -227,12 +227,41 @@
                         </div>
                         <!-- テーブルcard -->
 
+                        <!-- 出金額合計 -->
                         <div class="col-12 col-md-6 col-lg-3 mt-3">
                             <div class="row">
 
                                 <div class="col-12 col-md-8 col-lg-12">
                                     <div class="form-group">
-                                        <label for="">合計値</label>
+                                        <label for="">出金額合計</label>
+                                        <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($outgo_fee_sum_list->outgo_fee) }}" style="text-align:right" disabled>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- 入金額合計 -->
+                        <div class="col-12 col-md-6 col-lg-3 mt-3">
+                            <div class="row">
+
+                                <div class="col-12 col-md-8 col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">入金額合計</label>
+                                        <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($income_fee_sum_list->income_fee) }}" style="text-align:right" disabled>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- 個人合計 -->
+                        <div class="col-12 col-md-6 col-lg-3 mt-3">
+                            <div class="row">
+
+                                <div class="col-12 col-md-8 col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">個人合計</label>
                                         <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($outgo_fee_sum_list->outgo_fee) }}" style="text-align:right" disabled>
                                     </div>
                                 </div>
@@ -256,7 +285,7 @@
                                 <!-- 新規、編集 -->
                                 <div class="col-12 col-md-6 col-lg-6">
                                     <div class="btn-group float-xl-end" role="group">
-                                        <button type="button" onclick="location.href='backProfitNewInit'" id="btn_csv" class="btn btn-outline-primary float-end btn-default">新規登録</button>
+                                        <button type="button" onclick="location.href='backCostNewInit'" id="btn_csv" class="btn btn-outline-primary float-end btn-default">新規登録</button>
                                         <button type="button" id="btn_edit" class="btn btn-outline-primary float-end btn-default">編集</button>
                                     </div>
                                 </div>
