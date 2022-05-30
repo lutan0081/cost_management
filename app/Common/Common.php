@@ -153,7 +153,7 @@ class Common
     }
 
     /**
-     * 取引区分取得
+     * 出金区分
      *
      * @return void
      */

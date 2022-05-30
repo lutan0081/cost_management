@@ -179,7 +179,6 @@
                                                         <th scope="col" id="outgo_fee">出金額</th>
                                                         <th scope="col" id="income_fee">入金額</th>
                                                         <th scope="col" id="balance_fee">残高</th>
-                                                        <th scope="col" id="cost_type">取引区分</th>
                                                         <th scope="col" id="financial_name">金融機関名</th>
                                                         <th scope="col" id="financial_branch">支店名</th>
                                                         <th scope="col" id="financial_summary">摘要</th>
@@ -200,7 +199,6 @@
                                                             <td id="outgoFee_{{ $cost_list->cost_id }}" class="click_class">{{ Common::format_three_digit_separator($cost_list->outgo_fee) }}</td>
                                                             <td id="incomeFee_{{ $cost_list->cost_id }}" class="click_class">{{ Common::format_three_digit_separator($cost_list->income_fee) }}</td>
                                                             <td id="balanceFee_{{ $cost_list->cost_id }}" class="click_class">{{ Common::format_three_digit_separator($cost_list->balance_fee) }}</td>
-                                                            <td id="costType_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->cost_type }}</td>
                                                             <td id="financialName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->financial_name }}</td>
                                                             <td id="financialBranch_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->financial_branch }}</td>
                                                             <td id="financialSummary_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->financial_summary }}</td>

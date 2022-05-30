@@ -157,7 +157,6 @@ class BackCostController extends Controller
             ."costs.income_fee, "
             ."costs.outgo_fee, "
             ."costs.balance_fee, "
-            ."costs.cost_type, "
             ."costs.cost_account_id, "
             ."cost_accounts.cost_account_name, "
             ."costs.cost_memo, "
@@ -384,7 +383,6 @@ class BackCostController extends Controller
             ."costs.income_fee, "
             ."costs.outgo_fee, "
             ."costs.balance_fee, "
-            ."costs.cost_type, "
             ."costs.cost_account_id, "
             ."costs.cost_memo, "
             ."costs.financial_name, "
@@ -529,7 +527,6 @@ class BackCostController extends Controller
             ."costs.income_fee, "
             ."costs.outgo_fee, "
             ."costs.balance_fee, "
-            ."costs.cost_type, "
             ."costs.cost_account_id, "
             ."costs.cost_memo, "
             ."costs.financial_name, "
@@ -726,6 +723,13 @@ class BackCostController extends Controller
             // 銀行一覧
             $bank_list = $common->getBanks();
 
+            // 出金区分
+            $private_or_bank_list = $common->getPrivateOrBanks();
+            
+            // 勘定科目
+            $cost_account_list = $common->getCostAccounts();
+
+
             // 取引区分
 
             // // 不動産一覧
@@ -750,7 +754,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCostEdit' ,compact('cost_list', 'bank_list'));
+        return view('back.backCostEdit' ,compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list'));
     }
 
     /**
@@ -780,6 +784,8 @@ class BackCostController extends Controller
         $obj->financial_branch= '';
         $obj->financial_summary= '';
         $obj->approval_id= '';
+        $obj->approval_date= '';
+        $obj->question_contents= '';
         $obj->create_user_name= '';
         $obj->approval_date= '';
         $obj->question_contents= '';
