@@ -124,6 +124,17 @@ Route::any('backCostInit', 'Back\Cost\BackCostController@backCostInit')->middlew
 // 新規表示
 Route::get('backCostNewInit', 'Back\Cost\BackCostController@backCostNewInit')->middleware("cost_auth");
 
+// 編集表示
+Route::get('backCostEditInit', 'Back\Cost\BackCostController@backCostEditInit')->middleware("cost_auth");
+
+// 登録分岐（新規/編集）
+Route::post('backCostEditEntry', 'Back\Cost\BackCostController@backCostEditEntry')->middleware("cost_auth");
+
+// 削除
+Route::post('backCostDeleteEntry', 'Back\Cost\BackCostController@backCostDeleteEntry')->middleware("cost_auth");
+
+// 削除：画像:詳細
+Route::post('backDeleteEntryImgDetail', 'Back\Cost\BackCostController@backDeleteEntryImgDetail')->middleware("cost_auth");
 /**
  * CSV
  */

@@ -194,7 +194,7 @@
                                                             <td id="select_{{ $cost_list->cost_id }}" class="click_class"><input id="{{ $cost_list->cost_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
                                                             <td id="bankName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->bank_name. '_' .$cost_list->bank_number}}</td>
                                                             <td id="accountDate_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->account_date }}</td>
-                                                            <td id="privateOrBankName{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->private_or_bank_name }}</td>
+                                                            <td id="privateOrBankName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->private_or_bank_name }}</td>
                                                             <td id="costAccountName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->cost_account_name }}</td>
                                                             <td id="outgoFee_{{ $cost_list->cost_id }}" class="click_class">{{ Common::format_three_digit_separator($cost_list->outgo_fee) }}</td>
                                                             <td id="incomeFee_{{ $cost_list->cost_id }}" class="click_class">{{ Common::format_three_digit_separator($cost_list->income_fee) }}</td>

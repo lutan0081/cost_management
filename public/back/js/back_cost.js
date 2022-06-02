@@ -1,6 +1,6 @@
 $(function(){
 
-    // 初期化
+    // csv取込モーダル画面表示
     $('#csvModal').on('show.bs.modal', function (e) {
         console.log('show');//showメソッドが実行されたら実行される。
         $('#modal_bank_id').val('');
@@ -14,7 +14,7 @@ $(function(){
     $("#links").show();
     
     /**
-     * エラーメッセージエクスポート
+     * cvsインポート時のエラーメッセージエクスポート
      */
     function message_export (data) {
 
@@ -42,7 +42,6 @@ $(function(){
         // tdのidを配列に分解
         var id_info = $(this).attr("id");
         id = id_info.split('_')[1];
-
         console.log(id);
 
         setTimeout(function(){
@@ -50,7 +49,7 @@ $(function(){
         },500);
 
         // idをパラメーターでControllerに渡す
-        location.href = "backProfitEditInit?profit_id=" + id;
+        location.href = "backCostEditInit?cost_id=" + id;
 
     });
 

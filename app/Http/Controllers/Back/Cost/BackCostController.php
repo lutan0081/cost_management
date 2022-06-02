@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Crypt;
 // config内のapp.phpに定義
 use Common;
 
+use App\Config;
+
 /**
  * 表示・登録、編集、削除
  */
@@ -717,6 +719,9 @@ class BackCostController extends Controller
             // 経費一覧
             $cost_list = $this->getNewList($request);
 
+            // 写真一覧
+            $cost_img_list = [];
+
             // 共通クラスインスタンス化
             $common = new Common();
 
@@ -729,21 +734,9 @@ class BackCostController extends Controller
             // 勘定科目
             $cost_account_list = $common->getCostAccounts();
 
+            // 画像種別
+            $cost_img_type_list = $common->getImgTypes();
 
-            // 取引区分
-
-            // // 不動産一覧
-            // $real_estate_list = $common->getRealEstateList();
-
-            // // 勘定科目id
-            // $profit_account_list = $common->getProfitAccounts();
-
-            // // アカウント一覧
-            // $create_user_list = $common->getCreateUsers();
-
-            // // 新規表示の場合、号室不要の為から配列を渡す
-            // $room_list = [];
-    
         // 例外処理
         } catch (\Throwable $e) {
 
@@ -754,7 +747,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCostEdit' ,compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list'));
+        return view('back.backCostEdit' ,compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list', 'cost_img_type_list', 'cost_img_list'));
     }
 
     /**
@@ -787,8 +780,6 @@ class BackCostController extends Controller
         $obj->approval_date= '';
         $obj->question_contents= '';
         $obj->create_user_name= '';
-        $obj->approval_date= '';
-        $obj->question_contents= '';
         $obj->answer_contents= '';
         $obj->entry_user_id= '';
         $obj->entry_date= '';
@@ -901,7 +892,7 @@ class BackCostController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backProfitEditInit(Request $request){   
+    public function backCostEditInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
@@ -910,22 +901,23 @@ class BackCostController extends Controller
             $cost_info = $this->getEditList($request);
             $cost_list = $cost_info[0];
 
+            // 画像パス取得
+            $cost_img_list = $this->getImgList($request);
+
+            // 共通クラスインスタンス化
             $common = new Common();
 
-            // 不動産一覧
-            $real_estate_list = $common->getRealEstateList();
+            // 銀行一覧
+            $bank_list = $common->getBanks();
 
-            // 勘定科目id
-            $profit_account_list = $common->getProfitAccounts();
+            // 出金区分
+            $private_or_bank_list = $common->getPrivateOrBanks();
+            
+            // 勘定科目
+            $cost_account_list = $common->getCostAccounts();
 
-            // アカウント一覧
-            $create_user_list = $common->getCreateUsers();
-
-            // 号室
-            $room_list = $common->getRoomList($room_id);
-            // 配列デバック
-            $arrString = print_r($room_list , true);
-            Log::debug('room_list:'.$arrString);
+            // 画像種別
+            $cost_img_type_list = $common->getImgTypes();
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -937,7 +929,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list'));
+        return view('back.backCostEdit' ,compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list', 'cost_img_type_list', 'cost_img_list'));
     }
 
     /**
@@ -1008,6 +1000,50 @@ class BackCostController extends Controller
         return $ret;
     }
 
+    /**
+     * 編集(画像一覧取得)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function getImgList(Request $request){
+
+        Log::debug('start:' .__FUNCTION__);
+
+        try{
+            // 値設定
+            $cost_id = $request->input('cost_id');
+
+            $str = "select "
+            ."cost_imgs.cost_img_id, "
+            ."cost_imgs.cost_id, "
+            ."cost_imgs.cost_img_type_id, "
+            ."cost_img_types.cost_img_type_name, "
+            ."cost_imgs.cost_img_path, "
+            ."cost_imgs.cost_img_memo, "
+            ."cost_imgs.entry_user_id, "
+            ."cost_imgs.entry_date, "
+            ."cost_imgs.update_user_id, "
+            ."cost_imgs.update_date "
+            ."from "
+            ."cost_imgs "
+            ."left join cost_img_types on "
+            ."cost_img_types.cost_img_type_id = cost_imgs.cost_img_type_id "
+            ."where cost_imgs.cost_id = $cost_id ";
+            
+            $ret = DB::select($str);
+
+        } catch (\Throwable $e) {
+
+            throw $e;
+
+        } finally {
+
+        }
+
+        Log::debug('end:' .__FUNCTION__);
+        return $ret;
+    }
 
     /**
      * 登録分岐(新規/編集)
@@ -1015,7 +1051,7 @@ class BackCostController extends Controller
      * @param $request(edit.blade.phpの各項目)
      * @return $response(status:true=OK/false=NG)
      */
-    public function backProfitEditEntry(Request $request){
+    public function backCostEditEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
         
         // return初期値
@@ -1036,7 +1072,7 @@ class BackCostController extends Controller
          * id=有:update
          */
         // 新規登録
-        if($request->input('profit_id') == ""){
+        if($request->input('cost_id') == ""){
 
             Log::debug('新規の処理');
 
@@ -1083,25 +1119,62 @@ class BackCostController extends Controller
          * rules
          */
         $rules = [];
-        $rules['profit_account_date'] = "required|date";
-        $rules['profit_fee'] = "required|integer";
-        $rules['profit_memo'] = "nullable|max:100";
-        $rules['customer_name'] = "nullable|max:50";
+        $rules['financial_name'] = "nullable|max:100";
+        $rules['financial_branch'] = "nullable|max:100";
+        $rules['financial_summary'] = "nullable|max:100";
+        $rules['account_date'] = "required|date";
+        $rules['outgo_fee'] = "required|integer";
+        $rules['income_fee'] = "required|integer";
+        $rules['balance_fee'] = "nullable|integer";
+        $rules['cost_memo'] = "nullable|max:100";
+        $rules['question_contents'] = "nullable|max:500";
+        $rules['answer_contents'] = "nullable|max:500";
 
+        /**
+         * 画像
+         * nullableが効かない為、if文で判定
+         */
+        $img_file = $request->file('img_file');
+        Log::debug('バリデーション_img_file:' .$img_file);
+
+        if($img_file !== null){
+
+            Log::debug('画像が添付されています');
+            $rules['img_file'] = "nullable|mimes:jpeg,png,jpg";
+
+        }
+    
+        $rules['img_text'] = "nullable|max:20";
         /**
          * messages
          */
         $messages = [];
 
-        $messages['profit_account_date.required'] = "勘定日は必須です。";
-        $messages['profit_account_date.date'] = "勘定日の形式が不正です。";
+        $messages['financial_name.max'] = "金融機関名の文字数が超過しています。";
+        $messages['financial_branch.max'] = "支店名の文字数が超過しています。";
+        $messages['financial_summary.max'] = "摘要の文字数が超過しています。";
+        $messages['account_date.required'] = "勘定日は必須です。";
+        $messages['account_date.date'] = "勘定日の形式が不正です。";
+        $messages['outgo_fee.required'] = "出金額は必須です。。";
+        $messages['outgo_fee.integer'] = "出金額の値が不正です。";
+        $messages['income_fee.required'] = "入金額は必須です。";
+        $messages['income_fee.integer'] = "入金額の値が不正です。";
+        $messages['balance_fee.integer'] = "残高の値が不正です。";
+        $messages['question_contents.max'] = "質問の文字数が超過しています。";
+        $messages['answer_contents.max'] = "回答の文字数が超過しています。";
+        $messages['cost_memo.max'] = "備考飲み時数が超過しています。";
+        
+        $img_file = $request->file('img_file');
+        Log::debug('バリデーション_img_file:' .$img_file);
 
-        $messages['profit_fee.required'] = "利益額は必須です。";
-        $messages['profit_fee.integer'] = "利益額の形式が不正です。";
+        if($img_file !== null){
 
-        $messages['profit_memo.max'] = "備考の形式が不正です。";
+            Log::debug('画像が添付されています');
+            $messages['img_file.mimes'] = "画像ファイル(jpg.jpeg.png)でアップロードして下さい。";
 
-        $messages['customer_name.max'] = "取引先の文字数が超過しています。";
+        }
+    
+        $messages['img_text.max'] = "備考の文字数が超過しています。";
     
         // validation判定
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -1142,6 +1215,7 @@ class BackCostController extends Controller
             
             Log::debug('log_end:' .__FUNCTION__);
         }
+
         return $response;
     }
 
@@ -1157,20 +1231,39 @@ class BackCostController extends Controller
 
         try {
 
+            // トランザクション
+            DB::beginTransaction();
+
             // retrun初期値
             $ret = [];
             $ret['status'] = true;
 
             /**
-             * status:OK=1 NG=0
+             * 経費
              */
-            $bank_info = $this->insertProfit($request);
+            $cost_info = $this->insertCost($request);
 
-            // returnのステータスにtrueを設定
-            $ret['status'] = $bank_info['status'];
+            $ret['status'] = $cost_info['status'];
+
+            // 登録時のcost_idを取得
+            $cost_id = $cost_info['cost_id'];
+            Log::debug('cost_id:'.$cost_id);
+            
+            /**
+             * 画像
+             */
+            $cost_img_info = $this->insertImg($request, $cost_id);
+
+            $ret['status'] = $cost_img_info['status'];
+            
+            // コミット
+            DB::commit();
 
         // 例外処理
         } catch (\Throwable $e) {
+
+            // ロールバック
+            DB::rollback();
 
             Log::debug(__FUNCTION__ .':' .$e);
 
@@ -1201,7 +1294,7 @@ class BackCostController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function insertProfit(Request $request){
+    private function insertCost(Request $request){
         
         Log::debug('log_start:' .__FUNCTION__);
 
@@ -1211,82 +1304,127 @@ class BackCostController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
-            $profit_person_id = $request->input('profit_person_id');
-            $profit_account_id = $request->input('profit_account_id');
-            $profit_account_date = $request->input('profit_account_date');
-            $profit_fee = $request->input('profit_fee');
-            $real_estate_id = $request->input('real_estate_id');
-            $room_id = $request->input('room_id');
-            $profit_memo = $request->input('profit_memo');
-            $customer_name = $request->input('customer_name');
+            $bank_id = $request->input('bank_id');
+            $financial_name = $request->input('financial_name');
+            $financial_branch = $request->input('financial_branch');
+            $financial_summary = $request->input('financial_summary');
+            $private_or_bank_id = $request->input('private_or_bank_id');
+            $account_date = $request->input('account_date');
+            $cost_account_id = $request->input('cost_account_id');
+            $outgo_fee = $request->input('outgo_fee');
+            $income_fee = $request->input('income_fee');
+            $balance_fee = $request->input('balance_fee');
+            $cost_memo = $request->input('cost_memo');
+            $question_contents = $request->input('question_contents');
+            $answer_contents = $request->input('answer_contents');
 
             // 現在の日付取得
             $date = now() .'.000';
     
-            // 売上担当id
-            if($profit_person_id == null){
-                $profit_person_id = 0;
+            // 金融機関名
+            if($financial_name == null){
+                $financial_name = '';
             }
 
-            // 勘定科目id
-            if($profit_account_id == null){
-                $profit_account_id = 0;
+            // 支店名
+            if($financial_branch == null){
+                $financial_branch = '';
+            }
+
+            // 摘要
+            if($financial_summary == null){
+                $financial_summary = '';
+            }
+
+            // 個人又は預金
+            if($private_or_bank_id == null){
+                $private_or_bank_id = 0;
             }
 
             // 勘定日
-            if($profit_account_date == null){
-                $profit_account_date = '';
+            if($account_date == null){
+                $account_date = '';
             }
 
-            // 利益額
-            if($profit_fee == null){
-                $profit_fee = 0;
+            // 勘定科目id
+            if($cost_account_id == null){
+                $cost_account_id = 0;
             }
 
-            // 不動産id
-            if($real_estate_id == null){
-                $real_estate_id = 0;
+            // 出金額
+            if($outgo_fee == null){
+                $outgo_fee = 0;
             }
 
-            // 号室id
-            if($room_id == null){
-                $room_id = 0;
+            // 入金額
+            if($income_fee == null){
+                $income_fee = 0;
+            }
+
+            // 残高
+            if($balance_fee == null){
+                $balance_fee = 0;
             }
 
             // 備考
-            if($profit_memo == null){
-                $profit_memo = '';
+            if($cost_memo == null){
+                $cost_memo = '';
             }
 
-            // 取引先
-            if($customer_name == null){
-                $customer_name = '';
+            // 質問
+            if($question_contents == null){
+                $question_contents = '';
             }
 
+            // 回答
+            if($answer_contents == null){
+                $answer_contents = '';
+            }
+
+            // 銀行id
+            if($bank_id == null){
+                $bank_id = 0;
+            }
 
             $str = "insert "
             ."into "
-            ."cost_management.profits "
+            ."costs "
             ."( "
-            ."profit_person_id, "
-            ."customer_name, "
-            ."room_id, "
-            ."profit_account_id, "
-            ."profit_date, "
-            ."profit_fee, "
-            ."profit_memo, "
+            ."private_or_bank_id, "
+            ."bank_id, "
+            ."account_date, "
+            ."income_fee, "
+            ."outgo_fee, "
+            ."balance_fee, "
+            ."cost_account_id, "
+            ."cost_memo, "
+            ."financial_name, "
+            ."financial_branch, "
+            ."financial_summary, "
+            ."approval_id, "
+            ."approval_date, "
+            ."question_contents, "
+            ."answer_contents, "
             ."entry_user_id, "
             ."entry_date, "
             ."update_user_id, "
             ."update_date "
             .")values( "
-            ."$profit_person_id, "
-            ."'$customer_name', "
-            ."$room_id, "
-            ."$profit_account_id, "
-            ."'$profit_account_date', "
-            ."'$profit_fee', "
-            ."'$profit_memo', "
+            ."$private_or_bank_id, "
+            ."$bank_id, "
+            ."'$account_date', "
+            ."$income_fee, "
+            ."$outgo_fee, "
+            ."$balance_fee, "
+            ."$cost_account_id, "
+            ."'$cost_memo', "
+            ."'$financial_name', "
+            ."'$financial_branch', "
+            ."'$financial_summary', "
+            ."0, "
+            ."'', "
+            ."'$question_contents', "
+            ."'$answer_contents', "
             ."$session_id, "
             ."'$date', "
             ."$session_id, "
@@ -1297,6 +1435,23 @@ class BackCostController extends Controller
 
             // OK=1/NG=0
             $ret['status'] = DB::insert($str);
+
+            // 登録したapplication_id取得
+            $str = "select * from costs "
+            ."where "
+            ."(outgo_fee = $outgo_fee) "
+            ."and "
+            ."(income_fee = $income_fee) "
+            ."and "
+            ."(balance_fee = $balance_fee) "
+            ."and "
+            ."(entry_date = '$date') ";
+
+            Log::debug('select_cost:'.$str);
+            $cost_info = DB::select($str);
+
+            // 経費id
+            $ret['cost_id'] = $cost_info[0]->cost_id;
 
         // 例外処理
         } catch (\Throwable  $e) {
@@ -1310,6 +1465,130 @@ class BackCostController extends Controller
 
         Log::debug('log_end:'.__FUNCTION__);
         return $ret;
+    }
+
+
+    /**
+     * 付属書類(登録)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function insertImg(Request $request, $cost_id){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try {
+
+            /**
+             * 値取得
+             */
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+
+            $img_file = $request->file('img_file');
+            Log::debug('img_file:'.$img_file);
+
+            // 付属書類がない場合の処理
+            if($img_file == null){
+
+                Log::debug('付属書類がない場合の処理');
+
+                $ret['status'] = 1;
+
+                return $ret;
+
+            }
+
+            // 種別
+            $img_type = $request->input('img_type');
+            Log::debug('img_type:'.$img_type);
+
+            // 備考
+            $img_text = $request->input('img_text');
+            Log::debug('img_text:'.$img_text);
+
+            // 現在の日付取得
+            $date = now() .'.000';
+        
+            // idごとのフォルダ作成のためのパス生成
+            $dir ='img/' .$cost_id;
+            
+            // 任意のフォルダ作成
+            // ※appを入れるとエラーになる
+            Storage::makeDirectory('/public/' .$dir);
+
+            /**
+             * 画像登録処理
+             */
+            // ファイル名変更
+            $file_name = time() .'.' .$img_file->getClientOriginalExtension();
+            Log::debug('ファイル名:'.$file_name);
+
+            // ファイルパス+ファイル名
+            $tmp_file_path = $dir .'/' .$file_name;
+            Log::debug('tmp_file_path :'.$tmp_file_path);
+
+            // ※ここにappを入れないとエラーになる
+            InterventionImage::make($img_file)->resize(380, null,
+            function ($constraint) {
+                $constraint->aspectRatio();
+            })->save(storage_path('app/public/' .$tmp_file_path));
+
+            /**
+             * 種別idがnullの場合、0を入れる
+             */
+            if($img_type == null){
+                $img_type = 0;
+            }
+
+            /**
+             * 画像データ(insert)
+             */
+            $str = "insert "
+            ."into "
+            ."cost_imgs "
+            ."( "
+            ."cost_id, "
+            ."cost_img_type_id, "
+            ."cost_img_path, "
+            ."cost_img_memo, "
+            ."entry_user_id, "
+            ."entry_date, "
+            ."update_user_id, "
+            ."update_date "
+            .")values( "
+            ."$cost_id, "
+            ."$img_type, "
+            ."'$tmp_file_path', "
+            ."'$img_text', "
+            ."$session_id, "
+            ."'$date', "
+            ."$session_id, "
+            ."'$date' "
+            ."); ";
+            
+            Log::debug('sql:'.$str);
+
+            // OK=1/NG=0
+            $ret['status'] = DB::insert($str);
+
+            Log::debug('status:'.$ret);
+            
+        } catch (\Throwable $e) {
+
+            Log::debug('error:'.$e);
+
+            // storage/app/public/imagesから、画像ファイルを削除する
+            Storage::delete($tmp_file_path);
+
+            throw $e;
+
+        }finally{
+
+            Log::debug('log_end:'.__FUNCTION__);
+            return $ret;
+
+        }
     }
 
     /**
@@ -1328,12 +1607,22 @@ class BackCostController extends Controller
             $ret['status'] = true;
 
             /**
-             * status:OK=1 NG=0
+             * 経費概要
              */
-            $profit_info = $this->updateProfit($request);
+            $cost_info = $this->updateCost($request);
 
             // returnのステータスにtrueを設定
-            $ret['status'] = $profit_info['status'];
+            $ret['status'] = $cost_info['status'];
+
+            /**
+             * 補足資料
+             */
+            $cost_id = $request->input('cost_id');
+
+            $cost_img_info = $this->insertImg($request, $cost_id);
+
+            $ret['status'] = $cost_img_info['status'];
+
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -1367,7 +1656,7 @@ class BackCostController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function updateProfit(Request $request){
+    private function updateCost(Request $request){
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
@@ -1376,75 +1665,111 @@ class BackCostController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
-            $profit_id = $request->input('profit_id');
-            $profit_person_id = $request->input('profit_person_id');
-            $profit_account_id = $request->input('profit_account_id');
-            $profit_account_date = $request->input('profit_account_date');
-            $profit_fee = $request->input('profit_fee');
-            $real_estate_id = $request->input('real_estate_id');
-            $room_id = $request->input('room_id');
-            $profit_memo = $request->input('profit_memo');
-            $customer_name = $request->input('customer_name');
+            $cost_id = $request->input('cost_id');
+            $bank_id = $request->input('bank_id');
+            $financial_name = $request->input('financial_name');
+            $financial_branch = $request->input('financial_branch');
+            $financial_summary = $request->input('financial_summary');
+            $private_or_bank_id = $request->input('private_or_bank_id');
+            $account_date = $request->input('account_date');
+            $cost_account_id = $request->input('cost_account_id');
+            $outgo_fee = $request->input('outgo_fee');
+            $income_fee = $request->input('income_fee');
+            $balance_fee = $request->input('balance_fee');
+            $cost_memo = $request->input('cost_memo');
+            $question_contents = $request->input('question_contents');
+            $answer_contents = $request->input('answer_contents');
 
             // 現在の日付取得
             $date = now() .'.000';
 
-            // 取引先
-            if($customer_name == null){
-                $customer_name = '';
+            // 金融機関名
+            if($financial_name == null){
+                $financial_name = '';
             }
 
-            // 売上担当id
-            if($profit_person_id == null){
-                $profit_person_id = 0;
+            // 支店名
+            if($financial_branch == null){
+                $financial_branch = '';
             }
 
-            // 勘定科目id
-            if($profit_account_id == null){
-                $profit_account_id = 0;
+            // 摘要
+            if($financial_summary == null){
+                $financial_summary = '';
+            }
+
+            // 個人又は預金
+            if($private_or_bank_id == null){
+                $private_or_bank_id = 0;
             }
 
             // 勘定日
-            if($profit_account_date == null){
-                $profit_account_date = '';
+            if($account_date == null){
+                $account_date = '';
             }
 
-            // 利益額
-            if($profit_fee == null){
-                $profit_fee = 0;
+            // 勘定科目id
+            if($cost_account_id == null){
+                $cost_account_id = 0;
             }
 
-            // 不動産id
-            if($real_estate_id == null){
-                $real_estate_id = 0;
+            // 出金額
+            if($outgo_fee == null){
+                $outgo_fee = 0;
             }
 
-            // 号室id
-            if($room_id == null){
-                $room_id = 0;
+            // 入金額
+            if($income_fee == null){
+                $income_fee = 0;
+            }
+
+            // 残高
+            if($balance_fee == null){
+                $balance_fee = 0;
             }
 
             // 備考
-            if($profit_memo == null){
-                $profit_memo = '';
+            if($cost_memo == null){
+                $cost_memo = '';
+            }
+
+            // 質問
+            if($question_contents == null){
+                $question_contents = '';
+            }
+
+            // 回答
+            if($answer_contents == null){
+                $answer_contents = '';
+            }
+
+            // 銀行id
+            if($bank_id == null){
+                $bank_id = 0;
             }
 
             $str = "update "
-            ."cost_management.profits "
+            ."costs "
             ."set "
-            ."profit_person_id = $profit_person_id, "
-            ."customer_name = '$customer_name', "
-            ."room_id = $room_id, "
-            ."profit_account_id = $profit_account_id, "
-            ."profit_date = '$profit_account_date', "
-            ."profit_fee = $profit_fee, "
-            ."profit_memo = '$profit_memo', "
-            ."entry_user_id = $session_id, "
-            ."entry_date = '$date', "
+            ."private_or_bank_id = $private_or_bank_id, "
+            ."bank_id = $bank_id, "
+            ."account_date = '$account_date', "
+            ."income_fee = $income_fee, "
+            ."outgo_fee = $outgo_fee, "
+            ."balance_fee = $balance_fee, "
+            ."cost_account_id = $cost_account_id, "
+            ."cost_memo = '$cost_memo', "
+            ."financial_name = '$financial_name', "
+            ."financial_branch = '$financial_branch', "
+            ."financial_summary = '$financial_summary', "
+            ."approval_id = 0, "
+            ."approval_date = '', "
+            ."question_contents = '$question_contents', "
+            ."answer_contents = '$answer_contents', "
             ."update_user_id = $session_id, "
             ."update_date = '$date' "
             ."where "
-            ."profit_id = $profit_id; ";
+            ."cost_id = $cost_id; ";
             
             Log::debug('sql:'.$str);
 
@@ -1471,21 +1796,41 @@ class BackCostController extends Controller
      * @param Request $request
      * @return void
      */
-    public function backProfitDeleteEntry(Request $request){
+    public function backCostDeleteEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
 
+            DB::beginTransaction();
+
             // return初期値
             $response = [];
 
-            $profit_info = $this->deleteProfit($request);
+            /**
+             * 経費概要
+             */
+            $cost_info = $this->deleteCost($request);
 
             // js側での判定のステータス(true:OK/false:NG)
-            $response['status'] = $profit_info['status'];
+            $response['status'] = $cost_info['status'];
+
+            /**
+             * 補足資料
+             */
+            $img_info = $this->deleteEntryImg($request);
+
+            // js側での判定のステータス(true:OK/false:NG)
+            $ret['status'] = $img_info['status'];
+
+            // js側での判定のステータス(true:OK/false:NG)
+            $response["status"] = $ret['status'];
+
+            DB::commit();
 
         // 例外処理
         } catch (\Throwable $e) {
+
+            DB::rollback();
 
             Log::debug(__FUNCTION__ .':' .$e);
 
@@ -1517,7 +1862,7 @@ class BackCostController extends Controller
      * @param Request $request
      * @return void
      */
-    private function deleteProfit(Request $request){
+    private function deleteCost(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -1525,13 +1870,13 @@ class BackCostController extends Controller
             $ret = [];
 
             // 値取得
-            $profit_id = $request->input('profit_id');
+            $cost_id = $request->input('cost_id');
 
             $str = "delete "
             ."from "
-            ."profits "
+            ."costs "
             ."where "
-            ."profit_id = $profit_id; ";
+            ."cost_id = $cost_id; ";
             Log::debug('str:'.$str);
 
             // OK=1/NG=0
@@ -1551,5 +1896,203 @@ class BackCostController extends Controller
 
         Log::debug('log_end:' .__FUNCTION__);
         return $ret;
+    }
+
+    /**
+     * 削除(画像)
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function deleteEntryImg(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            $ret = [];
+
+            // 値取得
+            $cost_id = $request->input('cost_id');
+
+            /**
+             * 画像削除
+             * 1.契約者Idごとの画像データ取得
+             * 2.パス取得
+             * 3.フォルダ削除
+             * 4.データ(DB)削除
+             */
+            $str = "select * from cost_imgs "
+            ."where cost_id = '$cost_id' ";
+            Log::debug('select_sql:'.$str);
+            $img_list = DB::select($str);
+
+            // デバック
+            $arrString = print_r($img_list , true);
+            Log::debug('log_Imgs:'.$arrString);
+
+            /**
+             * 画像データが存在しない場合
+             * 削除対象が無のため、return=trueを返却
+             */
+            if(count($img_list) == 0){
+
+                Log::debug('画像データが存在しない場合の処理');
+
+                $ret['status'] = 1;
+
+                return $ret;
+            }
+
+            // 画像パスを"/"で分解->配列化
+            $arr = explode('/', $img_list[0]->cost_img_path);
+
+            // appを除外し文字結合(public/img/214)
+            $img_dir_path = $arr[0] ."/" .$arr[1];
+
+            // フォルダ削除
+            Storage::deleteDirectory('/public/' .$img_dir_path);
+
+            // 画像データ削除(DB)
+            $str = "delete from cost_imgs "
+            ."where cost_id = '$cost_id' ";
+            Log::debug('delete_sql:'.$str);
+
+            $ret['status'] = DB::delete($str);
+            Log::debug($ret['status']);
+            
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            throw $e;
+
+        // status:OK=1/NG=0
+        } finally {
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return $ret;
+    }
+
+    /**
+     * 削除(画像:詳細)
+     *
+     * @param Request $request
+     * @return $ret['status'] OK=true/NG=false
+     */
+    public function backDeleteEntryImgDetail(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            // トランザクション
+            DB::beginTransaction();
+
+            $response = [];
+
+            // 値取得
+            $cost_img_id = $request->input('img_id');
+
+            /**
+             * 画像削除
+             * 1.契約者Idごとの画像データ取得
+             * 2.パス取得
+             * 3.フォルダ削除
+             * 4.データ(DB)削除
+             */
+            $str = "select * from cost_imgs "
+            ."where cost_img_id = '$cost_img_id' ";
+            Log::debug('select_sql:'.$str);
+            $img_list = DB::select($str);
+
+            // デバック
+            $arrString = print_r($img_list , true);
+            Log::debug('imgs:'.$arrString);
+
+            // 画像データが存在しない場合、削除対象が無のため、return=trueを返却
+            if(count($img_list) == 0){
+
+                Log::debug('画像が存在しない場合の処理');
+
+                $ret['status'] = true;
+
+                // コミット(記載無しの場合、処理が実行されない)
+                DB::commit();
+
+                return response()->json($response);
+
+            }
+            
+            /**
+             * 画像ファイル削除
+             */
+            // 画像パスを"/"で分解->配列化
+            $img_name_path = $img_list[0]->cost_img_path;
+            Log::debug('img_name_path:'.$img_name_path);
+
+            // ファイル削除(例:Storage::delete('public/img/214/1637578613.jpg');
+            Storage::delete('/public/' .$img_name_path);
+
+            /**
+             * 画像フォルダ削除
+             */
+             // 画像パスを"/"で分解->配列化
+            $arr = explode('/', $img_list[0]->cost_img_path);
+            $img_dir_path = $arr[0] ."/" .$arr[1];
+
+            // フォルダの中身を確認
+            $img_arr = Storage::files('/public/' .$img_dir_path);
+
+            // デバック(ファイルの中身を確認)
+            Log::debug('img_arr:'.$arrString);
+            $arrString = print_r($img_arr , true);
+
+            // 参照の値が空白の場合、フォルダ削除
+            if(empty($img_arr)){
+
+                Log::debug('フォルダの中身がない場合の処理');
+
+                // フォルダ削除
+                Storage::deleteDirectory('/public/' .$img_dir_path);
+            }
+
+            // 画像データ削除(DB)
+            $str = "delete from cost_imgs "
+            ."where cost_img_id = '$cost_img_id' ";
+            Log::debug('delete_sql:'.$str);
+
+            $response['status'] = DB::delete($str);
+            Log::debug($response['status']);
+            
+            // コミット
+            DB::commit();
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            DB::rollback();
+
+            $response['status'] = 0;
+
+        // status:OK=1/NG=0
+        } finally {
+
+            if($response['status'] == 1){
+
+                Log::debug('status:trueの処理');
+                $response['status'] = true;
+
+            }else{
+
+                Log::debug('status:falseの処理');
+                $response['status'] = false;
+            }
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
     }
 } 

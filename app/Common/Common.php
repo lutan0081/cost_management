@@ -172,6 +172,23 @@ class Common
     }
 
     /**
+     * 画像種別
+     *
+     * @return void
+     */
+    public function getImgTypes(){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from cost_img_types "
+        ."order by sort_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
+    /**
      * 月度
      *
      * @return void

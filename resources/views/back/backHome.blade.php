@@ -61,7 +61,7 @@
 
                                             <div class="col-12 col-md-12 col-lg-12 pt-5">
                                                 <span class="dashboard_box_title">
-                                                    <i class="fas bi bi-piggy-bank me-2"></i>売上
+                                                    <i class="fas bi bi-piggy-bank me-2"></i>PROFIT
                                                 </span> 
                                             </div>
                                             
@@ -88,8 +88,8 @@
 
                                             <div class="col-12 col-md-12 col-lg-12 pt-5">
                                                 <span class="dashboard_box_title">
-                                                    <i class="bi bi-coin"></i>
-                                                    経費
+                                                <i class="bi bi-wallet2"></i>
+                                                    COST
                                                 </span> 
                                             </div>
                                             
@@ -115,11 +115,14 @@
                                         <div class="row">
 
                                             <div class="col-12 col-md-12 col-lg-12 pt-5">
-                                        
+                                                <span class="dashboard_box_title">
+                                                    <i class="bi bi-hand-thumbs-up"></i>
+                                                    AGREEMENT
+                                                </span> 
                                             </div>
                                             
                                             <div class="col-12 col-md-12 col-lg-12 pt-2">
-                                            
+                                                未承諾: <span class="count dashboard_box_num">12345678</span>
                                             </div>
                                             
                                         </div>
@@ -134,15 +137,16 @@
                                     <!-- 子要素cssで95%に設定し、mx-autoで中央に配置 -->
                                     <div class="col-12 col-md-12 col-lg-12 dashboard_box_inner_4 mx-auto">
                                         <div class="row">
-
                                             <div class="col-12 col-md-12 col-lg-12 pt-5">
-                                        
+                                                <span class="dashboard_box_title">
+                                                    <i class="bi bi-question-circle"></i>
+                                                    Q&A
+                                                </span> 
                                             </div>
                                             
                                             <div class="col-12 col-md-12 col-lg-12 pt-2">
-                                                
+                                                未回答: <span class="count dashboard_box_num">12345678</span>
                                             </div>
-
                                         </div>
                                     </div>
                                 </div>
