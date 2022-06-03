@@ -168,5 +168,11 @@ label.label_any:after {
     background-color: #0070BD;
 }
 
+/*==================================
+マーカー風
+===================================*/
+.pink_line{
+    background:rgba(0, 0, 0, 0) linear-gradient(transparent 60%, #ffb5da 0%) repeat scroll 0 0;
+}
 
 

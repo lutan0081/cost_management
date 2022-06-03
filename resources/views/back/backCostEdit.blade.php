@@ -172,8 +172,16 @@
                                                             <hr>
                                                         </div>
 
+                                                        <!-- 経費か否か -->
+                                                        <div class="col-12 col-md-12 col-lg-12 mt-2">
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input" type="checkbox" id="cost_flag_id">
+                                                                <label class="form-check-label pink_line" for="cost_flag_id">経費か否か</label>
+                                                            </div>
+                                                        </div>
+
                                                         <!-- 出金区分 -->
-                                                        <div class="col-6 col-md-8 col-lg-4 mt-2">
+                                                        <div class="col-6 col-md-8 col-lg-4 mt-3">
                                                             <label class="label_required mb-2"></label>出金区分
                                                             
                                                             <select class="form-select" name="private_or_bank_id" id="private_or_bank_id" required>
@@ -188,7 +196,7 @@
                                                         </div>
 
                                                         <!-- 勘定日 -->
-                                                        <div class="col-6 col-md-6 col-lg-4 mt-2">
+                                                        <div class="col-6 col-md-6 col-lg-4 mt-3">
                                                             <label class="label_required mb-2" for=""></label>勘定日
                                                             <input type="text" class="form-control" id="account_date" name="account_date" autocomplete="off" value="{{ $cost_list->account_date }}" required>
                                                             <div class="cost-tab invalid-feedback" id ="account_date_error">
@@ -197,7 +205,7 @@
                                                         </div>
 
                                                         <!-- 勘定科目 -->
-                                                        <div class="col-6 col-md-8 col-lg-4 mt-2">
+                                                        <div class="col-6 col-md-8 col-lg-4 mt-3">
                                                             <label class="label_required mb-2"></label>勘定科目
                                                             <select class="form-select" name="cost_account_id" id="cost_account_id" required>
                                                                 <option></option>
@@ -213,7 +221,7 @@
                                                         <div class="w-100"></div>
 
                                                         <!-- 出金額 -->
-                                                        <div class="col-6 col-md-8 col-lg-4 mt-2">
+                                                        <div class="col-6 col-md-8 col-lg-4 mt-3">
                                                             <label class="label_required mb-2" for="textBox"></label>出金額
                                                             <input type="text" class="form-control" name="outgo_fee" id="outgo_fee" value="{{ $cost_list->outgo_fee }}" placeholder="例：100000" style="text-align:right" required>
                                                             <!-- バリデーション -->
