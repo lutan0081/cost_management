@@ -125,6 +125,22 @@ $(function() {
         // 備考
         let cost_memo = $("#cost_memo").val();
 
+        // 経費か否かtrue/false
+        let cost_flag_id = $('#cost_flag_id').prop('checked');
+
+        console.log('cost_flag_id:' + cost_flag_id);
+
+        // 1=経費
+        if(cost_flag_id == true){
+            
+            cost_flag_id = 1
+        
+        // 0=経費無し
+        }else{
+
+            cost_flag_id = 0
+        }
+        
         /**
          * その他
          */
@@ -176,7 +192,8 @@ $(function() {
         sendData.append('income_fee', income_fee);
         sendData.append('balance_fee', balance_fee);
         sendData.append('cost_memo', cost_memo);
-
+        sendData.append('cost_flag_id', cost_flag_id);
+        
         /**
          * その他
          */

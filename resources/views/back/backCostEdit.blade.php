@@ -175,7 +175,7 @@
                                                         <!-- 経費か否か -->
                                                         <div class="col-12 col-md-12 col-lg-12 mt-2">
                                                             <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox" id="cost_flag_id">
+                                                                <input class="form-check-input" type="checkbox" id="cost_flag_id" name="cost_flag_id">
                                                                 <label class="form-check-label pink_line" for="cost_flag_id">経費か否か</label>
                                                             </div>
                                                         </div>
@@ -223,7 +223,7 @@
                                                         <!-- 出金額 -->
                                                         <div class="col-6 col-md-8 col-lg-4 mt-3">
                                                             <label class="label_required mb-2" for="textBox"></label>出金額
-                                                            <input type="text" class="form-control" name="outgo_fee" id="outgo_fee" value="{{ $cost_list->outgo_fee }}" placeholder="例：100000" style="text-align:right" required>
+                                                            <input type="number" class="form-control" name="outgo_fee" id="outgo_fee" value="{{ $cost_list->outgo_fee }}" placeholder="例：100000" style="text-align:right" required>
                                                             <!-- バリデーション -->
                                                             <div class="cost-tab invalid-feedback" id ="outgo_fee_error">
                                                                 出金額は必須です。
@@ -233,7 +233,7 @@
                                                         <!-- 入金額 -->
                                                         <div class="col-6 col-md-8 col-lg-4 mt-2">
                                                             <label class="label_required mb-2" for="textBox"></label>入金額
-                                                            <input type="text" class="form-control" name="income_fee" id="income_fee" value="{{ $cost_list->income_fee }}" placeholder="例：100000" style="text-align:right" required>
+                                                            <input type="number" class="form-control" name="income_fee" id="income_fee" value="{{ $cost_list->income_fee }}" placeholder="例：100000" style="text-align:right" required>
                                                             <!-- バリデーション -->
                                                             <div class="cost-tab invalid-feedback" id ="income_fee_error">
                                                                 入金額は必須です。
@@ -243,7 +243,7 @@
                                                         <!-- 残高 -->
                                                         <div class="col-6 col-md-8 col-lg-4 mt-2">
                                                             <label class="label_any mb-2" for="textBox"></label>残高
-                                                            <input type="text" class="form-control" name="balance_fee" id="balance_fee" value="{{ $cost_list->balance_fee }}" placeholder="例：100000" style="text-align:right" disabled>
+                                                            <input type="number" class="form-control" name="balance_fee" id="balance_fee" value="{{ $cost_list->balance_fee }}" placeholder="例：100000" style="text-align:right" disabled>
                                                             <!-- バリデーション -->
                                                             <div class="cost-tab invalid-feedback" id ="balance_fee_error">
                                                                 残高は必須です。

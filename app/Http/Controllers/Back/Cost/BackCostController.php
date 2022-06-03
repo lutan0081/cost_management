@@ -165,6 +165,8 @@ class BackCostController extends Controller
             ."costs.financial_name, "
             ."costs.financial_branch, "
             ."costs.financial_summary, "
+            ."costs.cost_flag_id, "
+            ."costs.deadline_flag, "
             ."costs.entry_user_id, "
             ."costs.entry_date, "
             ."costs.update_user_id, "
@@ -781,6 +783,8 @@ class BackCostController extends Controller
         $obj->question_contents= '';
         $obj->create_user_name= '';
         $obj->answer_contents= '';
+        $obj->cost_flag_id= '';
+        $obj->deadline_flag= '';
         $obj->entry_user_id= '';
         $obj->entry_date= '';
         $obj->update_user_id= '';
@@ -968,6 +972,8 @@ class BackCostController extends Controller
             ."costs.approval_date, "
             ."costs.question_contents, "
             ."costs.answer_contents, "
+            ."costs.cost_flag_id, "
+            ."costs.deadline_flag, "
             ."costs.entry_user_id, "
             ."costs.entry_date, "
             ."costs.update_user_id, "
@@ -1317,6 +1323,7 @@ class BackCostController extends Controller
             $cost_memo = $request->input('cost_memo');
             $question_contents = $request->input('question_contents');
             $answer_contents = $request->input('answer_contents');
+            $cost_flag_id = $request->input('cost_flag_id');
 
             // 現在の日付取得
             $date = now() .'.000';
@@ -1386,6 +1393,11 @@ class BackCostController extends Controller
                 $bank_id = 0;
             }
 
+            // 経費か否かid
+            if($cost_flag_id == null){
+                $cost_flag_id = 0;
+            }
+            
             $str = "insert "
             ."into "
             ."costs "
@@ -1405,6 +1417,8 @@ class BackCostController extends Controller
             ."approval_date, "
             ."question_contents, "
             ."answer_contents, "
+            ."cost_flag_id, "
+            ."deadline_flag, "
             ."entry_user_id, "
             ."entry_date, "
             ."update_user_id, "
@@ -1425,6 +1439,8 @@ class BackCostController extends Controller
             ."'', "
             ."'$question_contents', "
             ."'$answer_contents', "
+            ."$cost_flag_id, "
+            ."0, "
             ."$session_id, "
             ."'$date', "
             ."$session_id, "
@@ -1679,7 +1695,8 @@ class BackCostController extends Controller
             $cost_memo = $request->input('cost_memo');
             $question_contents = $request->input('question_contents');
             $answer_contents = $request->input('answer_contents');
-
+            $cost_flag_id = $request->input('cost_flag_id');
+            
             // 現在の日付取得
             $date = now() .'.000';
 
@@ -1748,6 +1765,11 @@ class BackCostController extends Controller
                 $bank_id = 0;
             }
 
+            // 経費か否かid
+            if($cost_flag_id == null){
+                $cost_flag_id = 0;
+            }
+
             $str = "update "
             ."costs "
             ."set "
@@ -1766,6 +1788,8 @@ class BackCostController extends Controller
             ."approval_date = '', "
             ."question_contents = '$question_contents', "
             ."answer_contents = '$answer_contents', "
+            ."cost_flag_id = '$cost_flag_id', "
+            ."deadline_flag = 0, "
             ."update_user_id = $session_id, "
             ."update_date = '$date' "
             ."where "
