@@ -339,14 +339,14 @@ class CsvController extends Controller
              */
             switch($modal_bank_id){
 
+                case 1:
+                    Log::debug('池田泉州銀行の処理');
+                    $response = $this->importIkedasenshuCsv($request);
+                    break;
+
                 case 2:
                     Log::debug('香川銀行の処理');
                     $response = $this->importKagawaCsv($request);
-                    break;
-
-                case 3:
-                    Log::debug('池田泉州銀行の処理');
-                    $response = $this->importIkedasenshuCsv($request);
                     break;
 
                 default:
