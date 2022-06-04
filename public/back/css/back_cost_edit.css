@@ -175,4 +175,15 @@ label.label_any:after {
     background:rgba(0, 0, 0, 0) linear-gradient(transparent 60%, #ffb5da 0%) repeat scroll 0 0;
 }
 
+.markerBlue{
+    background:linear-gradient(transparent 50%, #99ccff 0%);
+}
+
+.markerYellow{
+    background:linear-gradient(transparent 50%, #ffffcc 0%);
+}
+
+.markerGreen{
+    background:linear-gradient(transparent 50%, #ccffcc 0%);
+}
 

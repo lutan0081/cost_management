@@ -69,8 +69,8 @@
                         <!-- 承諾する -->
                         <div class="col-12 col-md-12 col-lg-12">
                             <div class="form-check form-switch float-end">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                <label class="form-check-label" for="flexCheckDefault">
+                                <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id" @if($cost_list->approval_id == 1)checked @endif>
+                                <label class="form-check-label markerBlue" for="flexCheckDefault">
                                     承諾する
                                 </label>
                             </div>
@@ -175,7 +175,7 @@
                                                         <!-- 経費か否か -->
                                                         <div class="col-12 col-md-12 col-lg-12 mt-2">
                                                             <div class="form-check form-switch">
-                                                                <input class="form-check-input" type="checkbox" id="cost_flag_id" name="cost_flag_id">
+                                                                <input class="form-check-input" type="checkbox" id="cost_flag_id" name="cost_flag_id" @if($cost_list->cost_flag_id == 1)checked @endif>
                                                                 <label class="form-check-label pink_line" for="cost_flag_id">経費か否か</label>
                                                             </div>
                                                         </div>

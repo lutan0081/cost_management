@@ -119,7 +119,7 @@
                                                 </div>
 
                                                 <!-- 出金区分 -->
-                                                <div class="col-12 col-md-8 col-lg-3 mt-1">
+                                                <div class="col-12 col-md-8 col-lg-2 mt-2">
                                                     <label class="" for="textBox"></label>出金区分
                                                     
                                                     <select class="form-select" name="private_or_bank_id" id="private_or_bank_id">
@@ -132,8 +132,34 @@
                                                 </div>
                                                 <!-- 出金区分 -->
 
+                                                <!-- 経費か否か -->
+                                                <div class="col-12 col-md-8 col-lg-5 mt-2">
+                                                    <input class="form-check-input" type="checkbox" name="cost_flag_id" id="cost_flag_id">
+                                                    <label class="form-check-label pink_line me-4" for="cost_flag_id">
+                                                        経費のみ表示
+                                                    </label>
+
+                                                    <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id">
+                                                    <label class="form-check-label markerYellow me-4" for="approval_id">
+                                                        承諾前のみ表示
+                                                    </label>
+
+                                                    <input class="form-check-input" type="checkbox" name="question_contents" id="question_contents">
+                                                    <label class="form-check-label markerGreen me-4" for="question_contents">
+                                                        Q&Aのみ表示
+                                                    </label>
+                                                </div>
+                                                <!-- 経費か否か -->
+
+                                                <div class="w-100"></div>
+
+                                                <!-- 色分けの説明 -->
+                                                <div class="col-6 col-md-6 col-lg-6 color_info_box">
+                                                    <label class="markerBlue" for=""><i class="bi bi-question-circle me-1"></i>青：Q&A</label>
+                                                </div>
+
                                                 <!-- 検索ボタン -->
-                                                <div class="col-5 col-md-4 col-lg-5 mt-2">
+                                                <div class="col-5 col-md-4 col-lg-6 mt-2">
                                                     <input type="submit" class="btn btn-default btn-outline-primary float-end" value="検索">
                                                 </div>
                                                 <!-- 検索ボタン -->
@@ -163,15 +189,17 @@
                                 <!-- カードボディ -->
                                 <div class="card-body">
                                     <!-- スクロール -->
-                                    <div class="overflow-auto" style="height:30rem;">
+                                    <div class="overflow-auto" style="height:27rem;">
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-condensed table-striped">
+                                            <table class="table table-hover table-condensed">
 
                                                 <!-- テーブルヘッド -->
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
                                                         <th>選択</th>
+                                                        <th scope="col" id="approval_id">承諾</th>
+                                                        <th scope="col" id="cost_flag_id">経費区分</th>
                                                         <th scope="col" id="bank_name">照会口座</th>
                                                         <th scope="col" id="account_date">勘定日</th>
                                                         <th scope="col" id="cost_type">出金区分</th>
@@ -189,9 +217,11 @@
                                                 <!-- テーブルボディ -->
                                                 <tbody>
                                                     @foreach($res as $cost_list)
-                                                        <tr>
+                                                        <tr @if($cost_list->question_contents != '') class="table table-primary" @endif>
                                                             <td id="id_{{ $cost_list->cost_id }}" class="click_class" style="display:none"></td>
                                                             <td id="select_{{ $cost_list->cost_id }}" class="click_class"><input id="{{ $cost_list->cost_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
+                                                            <td id="approvalId_{{ $cost_list->cost_id }}" class="click_class">@if($cost_list->approval_id == 1) <i class="bi bi-check-lg"></i> @endif</td>
+                                                            <td id="costFlagId_{{ $cost_list->cost_id }}" class="click_class">@if($cost_list->cost_flag_id == 1) 経費 @endif</td>
                                                             <td id="bankName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->bank_name. '_' .$cost_list->bank_number}}</td>
                                                             <td id="accountDate_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->account_date }}</td>
                                                             <td id="privateOrBankName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->private_or_bank_name }}</td>

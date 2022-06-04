@@ -575,4 +575,98 @@ $(function() {
         });
     });
 
+    /**
+     * 承諾ボタンの処理
+     */
+    $("#approval_id").click(function(e){
+
+        console.log("承認ボタンの処理");
+        e.preventDefault();
+
+        // alertの設定
+        var options = {
+            title: "承諾しますか？",
+            icon: 'warning',
+            buttons: {
+                Cancel: "Cancel", // キャンセルボタン
+                OK: true
+            }
+        };
+
+        // 値取得
+        let cost_id = $("#cost_id").val();
+        console.log(cost_id);
+        
+        // then() OKを押した時の処理
+        swal(options)
+            .then(function(val) {
+
+            if(val == null){
+
+                console.log('Cancel');
+
+                return false;
+            }
+    
+            if (val == "OK") {
+
+                console.log('OK');
+
+                // 送信用データ
+                let sendData = {
+
+                    "cost_id": cost_id,
+                };
+
+                console.log(sendData);
+
+                $.ajaxSetup({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+                });
+
+                $.ajax({
+
+                    type: 'post',
+                    url: 'backCostDeleteEntry',
+                    dataType: 'json',
+                    data: sendData,
+                
+                // 接続処理
+                }).done(function(data) {
+
+                    console.log('status:' + data.status)
+
+                    var options = {
+                        title: "削除が完了しました。",
+                        icon: "success",
+                        buttons: {
+                            ok: true
+                        }
+                    };
+
+                    // then() OKを押した時の処理
+                    swal(options)
+                        .then(function(val) {
+                        if (val) {
+
+                            location.href="backCostInit"
+                            
+                        }
+                    });
+
+                // ajax接続失敗の時の処理
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
+
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                });
+            };
+            // sweetalert
+        });
+    });
 });

@@ -43,6 +43,7 @@ class BackCostController extends Controller
 
             // 経費一覧取得
             $cost_list = $this->getCostList($request);
+            // dd($cost_list);
 
             // 出金合計
             $outgo_fee_sum_list = $this->getOutgoFeeSumList($request);
@@ -84,6 +85,14 @@ class BackCostController extends Controller
             // 終期
             $end_date = $request->input('end_date');
 
+            // 承諾前のみ表示
+            if(isset($_POST['approval_id'])){
+                $approval_id = 0;
+            }else{
+                $approval_id = 1;
+            }
+
+
             // ★リクエストパラメータをページネーション用の連想配列に格納★
             $paginate_params = [
 
@@ -93,6 +102,7 @@ class BackCostController extends Controller
                 'private_or_bank_id' => $private_or_bank_id,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
+                // 'approval_id' => $approval_id,
 
             ];
             
@@ -147,7 +157,34 @@ class BackCostController extends Controller
             // 終期
             $end_date = $request->input('end_date');
             Log::debug('$end_date:' .$end_date);
+
+            // 経費か否か
+            if(isset($_POST['cost_flag_id'])){
+                Log::debug('cost_flag_id = true');
+                $cost_flag_id = 1;
+            }else{
+                Log::debug('cost_flag_id = false');
+                $cost_flag_id = 0;
+            }
             
+            // 承諾前のみ表示
+            if(isset($_POST['approval_id'])){
+                Log::debug('approval_id = true');
+                $approval_id = 0;
+            }else{
+                Log::debug('approval_id = false');
+                $approval_id = 1;
+            }
+
+            //  Q&Aのみ表示
+            if(isset($_POST['question_contents'])){
+                Log::debug('question_contents = true');
+                $question_contents = 1;
+            }else{
+                Log::debug('question_contents = false');
+                $question_contents = 0;
+            }
+
             $str = "select "
             ."cost_id, "
             ."costs.private_or_bank_id, "
@@ -165,6 +202,10 @@ class BackCostController extends Controller
             ."costs.financial_name, "
             ."costs.financial_branch, "
             ."costs.financial_summary, "
+            ."costs.approval_id, "
+            ."costs.approval_date, "
+            ."costs.question_contents, "
+            ."costs.answer_contents, "
             ."costs.cost_flag_id, "
             ."costs.deadline_flag, "
             ."costs.entry_user_id, "
@@ -185,37 +226,28 @@ class BackCostController extends Controller
 
             // フリーワード
             if($free_word !== null){
-
                 $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
                 $where = $where ."or ifnull(summary,'') like '%$free_word%'";
-
             };
 
             // 勘定項目id
             if($cost_account_id !== null){
-
                 $where = $where ."and costs.cost_account_id = '$cost_account_id' ";
-            
             };
 
             // 照会口座
             if($bank_id !== null){
-
                 $where = $where ."and costs.bank_id = '$bank_id' ";
-            
             };
 
             // 個人又は預金
             if($private_or_bank_id !== null){
-
                 $where = $where ."and costs.private_or_bank_id = '$private_or_bank_id' ";
-            
             };
     
             // 勘定日
             // 始期・終期がnullでない場合
             if(($start_date !== null) && ($end_date !== null)) {
-
                 Log::debug('始期・終期がnullでない場合の処理');
 
                 $where = $where ."and " 
@@ -226,27 +258,43 @@ class BackCostController extends Controller
 
             // 始期がnullでない場合の処理
             if(($start_date !== null) && ($end_date == null)) {
-
                 Log::debug('始期がnullでない場合の処理');
 
                 $where = $where ."and " 
                 ."(account_date >= '$start_date') "
                 ."and" 
                 ."(account_date <= '9999/12/31')";
-                
             };
 
             // 終期がnullでない場合の処理
             if(($start_date == null) && ($end_date !== null)) {
-
                 Log::debug('終期がnullでない場合の処理');
 
                 $where = $where ."and " 
                 ."(account_date >= '1900/01/01') "
                 ."and" 
                 ."(account_date <= '$end_date')";
-
             };
+
+            // 経費か否か
+            if($cost_flag_id !== 0){
+                Log::debug('経費にチェックされてる場合の処理');
+                $where = $where ."and costs.cost_flag_id = $cost_flag_id ";
+            }
+
+            // 承諾前のみ表示
+            if($approval_id == 0){
+                Log::debug('承認前にチェックされてる場合の処理');
+                $where = $where ."and costs.approval_id = $approval_id ";
+            }
+
+            // Q&Aの表示
+            if($question_contents == 1){
+                Log::debug('Q&Aにチェックされてる場合の処理');
+                $where = $where ."and costs.question_contents != '' ";
+            }
+            
+
 
             $str = $str .$where;
             Log::debug('$str:' .$str);
@@ -255,7 +303,7 @@ class BackCostController extends Controller
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->orderByRaw("cost_id desc")->paginate(20)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("cost_id desc")->paginate(30)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];
