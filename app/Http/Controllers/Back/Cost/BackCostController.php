@@ -50,7 +50,6 @@ class BackCostController extends Controller
 
             // 入金合計
             $income_fee_sum_list = $this->getIncomeFeeSumList($request);
-            // dd($income_fee_sum_list);
             
             // 共通クラス
             $common = new Common();
@@ -85,13 +84,14 @@ class BackCostController extends Controller
             // 終期
             $end_date = $request->input('end_date');
 
-            // 承諾前のみ表示
-            if(isset($_POST['approval_id'])){
-                $approval_id = 0;
-            }else{
-                $approval_id = 1;
-            }
+            // 経費
+            $cost_flag_id = $request->input('cost_flag_id');
 
+            // 承認前
+            $approval_id = $request->input('approval_id');
+
+            // Q&A
+            $question_contents = $request->input('question_contents');
 
             // ★リクエストパラメータをページネーション用の連想配列に格納★
             $paginate_params = [
@@ -102,7 +102,9 @@ class BackCostController extends Controller
                 'private_or_bank_id' => $private_or_bank_id,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
-                // 'approval_id' => $approval_id,
+                'cost_flag_id' => $cost_flag_id,
+                'approval_id' => $approval_id,
+                'question_contents' => $question_contents,
 
             ];
             
@@ -116,7 +118,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list', 'income_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date'));
+        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list', 'income_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date' ,'cost_flag_id', 'approval_id', 'question_contents'));
     }
 
     /**
@@ -158,32 +160,16 @@ class BackCostController extends Controller
             $end_date = $request->input('end_date');
             Log::debug('$end_date:' .$end_date);
 
-            // 経費か否か
-            if(isset($_POST['cost_flag_id'])){
-                Log::debug('cost_flag_id = true');
-                $cost_flag_id = 1;
-            }else{
-                Log::debug('cost_flag_id = false');
-                $cost_flag_id = 0;
-            }
-            
-            // 承諾前のみ表示
-            if(isset($_POST['approval_id'])){
-                Log::debug('approval_id = true');
-                $approval_id = 0;
-            }else{
-                Log::debug('approval_id = false');
-                $approval_id = 1;
-            }
+            // 経費id
+            $cost_flag_id = $request->input('cost_flag_id');
+            Log::debug('$cost_flag_id:' .$cost_flag_id);
 
-            //  Q&Aのみ表示
-            if(isset($_POST['question_contents'])){
-                Log::debug('question_contents = true');
-                $question_contents = 1;
-            }else{
-                Log::debug('question_contents = false');
-                $question_contents = 0;
-            }
+            // 承認前is
+            $approval_id = $request->input('approval_id');
+            Log::debug('$approval_id:' .$approval_id);
+
+            $question_contents = $request->input('question_contents');
+            Log::debug('$question_contents:' .$question_contents);
 
             $str = "select "
             ."cost_id, "
@@ -277,25 +263,23 @@ class BackCostController extends Controller
             };
 
             // 経費か否か
-            if($cost_flag_id !== 0){
+            if($cost_flag_id == 'on'){
                 Log::debug('経費にチェックされてる場合の処理');
-                $where = $where ."and costs.cost_flag_id = $cost_flag_id ";
+                $where = $where ."and costs.cost_flag_id = 1 ";
             }
 
             // 承諾前のみ表示
-            if($approval_id == 0){
+            if($approval_id == 'on'){
                 Log::debug('承認前にチェックされてる場合の処理');
-                $where = $where ."and costs.approval_id = $approval_id ";
+                $where = $where ."and costs.approval_id = 0 ";
             }
 
             // Q&Aの表示
-            if($question_contents == 1){
+            if($question_contents == 'on'){
                 Log::debug('Q&Aにチェックされてる場合の処理');
                 $where = $where ."and costs.question_contents != '' ";
             }
             
-
-
             $str = $str .$where;
             Log::debug('$str:' .$str);
 
@@ -1836,7 +1820,7 @@ class BackCostController extends Controller
             ."approval_date = '', "
             ."question_contents = '$question_contents', "
             ."answer_contents = '$answer_contents', "
-            ."cost_flag_id = '$cost_flag_id', "
+            ."cost_flag_id = $cost_flag_id, "
             ."deadline_flag = 0, "
             ."update_user_id = $session_id, "
             ."update_date = '$date' "
@@ -1929,7 +1913,7 @@ class BackCostController extends Controller
     }
 
     /**
-     * 削除
+     * 削除(sql)
      *
      * @param Request $request
      * @return void
@@ -2166,5 +2150,108 @@ class BackCostController extends Controller
 
         Log::debug('log_end:' .__FUNCTION__);
         return response()->json($response);
+    }
+
+    /**
+     * 承認の処理
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function backCostApprovalEntry(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            // return初期値
+            $response = [];
+
+            /**
+             * 経費概要
+             */
+            $approval_info = $this->updateApproval($request);
+
+            // js側での判定のステータス(true:OK/false:NG)
+            $response['status'] = $approval_info['status'];
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            $response['status'] = 0;
+
+        // status:OK=1/NG=0
+        } finally {
+
+            if($response['status'] == 1){
+
+                Log::debug('status:trueの処理');
+                $response['status'] = true;
+
+            }else{
+
+                Log::debug('status:falseの処理');
+                $response['status'] = false;
+            }
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * 承認の処理(sql)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function updateApproval(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            // return初期値
+            $ret = [];
+
+            /**
+             * 値取得
+             */
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('session_id:'.$session_id);
+
+            // 経費id
+            $cost_id = $request->input('cost_id');
+
+            // 日付
+            $date = now() .'.000';
+
+            $str = "update costs "
+            ."set "
+            ."approval_id=$session_id "
+            .",approval_date='$date' "
+            .",update_user_id=$session_id "
+            .",update_date='$date' "
+            ."where "
+            ."cost_id=$cost_id ";
+            Log::debug('str:'.$str);
+
+            // OK=1/NG=0
+            $ret['status'] = DB::update($str);
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            throw $e;
+
+        // status:OK=1/NG=0
+        } finally {
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return $ret;
     }
 } 

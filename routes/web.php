@@ -135,6 +135,10 @@ Route::post('backCostDeleteEntry', 'Back\Cost\BackCostController@backCostDeleteE
 
 // 削除：画像:詳細
 Route::post('backDeleteEntryImgDetail', 'Back\Cost\BackCostController@backDeleteEntryImgDetail')->middleware("cost_auth");
+
+// 承認の処理
+Route::post('backCostApprovalEntry', 'Back\Cost\BackCostController@backCostApprovalEntry')->middleware("cost_auth");
+
 /**
  * CSV
  */

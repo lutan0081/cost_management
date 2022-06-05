@@ -581,11 +581,13 @@ $(function() {
     $("#approval_id").click(function(e){
 
         console.log("承認ボタンの処理");
+
         e.preventDefault();
 
         // alertの設定
         var options = {
             title: "承諾しますか？",
+            text: "一度承諾をすると編集ができません。\n編集が必要な場合、システム管理者にお問合せください。",
             icon: 'warning',
             buttons: {
                 Cancel: "Cancel", // キャンセルボタン
@@ -600,7 +602,8 @@ $(function() {
         // then() OKを押した時の処理
         swal(options)
             .then(function(val) {
-
+            
+            // Cancelの処理
             if(val == null){
 
                 console.log('Cancel');
@@ -608,13 +611,93 @@ $(function() {
                 return false;
             }
     
+            // OKの処理
             if (val == "OK") {
 
                 console.log('OK');
 
+                // ローディング画面
+                $("#overlay").fadeIn(300);
+
+                $('#nav-cost-tab').removeClass('bg_tab_error');
+                $('#nav-file-tab').removeClass('bg_tab_error');
+                $('#nav-other-tab').removeClass('bg_tab_error');
+        
+                // バリデーション
+                // formの値数を取得
+                let forms = $('.needs-validation');
+                console.log('forms.length:' + forms[0].length);
+        
+                // validationフラグ初期値
+                let v_check = true;
+        
+                // formの項目数ループ処理
+                for (let i = 0; i < forms[0].length; i++) {
+        
+                    // タグ名、Id名取得
+                    let form = forms[0][i];
+                    console.log('from:'+ form);
+        
+                    // タグ名を取得 input or button
+                    let tag = $(form).prop("tagName");
+                    console.log('tag:'+ tag);
+        
+                    // 各項目のid取得
+                    let f_id = $(form).prop("id");
+                    console.log('id:'+ f_id);
+                    
+                    // form内のbuttonは通過
+                    if (tag == 'BUTTON') {
+                        continue;
+                    }
+        
+                    // 必須ではない場合、以降を処理せず次のレコードに行く
+                    let required = $(form).attr("required");
+        
+                    console.log('required:' + required);
+        
+                    if (required !== 'required') {
+        
+                        continue;
+                    }
+        
+                    // 必須で値が空白の場合の処理
+                    let val = $(form).val();
+        
+                    console.log('value:'+ val);
+        
+                    if (val === '') {
+        
+                        // エラーメッセージのidを作成
+                        let f_id_error = f_id + '_error';
+        
+                        let error_message_id = $('#' + f_id_error).attr('class');
+                        
+                        // タブを赤色に変更する(引数:エラーメッセージのid)
+                        tabError(error_message_id);
+        
+                        // blade側のformタグにwas-validatedを追加
+                        $(forms).addClass("was-validated");
+                        v_check = false;
+        
+                    }
+                    
+                }
+        
+                // チェック=falseの場合プログラム終了
+                console.log(v_check);
+                if (v_check === false) {
+        
+                    // ローディング画面停止
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
+        
+                    return false;
+                }
+
                 // 送信用データ
                 let sendData = {
-
                     "cost_id": cost_id,
                 };
 
@@ -625,9 +708,8 @@ $(function() {
                 });
 
                 $.ajax({
-
                     type: 'post',
-                    url: 'backCostDeleteEntry',
+                    url: 'backCostApprovalEntry',
                     dataType: 'json',
                     data: sendData,
                 
@@ -635,24 +717,13 @@ $(function() {
                 }).done(function(data) {
 
                     console.log('status:' + data.status)
+                    
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
 
-                    var options = {
-                        title: "削除が完了しました。",
-                        icon: "success",
-                        buttons: {
-                            ok: true
-                        }
-                    };
-
-                    // then() OKを押した時の処理
-                    swal(options)
-                        .then(function(val) {
-                        if (val) {
-
-                            location.href="backCostInit"
-                            
-                        }
-                    });
+                    // location.reload();
+                    location.href = 'backCostInit';
 
                 // ajax接続失敗の時の処理
                 }).fail(function(jqXHR, textStatus, errorThrown) {

@@ -134,17 +134,17 @@
 
                                                 <!-- 経費か否か -->
                                                 <div class="col-12 col-md-8 col-lg-5 mt-2">
-                                                    <input class="form-check-input" type="checkbox" name="cost_flag_id" id="cost_flag_id">
+                                                    <input class="form-check-input" type="checkbox" name="cost_flag_id" id="cost_flag_id" @if($cost_flag_id == 'on') checked @endif>
                                                     <label class="form-check-label pink_line me-4" for="cost_flag_id">
                                                         経費のみ表示
                                                     </label>
 
-                                                    <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id">
+                                                    <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id" @if($approval_id == 'on') checked @endif>
                                                     <label class="form-check-label markerYellow me-4" for="approval_id">
                                                         承諾前のみ表示
                                                     </label>
 
-                                                    <input class="form-check-input" type="checkbox" name="question_contents" id="question_contents">
+                                                    <input class="form-check-input" type="checkbox" name="question_contents" id="question_contents" @if($question_contents == 'on') checked @endif>
                                                     <label class="form-check-label markerGreen me-4" for="question_contents">
                                                         Q&Aのみ表示
                                                     </label>
