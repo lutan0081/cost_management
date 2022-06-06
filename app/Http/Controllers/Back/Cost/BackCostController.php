@@ -213,7 +213,7 @@ class BackCostController extends Controller
             // フリーワード
             if($free_word !== null){
                 $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
-                $where = $where ."or ifnull(summary,'') like '%$free_word%'";
+                $where = $where ."or ifnull(financial_summary,'') like '%$free_word%'";
             };
 
             // 勘定項目id
@@ -352,7 +352,7 @@ class BackCostController extends Controller
             if($free_word !== null){
 
                 $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
-                $where = $where ."or ifnull(summary,'') like '%$free_word%'";
+                $where = $where ."or ifnull(financial_summary,'') like '%$free_word%'";
 
             };
 
@@ -496,7 +496,7 @@ class BackCostController extends Controller
             if($free_word !== null){
 
                 $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
-                $where = $where ."or ifnull(summary,'') like '%$free_word%'";
+                $where = $where ."or ifnull(financial_summary,'') like '%$free_word%'";
 
             };
 
@@ -640,7 +640,7 @@ class BackCostController extends Controller
             if($free_word !== null){
 
                 $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
-                $where = $where ."or ifnull(summary,'') like '%$free_word%'";
+                $where = $where ."or ifnull(financial_summary,'') like '%$free_word%'";
 
             };
 

@@ -105,7 +105,7 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li>
-                                <a href="backUserInit">アカウント一覧</a>
+                                <a href="backUserInit">ユーザ一覧</a>
                             </li>
                         </ul>
                     </div>

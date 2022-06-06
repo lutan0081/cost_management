@@ -140,10 +140,18 @@ Route::post('backDeleteEntryImgDetail', 'Back\Cost\BackCostController@backDelete
 Route::post('backCostApprovalEntry', 'Back\Cost\BackCostController@backCostApprovalEntry')->middleware("cost_auth");
 
 /**
+ * ユーザ一覧
+ */
+Route::post('backUserInit', 'Back\Cost\BackCostController@backUserInit')->middleware("cost_auth");
+
+/**
  * CSV
  */
 // 売上出力
 Route::get('csvDownload', 'Common\Csv\CsvController@csvDownload')->middleware("cost_auth");
+
+// 経費出力
+Route::get('csvCostDownload', 'Common\Csv\CsvController@csvCostDownload')->middleware("cost_auth");
 
 // 経費Import
 Route::post('csvImport', 'Common\Csv\CsvController@csvImport')->middleware("cost_auth");

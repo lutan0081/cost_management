@@ -151,7 +151,7 @@ class CsvController extends Controller
     }
 
     /**
-     * 一覧(sql)
+     * 売上一覧(sql)
      *
      * @return $ret(部屋一覧)
      */
@@ -280,6 +280,341 @@ class CsvController extends Controller
 
             // order by句
             $order_by = "order by profit_id desc";
+
+            // $str = $str .$where .$order_by;
+            $str = $str. $where. $order_by;
+            Log::debug('$str:' .$str);
+
+            // resの中に値が代入されている
+            $ret = [];
+            $ret = DB::select($str);
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
+
+    /**
+     *  csvエクスポート（経費）
+     *
+     * @param Request $request(フォームデータ)
+     * @return
+     */
+    public function csvCostDownload(Request $request){
+
+        // 始期
+        $start_date = $request->input('start_date');
+
+        // 終期
+        $end_date = $request->input('end_date');
+
+        // 一覧取得(オブジェクトで受けている)
+        $cost_list = $this->getCostList($request);
+
+        // 配列デバック
+        $arrString = print_r($cost_list , true);
+        Log::debug('messages:'.$arrString);
+        
+        // ファイル作成
+        $stream = fopen('php://output', 'w');
+
+        // Excelで開いた時、文字化けするためBOMを付ける
+        fwrite($stream, pack('C*',0xEF,0xBB,0xBF)); // BOM をつける
+
+        // ヘッダー
+        $arr = [];
+        $arr[] = 'ID';
+        $arr[] = '経費区分';
+        $arr[] = '照会口座';
+        $arr[] = '勘定日';
+        $arr[] = '出金区分';
+        $arr[] = '勘定科目';
+        $arr[] = '出金額';
+        $arr[] = '入金額';
+        $arr[] = '残高';
+        $arr[] = '金融機関名';
+        $arr[] = '支店面';
+        $arr[] = '摘要';
+        $arr[] = '備考';
+
+        // 書き込み（第2引数が連想配列にする）
+        fputcsv($stream, $arr);
+
+        // 利益合計値の初期値
+        $outgo_fee_sum = 0;
+
+        // 各値ループ->連想配列にする->CSVに書き込み
+        foreach ($cost_list as $cost) {
+
+            // cost_listがオフジェクトの為、連想配列にする
+            // id
+            $cost_id = $cost->cost_id;
+
+            // 経費か否か
+            $cost_flag_id = $cost->cost_flag_id;
+
+            if($cost_flag_id == 1){
+                $cost_flag_id = '経費';
+            }else{
+                $cost_flag_id = '';
+            }
+
+            // 照会口座名
+            $bank_name = $cost->bank_name;
+
+            // 勘定日
+            $account_date = $cost->account_date;
+
+            // 出金区分
+            $private_or_bank_name = $cost->private_or_bank_name;
+
+            // 勘定科目
+            $cost_account_name = $cost->cost_account_name;
+
+            // 出金額
+            $outgo_fee = $cost->outgo_fee;
+
+            // 入金額
+            $income_fee = $cost->income_fee;
+
+            // 残高
+            $balance_fee = $cost->balance_fee;
+
+            // 金融機関名
+            $financial_name = $cost->financial_name;
+
+            // 支店名
+            $financial_branch = $cost->financial_branch;
+
+            // 摘要
+            $financial_summary = $cost->financial_summary;
+
+            // 備考
+            $cost_memo = $cost->cost_memo;
+
+            // 配列内に格納
+            $arr = [];
+            $arr[] = $cost_id;
+            $arr[] = $cost_flag_id;
+            $arr[] = $bank_name;
+            $arr[] = $account_date;
+            $arr[] = $private_or_bank_name;
+            $arr[] = $cost_account_name;
+            $arr[] = $outgo_fee;
+            $arr[] = $income_fee;
+            $arr[] = $balance_fee;
+            $arr[] = $financial_name;
+            $arr[] = $financial_branch;
+            $arr[] = $financial_summary;
+            $arr[] = $cost_memo;
+
+            // CSVファイル書き込み
+            fputcsv($stream, $arr);
+
+            // 利益額を加算していく
+            $outgo_fee_sum = $outgo_fee_sum + $outgo_fee; 
+        }
+
+        // 最終行に合計値を書き込み
+        $arr_total = [];
+        $arr_total[] = '';
+        $arr_total[] = '';
+        $arr_total[] = '';
+        $arr_total[] = '';
+        $arr_total[] = '';
+        $arr_total[] = '合計値';
+        $arr_total[] = $outgo_fee_sum;
+
+        fputcsv($stream, $arr_total);
+
+        // phpの改行コードを\r\nに変換
+        $csv = str_replace(PHP_EOL, "\r\n", stream_get_contents($stream));
+        
+        // 文字形式指定
+        $csv = mb_convert_encoding($csv, 'SJIS', 'UTF-8');
+
+        $file_name = 'cost_'. $start_date. '_'. $end_date. '.csv';
+
+        $headers = array(
+
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename='. "$file_name",
+
+        );
+
+        return Response::make($csv, 200, $headers);
+        
+    }
+
+    /**
+     * 経費一覧(sql)
+     *
+     * @return $ret(部屋一覧)
+     */
+    private function getCostList(Request $request){
+
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            // フリーワード
+            $free_word = $request->input('free_word');
+            Log::debug('$free_word:' .$free_word);
+
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('$session_id:' .$session_id);
+            
+            // 照会口座id
+            $bank_id = $request->input('bank_id');
+            Log::debug('$bank_id:' .$bank_id);
+
+            // 勘定科目
+            $cost_account_id = $request->input('cost_account_id');
+            Log::debug('$cost_account_id:' .$cost_account_id);
+
+            // 取引区分
+            $private_or_bank_id = $request->input('private_or_bank_id');
+            Log::debug('$private_or_bank_id:' .$private_or_bank_id);
+
+            // 始期
+            $start_date = $request->input('start_date');
+            Log::debug('$start_date:' .$start_date);
+
+            // 終期
+            $end_date = $request->input('end_date');
+            Log::debug('$end_date:' .$end_date);
+
+            // 経費id
+            $cost_flag_id = $request->input('cost_flag_id');
+            Log::debug('$cost_flag_id:' .$cost_flag_id);
+
+            // 承認前is
+            $approval_id = $request->input('approval_id');
+            Log::debug('$approval_id:' .$approval_id);
+
+            $question_contents = $request->input('question_contents');
+            Log::debug('$question_contents:' .$question_contents);
+
+            $str = "select "
+            ."cost_id, "
+            ."costs.private_or_bank_id, "
+            ."private_or_banks.private_or_bank_name, "
+            ."costs.bank_id, "
+            ."banks.bank_name, "
+            ."banks.bank_number, "
+            ."costs.account_date, "
+            ."costs.income_fee, "
+            ."costs.outgo_fee, "
+            ."costs.balance_fee, "
+            ."costs.cost_account_id, "
+            ."cost_accounts.cost_account_name, "
+            ."costs.cost_memo, "
+            ."costs.financial_name, "
+            ."costs.financial_branch, "
+            ."costs.financial_summary, "
+            ."costs.approval_id, "
+            ."costs.approval_date, "
+            ."costs.question_contents, "
+            ."costs.answer_contents, "
+            ."costs.cost_flag_id, "
+            ."costs.deadline_flag, "
+            ."costs.entry_user_id, "
+            ."costs.entry_date, "
+            ."costs.update_user_id, "
+            ."costs.update_date "
+            ."from costs "
+            ."left join private_or_banks on "
+            ."private_or_banks.private_or_bank_id = costs.private_or_bank_id "
+            ."left join banks on "
+            ."banks.bank_id = costs.bank_id "
+            ."left join cost_accounts on "
+            ."cost_accounts.cost_account_id = costs.cost_account_id "            
+            ."where 1 = 1 ";
+            
+            // where句
+            $where = "";
+
+            // フリーワード
+            if($free_word !== null){
+                $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
+                $where = $where ."or ifnull(summary,'') like '%$free_word%'";
+            };
+
+            // 勘定項目id
+            if($cost_account_id !== null){
+                $where = $where ."and costs.cost_account_id = '$cost_account_id' ";
+            };
+
+            // 照会口座
+            if($bank_id !== null){
+                $where = $where ."and costs.bank_id = '$bank_id' ";
+            };
+
+            // 個人又は預金
+            if($private_or_bank_id !== null){
+                $where = $where ."and costs.private_or_bank_id = '$private_or_bank_id' ";
+            };
+    
+            // 勘定日
+            // 始期・終期がnullでない場合
+            if(($start_date !== null) && ($end_date !== null)) {
+                Log::debug('始期・終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '$start_date') "
+                ."and" 
+                ."(account_date <= '$end_date')";
+            };
+
+            // 始期がnullでない場合の処理
+            if(($start_date !== null) && ($end_date == null)) {
+                Log::debug('始期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '$start_date') "
+                ."and" 
+                ."(account_date <= '9999/12/31')";
+            };
+
+            // 終期がnullでない場合の処理
+            if(($start_date == null) && ($end_date !== null)) {
+                Log::debug('終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(account_date >= '1900/01/01') "
+                ."and" 
+                ."(account_date <= '$end_date')";
+            };
+
+            // 経費か否か
+            if($cost_flag_id == 'true'){
+                Log::debug('経費にチェックされてる場合の処理');
+                $where = $where ."and costs.cost_flag_id = 1 ";
+            }
+
+            // 承諾前のみ表示
+            if($approval_id == 'true'){
+                Log::debug('承認前にチェックされてる場合の処理');
+                $where = $where ."and costs.approval_id = 0 ";
+            }
+
+            // Q&Aの表示
+            if($question_contents == 'true'){
+                Log::debug('Q&Aにチェックされてる場合の処理');
+                $where = $where ."and costs.question_contents != '' ";
+            }
+
+            // order by句
+            $order_by = "order by cost_id desc";
 
             // $str = $str .$where .$order_by;
             $str = $str. $where. $order_by;

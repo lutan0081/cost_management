@@ -311,4 +311,52 @@ $(function(){
         });
     });
 
+    /**
+     * csv出力
+     */
+    $("#btn_csv_output").on('click', function(e) {
+
+        console.log("csvボタンの処理");
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);
+
+        e.preventDefault();
+
+        // フリーワード
+        let free_word = $('#free_word').val();
+        console.log('free_word：' + free_word);
+        
+        let bank_id = $('#bank_id').val();
+        console.log('bank_id：' + bank_id);
+
+        let cost_account_id = $('#cost_account_id').val();
+        console.log('cost_account_id：' + cost_account_id);
+
+        let private_or_bank_id = $('#private_or_bank_id').val();
+        console.log('private_or_bank_id：' + private_or_bank_id);
+
+        let cost_flag_id = $('#cost_flag_id').prop('checked');
+        console.log('cost_flag_id：' + cost_flag_id);
+
+        let approval_id = $('#approval_id').prop('checked');
+        console.log('approval_id：' + approval_id);
+
+        let question_contents = $('#question_contents').prop('checked');
+        console.log('question_contents：' + question_contents);
+
+        let start_date = $('#start_date').val();
+
+        let end_date = $('#end_date').val();
+
+        // 5秒遅延
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },3000);
+
+        // csvDownload
+        location.href = "csvCostDownload?free_word=" + free_word + "&bank_id=" + bank_id + "&cost_account_id=" + cost_account_id+ "&private_or_bank_id=" + private_or_bank_id + "&cost_flag_id=" + cost_flag_id + "&approval_id=" + approval_id + "&question_contents=" + question_contents + "&start_date=" + start_date + "&end_date=" + end_date;
+
+    });
+    
 });
