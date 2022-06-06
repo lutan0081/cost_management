@@ -38,37 +38,20 @@ $(function() {
         
         // 接続が出来た場合の処理
         }).done(function(data) {
+
             // trueの場合ログイン
-            console.log(data);
-            
-            /**
-             * admin = trueの場合、管理画面に遷移
-             */
-            if(data.admin == true){
+            console.log(data.status);
 
-                location.href = 'adminInit'
+            // status = trueの場合、一般画面に遷移
+            if(data.status == true){
+                location.href = 'backHomeInit';
                 return false;
-
             }else{
-                /**
-                 * status = trueの場合、一般画面に遷移
-                 */
-                if(data.status == true){
-
-                    location.href = 'backHomeInit';
-                    return false;
-
-                }else{
-
-                    /**
-                     * falseの処理
-                     */
-                    $('.msg').addClass('error_text');
-                    $('.msg').text('E-mailまたはPasswordが正しくありません。').show();
-                
-                }
-
+                // falseの処理
+                $('.msg').addClass('error_text');
+                $('.msg').text('E-mailまたはPasswordが正しくありません。').show();
             }
+            
         // ajax接続が出来なかった場合の処理
         }).fail(function(jqXHR, textStatus, errorThrown) {
             

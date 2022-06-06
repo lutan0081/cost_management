@@ -38,8 +38,22 @@ class BackUserController extends Controller
         Log::debug('start:' .__FUNCTION__);
 
         try {
-            // 部屋一覧
-            $room_list = $this->getRoomList($request);
+
+            // 経費一覧取得
+            $user_list = $this->getUserList($request);
+
+            /**
+             * フォームに値を保持させるためにそのまま返す
+             */
+            // フリーワード
+            $free_word = $request->input('free_word');
+
+            // ★リクエストパラメータをページネーション用の連想配列に格納★
+            $paginate_params = [
+
+                'free_word' => $free_word,
+
+            ];
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -51,7 +65,8 @@ class BackUserController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRoom' ,$room_list);
+        return view('back.backUser', $user_list, compact('paginate_params', 'free_word'));
+
     }
 
     /**
@@ -59,7 +74,7 @@ class BackUserController extends Controller
      *
      * @return $ret(部屋一覧)
      */
-    private function getRoomList(Request $request){
+    private function getUserList(Request $request){
 
         Log::debug('log_start:'.__FUNCTION__);
 
@@ -73,62 +88,26 @@ class BackUserController extends Controller
             $session_id = $request->session()->get('create_user_id');
             Log::debug('$session_id:' .$session_id);
 
-            $str = "select "
-            ."rooms.room_id, "
-            ."rooms.room_name, "
-            ."rooms.room_size, "
-            ."rooms.room_type_id, "
-            ."room_types.room_type_name, "
-            ."rooms.real_estate_id, "
-            ."real_estates.real_estate_name "
-            ."from rooms "
-            ."left join real_estates "
-            ."on real_estates.real_estate_id = rooms.real_estate_id "
-            ."left join room_types "
-            ."on room_types.room_type_id = rooms.room_type_id ";
+            $str = "select * from create_users "
+            ."where 1 = 1 ";
 
             // where句
             $where = "";
 
             // フリーワード
             if($free_word !== null){
-
-                if($where == ""){
-
-                    $where = "where ";
-
-                }else{
-
-                    $where = "and ";
-                }
-
-                $where = $where ."ifnull(room_name,'') like '%$free_word%'";
-                $where = $where ."or ifnull(real_estate_name,'') like '%$free_word%'";
+                $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
+                $where = $where ."or ifnull(financial_summary,'') like '%$free_word%'";
             };
 
-            // id
-            if($where == ""){
-
-                $where = $where ."where "
-                ."real_estates.entry_user_id = '$session_id' ";
-
-            }else{
-
-                $where = $where ."and "
-                ."real_estates.entry_user_id = '$session_id' ";
-            }
-
-            // order by句
-            $order_by = "order by owner_id ";
-
-            $str = $str .$where .$order_by;
+            $str = $str .$where;
             Log::debug('$sql:' .$str);
 
             // query
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->paginate(10)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("create_user_id desc")->paginate(10)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];

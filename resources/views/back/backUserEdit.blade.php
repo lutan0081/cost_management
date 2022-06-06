@@ -9,7 +9,7 @@
         @endcomponent
 
 		<!-- 自作css -->
-		<link rel="stylesheet" href="{{ asset('back/css/back_bank_edit.css') }}">  
+		<link rel="stylesheet" href="{{ asset('back/css/back_user_edit.css') }}">  
 		
         <style>
 
@@ -159,7 +159,7 @@
         @endcomponent
 
 		<!-- 自作js -->
-		<script src="{{ asset('back/js/back_bank_edit.js') }}"></script>
+		<script src="{{ asset('back/js/back_user_edit.js') }}"></script>
 	</body>
 	
 </html>

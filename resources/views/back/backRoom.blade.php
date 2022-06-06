@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-		<title>部屋一覧/COSTS</title>
+		<title>部屋一覧/COST</title>
 
 		<!-- head -->
         @component('component.backHead')
@@ -115,7 +115,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
-                                                        <th>選択</th>
+                                                        <th><i class="bi bi-check2-square"></i></th>
                                                         <th scope="col" id="owner_name">物件名</th>
                                                         <th scope="col" id="owner_post_number">号室</th>
                                                         <th scope="col" id="owner_address">専有面積</th>
@@ -155,7 +155,7 @@
                         <!-- テーブルcard -->
 
                         <!-- ボタン -->
-                        <div class="col-sm-12 mt-4 pt-3">
+                        <div class="col-sm-12 mt-3">
                             <div class="card border border-0">
                                 <!-- row -->
                                 <div class="row">

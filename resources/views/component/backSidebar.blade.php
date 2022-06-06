@@ -10,7 +10,7 @@
 
         <!-- サイドメニュータイトル -->
         <div class="sidebar-brand">
-            <a href="#">Cost Management Ver 1.00</a>
+            <a href="#">COST Ver 1.00</a>
             <div id="close-sidebar">
                 <i class="fas fa-times"></i>
             </div>

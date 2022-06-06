@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-		<title>売上詳細/COSTS</title>
+		<title>売上詳細/COST</title>
 
 		<!-- head -->
         @component('component.backHead')
@@ -171,7 +171,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
-                                                        <th>選択</th>
+                                                        <th><i class="bi bi-check2-square"></i></th>
                                                         <th scope="col" id="legal_place_address">勘定日</th>
                                                         <th scope="col" id="legal_place_post_number">勘定科目</th>
                                                         <th scope="col" id="legal_place_name">取引先</th>

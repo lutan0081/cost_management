@@ -142,7 +142,7 @@ Route::post('backCostApprovalEntry', 'Back\Cost\BackCostController@backCostAppro
 /**
  * ユーザ一覧
  */
-Route::post('backUserInit', 'Back\Cost\BackCostController@backUserInit')->middleware("cost_auth");
+Route::any('backUserInit', 'Back\User\BackUserController@backUserInit')->middleware("cost_auth");
 
 /**
  * CSV

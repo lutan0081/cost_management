@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-		<title>銀行一覧/COSTS</title>
+		<title>銀行一覧/COST</title>
 
 		<!-- head -->
         @component('component.backHead')
@@ -116,7 +116,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
-                                                        <th>選択</th>
+                                                        <th><i class="bi bi-check2-square"></i></th>
                                                         <th scope="col" id="legal_place_name">銀行名</th>
                                                         <th scope="col" id="legal_place_post_number">支店名</th>
                                                         <th scope="col" id="legal_place_address">種別</th>
@@ -158,7 +158,7 @@
                         <!-- テーブルcard -->
 
                         <!-- ボタン -->
-                        <div class="col-sm-12 mt-4 pt-3">
+                        <div class="col-sm-12 mt-3">
                             <div class="card border border-0">
                                 <!-- row -->
                                 <div class="row">

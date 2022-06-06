@@ -42,17 +42,7 @@ class LoginController extends Controller
         if($auto_login_flag == "true"){
             Log::debug("自動ログインの処理");
 
-            // 管理者フラグ取得
-            $admin_user_flag = $request->session()->get('admin_user_flag');
-
-            // admin_user_flag=1:管理ユーザ/admin_user_flag=0:一般ユーザ
-            if($admin_user_flag == 1){
-                Log::debug('管理ユーザの場合の処理');
-                return redirect('adminInit');
-            }else{
-                Log::debug('一般ユーザの場合の処理');
-                return redirect('backHomeInit');
-            }
+            return redirect('backHomeInit');
         }
 
         Log::debug('log_end:' .__FUNCTION__);
@@ -82,7 +72,11 @@ class LoginController extends Controller
             // メールアドレス
             $mail = $request->input('mail_request');
             
-            // 自動ログインのチェック有無
+            /**
+             * 自動ログイン
+             * check = true
+             * check = false
+             */
             $auto_login_flag = $request->input('auto_login_flag');
 
             // retrunの配列作成
@@ -95,7 +89,7 @@ class LoginController extends Controller
             ."and "
             ."create_user_mail = "
             ."'$mail'";
-            Log::debug('sql:' .$str);
+            Log::debug('login_sql:' .$str);
             $data = DB::select($str);
 
             /**
@@ -107,58 +101,33 @@ class LoginController extends Controller
 
                 Log::debug('ログインデータが存在する場合の処理');
 
-                // 管理者フラグ:true=管理者/false=一般
-                $request->session()->put('admin_user_flag',$data[0]->admin_user_flag);
+                // 権限フラグ:1=全機能操作可能
+                // 権限フラグ:2 = 質問登録、承諾、CSVのみ出力可能
+                $request->session()->put('permission_type_id',$data[0]->permission_type_id);
 
                 // cost_auth=trueに設定(ログインしていない場合falseの為、frontHomeに強制遷移)
                 $request->session()->put('cost_auth',true);
 
-                // session_id
+                // session_id設定
                 $request->session()->put('create_user_id',$data[0]->create_user_id);
                 
-                // アカウント名
+                // アカウント名設定
                 $request->session()->put('create_user_name',$data[0]->create_user_name);
 
                 // ture=自動フラグ設定
                 if($auto_login_flag == "true"){
-
+                    // 自動ログインフラグをセッションに設定
                     $request->session()->put('auto_login_flag',$auto_login_flag);
 
-                    // 自動ログインフラグをセッションに設定
+                    // 自動ログインフラグをセッションに取得
                     $auto_login_flag = $request->session()->get('auto_login_flag');
                     Log::debug('自動ログインフラグ:' .$auto_login_flag);
                 }
 
-                // sessionにユーザ名取得
-                $create_user_name = $request->session()->get('create_user_name');
-
-                // session_id取得
-                $session_id = $request->session()->get('create_user_id');
-                Log::debug('session_id:' .$session_id);
-                
-                // 管理者フラグ
-                $admin_user_flag = $data[0]->admin_user_flag;
-                Log::debug('admin_user_flag:' .$admin_user_flag);
-
-                // admin_user_flag=1:管理ユーザ/admin_user_flag=0:一般ユーザ
-                if($admin_user_flag == 1){
-                    Log::debug('管理ユーザの場合の処理');
-
-                    $response["admin"] = true;
-
-                    $response["status"] = false;  
-                }else{
-                    Log::debug('一般ユーザの場合の処理');
-
-                    $response["admin"] = false;
-
-                    $response["status"] = true;  
-                }
+                $response["status"] = true;
 
             // データ数が存在しない場合の処理 
             }else{
-                // ログイン判定フラグ
-                $response["admin"] = false;
 
                 $response["status"] = false;  
             }
@@ -167,8 +136,6 @@ class LoginController extends Controller
         } catch (\Exception $e) {
 
             Log::debug('error:'.$e);
-
-            $response["admin"] = false;
 
             $response['status'] = false;
 

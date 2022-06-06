@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-		<title>経費一覧/COSTS</title>
+		<title>経費一覧/COST</title>
 
 		<!-- head -->
         @component('component.backHead')
@@ -197,7 +197,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
-                                                        <th>選択</th>
+                                                        <th><i class="bi bi-check2-square"></i></th>
                                                         <th scope="col" id="approval_id">承諾</th>
                                                         <th scope="col" id="cost_flag_id">経費区分</th>
                                                         <th scope="col" id="bank_name">照会口座</th>

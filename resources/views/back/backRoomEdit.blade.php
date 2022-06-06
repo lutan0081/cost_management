@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-        <title>部屋詳細/COSTS</title>
+        <title>部屋詳細/COST</title>
 
 		<!-- head -->
         @component('component.backHead')

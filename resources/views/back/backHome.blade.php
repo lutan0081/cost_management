@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-		<title>ホーム/COSTS</title>
+		<title>ホーム/COST</title>
 
 		<!-- head -->
         @component('component.backHead')
@@ -294,7 +294,7 @@
         @endcomponent
 
 		<!-- 自作js -->
-		<script src="{{ asset('back/js/back_home.js') }}"></script>
+		<!-- <script src="{{ asset('back/js/back_home.js') }}"></script> -->
 	</body>
 	
 </html>
