@@ -255,13 +255,27 @@
                         </div>
                         <!-- テーブルcard -->
 
+                        <!-- 経費合計 -->
+                        <div class="col-12 col-md-6 col-lg-3 mt-3">
+                            <div class="row">
+
+                                <div class="col-12 col-md-8 col-lg-12">
+                                    <div class="form-group">
+                                        <label for=""><i class="bi bi-wrench-adjustable icon_blue me-2"></i>経費合計</label>
+                                        <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($cost_fee_sum_list->outgo_fee) }}" style="text-align:right" disabled>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
                         <!-- 出金額合計 -->
                         <div class="col-12 col-md-6 col-lg-3 mt-3">
                             <div class="row">
 
                                 <div class="col-12 col-md-8 col-lg-12">
                                     <div class="form-group">
-                                        <label for="">出金額合計</label>
+                                        <label for=""><i class="bi bi-cart-fill icon_blue me-2"></i></i>出金額合計</label>
                                         <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($outgo_fee_sum_list->outgo_fee) }}" style="text-align:right" disabled>
                                     </div>
                                 </div>
@@ -275,22 +289,8 @@
 
                                 <div class="col-12 col-md-8 col-lg-12">
                                     <div class="form-group">
-                                        <label for="">入金額合計</label>
+                                        <label for=""><i class="bi bi-piggy-bank-fill icon_blue me-2"></i>入金額合計</label>
                                         <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($income_fee_sum_list->income_fee) }}" style="text-align:right" disabled>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <!-- 個人合計 -->
-                        <div class="col-12 col-md-6 col-lg-3 mt-3">
-                            <div class="row">
-
-                                <div class="col-12 col-md-8 col-lg-12">
-                                    <div class="form-group">
-                                        <label for="">個人合計</label>
-                                        <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($outgo_fee_sum_list->outgo_fee) }}" style="text-align:right" disabled>
                                     </div>
                                 </div>
 
