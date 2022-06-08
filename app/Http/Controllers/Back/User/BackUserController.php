@@ -482,6 +482,7 @@ class BackUserController extends Controller
     
             // ユーザ名
             if($create_user_name == null){
+                
                 $create_user_name ='';
             }
 
