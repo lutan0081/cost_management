@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Crypt;
 use Common;
 
 /**
- * 集金口座(表示・登録、編集、削除)
+ * 表示・登録、編集、削除
  */
 class BackBankController extends Controller
 {   

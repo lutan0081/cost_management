@@ -26,11 +26,11 @@
             <div class="user-info">
 
                 <span class="user-name">
-                    {{ Session::get('create_user_name') }}
+                    <i class="bi bi-person-fill me-1"></i></i></i></i>{{ Session::get('create_user_name') }}
                 </span>
 
                 <span class="user-role">
-                    Administrator
+                    {{ Session::get('permission_type_name') }}
                 </span>
 
                 <span class="user-status">

@@ -717,13 +717,14 @@ $(function() {
                 }).done(function(data) {
 
                     console.log('status:' + data.status)
+                    console.log('承諾ボタンの処理')
                     
                     setTimeout(function(){
                         $("#overlay").fadeOut(300);
                     },500);
 
-                    // location.reload();
-                    location.href = 'backCostInit';
+                    location.reload();
+                    // location.href = 'backCostInit';
 
                 // ajax接続失敗の時の処理
                 }).fail(function(jqXHR, textStatus, errorThrown) {

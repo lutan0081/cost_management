@@ -83,12 +83,26 @@ class LoginController extends Controller
             $response = [];
 
             // ログインユーザデータ取得
-            $str = "select * from create_users "
-            ."where create_user_password = "
-            ."'$password' "
+            $str = "select "
+            ."create_users.create_user_id, "
+            ."create_users.create_user_name, "
+            ."create_users.create_user_mail, "
+            ."create_users.create_user_password, "
+            ."create_users.permission_type_id, "
+            ."permission_types.permission_type_name, "
+            ."create_users.active_flag, "
+            ."create_users.entry_date, "
+            ."create_users.update_user_id, "
+            ."create_users.update_date "
+            ."from "
+            ."create_users "
+            ."left join permission_types on "
+            ."permission_types.permission_type_id = create_users.permission_type_id "
+            ."where "
+            ."create_user_password = '$password' "
             ."and "
-            ."create_user_mail = "
-            ."'$mail'";
+            ."create_user_mail = '$mail' ";
+
             Log::debug('login_sql:' .$str);
             $data = DB::select($str);
 
@@ -104,6 +118,7 @@ class LoginController extends Controller
                 // 権限フラグ:1=全機能操作可能
                 // 権限フラグ:2 = 質問登録、承諾、CSVのみ出力可能
                 $request->session()->put('permission_type_id',$data[0]->permission_type_id);
+                $request->session()->put('permission_type_name',$data[0]->permission_type_name);
 
                 // cost_auth=trueに設定(ログインしていない場合falseの為、frontHomeに強制遷移)
                 $request->session()->put('cost_auth',true);

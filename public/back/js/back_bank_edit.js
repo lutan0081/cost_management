@@ -177,7 +177,7 @@ $(function(){
                      * ダイアログ外をクリックされた場合、nullを返す為
                      * ok,nullの場合の処理を記載
                      */
-                    if (val == 'ok' || val == null) {
+                    if (val == 'OK' || val == null) {
 
                         console.log(val);
 

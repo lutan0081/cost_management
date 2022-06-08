@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-        <title>銀行詳細/COST</title>
+        <title>ユーザ詳細/COST</title>
 
 		<!-- head -->
         @component('component.backHead')
@@ -52,75 +52,59 @@
                     <form id="editForm" class="needs-validation" novalidate>
 
                         <div class="info_title mt-3">
-                            <i class="fas fa-key icon_blue me-2"></i>銀行詳細
+                            <i class="far fa-gem icon_blue me-2"></i></i>ユーザ詳細
                         </div>
 
                         <!-- 境界線 -->
                         <hr>
 
-                        <!-- 銀行名 -->
+                        <!-- ユーザ名 -->
                         <div class="col-12 col-md-10 col-lg-6 mt-3">
-                            <label class="label_required mb-2" for="textBox"></label>銀行名
-                            <input type="text" class="form-control" name="bank_name" id="bank_name" placeholder="例：〇〇〇〇銀行" value="{{ $bank_list->bank_name }}" required>
+                            <label class="label_required mb-2" for="textBox"></label>ユーザ名
+                            <input type="text" class="form-control" name="create_user_name" id="create_user_name" placeholder="例：長谷　亘" value="{{ $create_user_list->create_user_name }}" required>
                             <!-- エラーメッセージ -->
-                            <div class="invalid-feedback" id ="bank_name_error">
-                                銀行名は必須です。
+                            <div class="invalid-feedback" id ="create_user_name_error">
+                                ユーザ名は必須です。
                             </div>
                         </div>
-                        <!-- 銀行名 -->
 
                         <!-- 改行 -->
                         <div class="w-100"></div>
 
-                        <!-- 支店名 -->
+                        <!-- パスワード -->
                         <div class="col-12 col-md-10 col-lg-3 mt-3">
-                            <label class="label_required mb-2" for="textBox"></label>支店名
-                            <input type="text" class="form-control" name="bank_branch_name" id="bank_branch_name" placeholder="例：〇〇支店" value="{{ $bank_list->bank_branch_name }}" required>
+                            <label class="label_required mb-2" for="textBox"></label>ユーザID
+                            <input type="text" class="form-control" name="create_user_mail" id="create_user_mail" placeholder="例：lutan0081" value="{{ $create_user_list->create_user_mail }}" required>
                             <!-- エラーメッセージ -->
-                            <div class="invalid-feedback" id ="user_license_ruby_error">
-                                支店名は必須です。
+                            <div class="invalid-feedback" id ="create_user_mail_error">
+                                ユーザIDは必須です。
                             </div>
                         </div>
-                        <!-- 支店名 -->
                         
-                        <!-- 集金口座 -->
-                        <div class="col-6 col-md-6 col-lg-3 mt-3">
-                            <label class="label_required mb-2" for="textBox"></label>種別                           
-                            <select class="form-select " name="bank_type_id" id="bank_type_id" required>
+                        <!--  -->
+                        <div class="col-12 col-md-10 col-lg-3 mt-3">
+                            <label class="label_required mb-2" for="textBox"></label>パスワード
+                            <input type="text" class="form-control" name="create_user_password" id="create_user_password" placeholder="例：lutan0081" value="{{ $create_user_list->create_user_password }}" required>
+                            <!-- エラーメッセージ -->
+                            <div class="invalid-feedback" id ="create_user_password_error">
+                                パスワードは必須です。
+                            </div>
+                        </div>
+                        
+                        <!-- 権限 -->
+                        <div class="col-6 col-md-6 col-lg-3 mt-3 mb-4">
+                            <label class="label_required mb-2" for="textBox"></label>権限                           
+                            <select class="form-select " name="permission_type_id" id="permission_type_id" required>
                                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                 <option></option>
-                                @foreach($bank_type_list as $bank_types)
-                                    <option value="{{$bank_types->bank_type_id}}" @if($bank_list->bank_type_id == $bank_types->bank_type_id) selected @endif>{{$bank_types->bank_type_name}}</option>
-                                @endforeach
                             </select>
-                            <div class="invalid-feedback" id ="bank_number_error">
-                                種別は必須です。
+                            <div class="invalid-feedback" id ="permission_type_id_error">
+                                権限は必須です。
                             </div>
                         </div>
-                        <!-- 集金口座 -->
 
                         <!-- 改行 -->
                         <div class="w-100"></div>
-
-                        <!-- 口座番号 -->
-                        <div class="col-12 col-md-12 col-lg-3 mt-3">
-                            <label class="label_required mb-2" for="textBox"></label>口座番号
-                            <input type="text" class="form-control" name="bank_number" id="bank_number" value="{{ $bank_list->bank_number }}" placeholder="例：3054295" required>
-                            <div class="invalid-feedback" id ="bank_number_error">
-                                口座番号は必須です。
-                            </div>
-                        </div>
-                        <!-- 口座番号 -->
-
-                        <!-- 口座名義人 -->
-                        <div class="col-12 col-md-12 col-lg-6 mt-3 pb-2">
-                            <label class="label_required mb-2" for="textBox"></label>名義人
-                            <input type="text" class="form-control" name="bank_account_name" id="bank_account_name" value="{{ $bank_list->bank_account_name }}" placeholder="例：カブシキガイシャ〇〇〇〇" required>
-                            <div class="invalid-feedback" id ="bank_account_name_error">
-                                名義人は必須です。
-                            </div>
-                        </div>
-                        <!-- 口座名義人 -->
 
                         <hr>
         
@@ -140,8 +124,8 @@
                         </div>     
                         <!-- ボタン -->
 
-                        <!-- 集金口座id -->
-                        <input type="hidden" name="bank_id" id="bank_id" value="{{ $bank_list->bank_id }}">
+                        <!-- id -->
+                        <input type="text" name="create_user_id" id="create_user_id" value="{{ $create_user_list->create_user_id }}">
 
                     </form>
 

@@ -12,7 +12,6 @@
 		<link rel="stylesheet" href="{{ asset('back/css/back_user.css') }}">  
 		
         <style>
-
             /* ボタンデフォルト値 */
             .btn-default{
                 width: 6rem;
@@ -22,7 +21,6 @@
             .card-body {
                 padding: 0rem;
             }
-
 		</style>
         
 	</head>
@@ -118,7 +116,7 @@
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
                                                         <th><i class="bi bi-check2-square"></i></th>
                                                         <th scope="col" id="legal_place_name">ユーザ名</th>
-                                                        <th scope="col" id="legal_place_post_number">E-mail</th>
+                                                        <th scope="col" id="legal_place_post_number">ユーザID</th>
                                                         <th scope="col" id="legal_place_address">パスワード</th>
                                                         <th scope="col" id="legal_place_address">権限</th>
                                                         <th scope="col" id="legal_place_address">登録日時</th>
@@ -134,7 +132,7 @@
                                                             <td id="name_{{ $user_list->create_user_id }}" class="click_class">{{ $user_list->create_user_name }}</td>
                                                             <td id="mail_{{ $user_list->create_user_id }}" class="click_class">{{ $user_list->create_user_mail }}</td>
                                                             <td id="password_{{ $user_list->create_user_id }}" class="click_class">{{ $user_list->create_user_password }}</td>
-                                                            <td id="permission_{{ $user_list->create_user_id }}" class="click_class">{{ $user_list->permission_flag }}</td>
+                                                            <td id="permission_{{ $user_list->create_user_id }}" class="click_class">{{ $user_list->permission_type_name }}</td>
                                                             <td id="entryDate_{{ $user_list->create_user_id }}" class="click_class">{{ $user_list->entry_date }}</td>
                                                         </tr>
                                                     @endforeach
@@ -165,7 +163,7 @@
                                     <!-- 新規、編集 -->
                                     <div class="col-12">
                                         <div class="btn-group float-end" role="group">
-                                            <button type="button" onclick="location.href='backBankNewInit'" class="btn btn-outline-primary float-end btn-default">新規登録</button>
+                                            <button type="button" onclick="location.href='backUserNewInit'" class="btn btn-outline-primary float-end btn-default">新規登録</button>
                                             <button type="button" id="btn_edit" class="btn btn-outline-primary float-end btn-default">編集</button>
                                         </div>
                                     </div>

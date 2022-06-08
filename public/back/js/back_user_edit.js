@@ -77,33 +77,29 @@ $(function(){
             return false;
         }
 
-        // 銀行id
-        let bank_id = $("#bank_id").val();
+        // ユーザ名
+        let create_user_name = $("#create_user_name").val();
 
-        // 銀行名
-        let bank_name = $("#bank_name").val();
+        // ユーザID
+        let create_user_mail = $("#create_user_mail").val();
 
-        // 支店名
-        let bank_branch_name = $("#bank_branch_name").val();
+        // パスワード
+        let create_user_password = $("#create_user_password").val();
 
-        // 種別
-        let bank_type_id = $("#bank_type_id").val();
+        // 権限
+        let permission_type_id = $("#permission_type_id").val();
 
-        // 口座番号
-        let bank_number = $("#bank_number").val();
-
-        // 名義人
-        let bank_account_name = $("#bank_account_name").val();
+        // create_user_id
+        let create_user_id = $("#create_user_id").val();
 
         // 送信データインスタンス化
         var sendData = new FormData();
         
-        sendData.append('bank_id', bank_id);
-        sendData.append('bank_name', bank_name);
-        sendData.append('bank_branch_name', bank_branch_name);
-        sendData.append('bank_type_id', bank_type_id);
-        sendData.append('bank_number', bank_number);
-        sendData.append('bank_account_name', bank_account_name);
+        sendData.append('create_user_name', create_user_name);
+        sendData.append('create_user_mail', create_user_mail);
+        sendData.append('create_user_password', create_user_password);
+        sendData.append('permission_type_id', permission_type_id);
+        sendData.append('create_user_id', create_user_id);
         
         // ajaxヘッダー
         $.ajaxSetup({
@@ -112,7 +108,7 @@ $(function(){
 
         $.ajax({
             type: 'post',
-            url: 'backBankEditEntry',
+            url: 'backUserEditEntry',
             dataType: 'json',
             data: sendData,
             cache:false,
@@ -141,7 +137,7 @@ $(function(){
                     .then(function(val) {
                     if (val) {
 
-                        location.href = 'backBankInit';
+                        location.href = 'backUserInit';
                     };
                 });
 
@@ -177,7 +173,7 @@ $(function(){
                      * ダイアログ外をクリックされた場合、nullを返す為
                      * ok,nullの場合の処理を記載
                      */
-                    if (val == 'ok' || val == null) {
+                    if (val == 'OK' || val == null) {
 
                         console.log(val);
 

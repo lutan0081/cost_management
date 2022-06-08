@@ -1206,7 +1206,7 @@ class BackCostController extends Controller
         if($img_file !== null){
 
             Log::debug('画像が添付されています');
-            $rules['img_file'] = "nullable|mimes:jpeg,png,jpg";
+            $rules['img_file'] = "nullable|mimes:jpeg,png,jpg,pdf";
 
         }
     
@@ -1568,12 +1568,14 @@ class BackCostController extends Controller
             if($img_file == null){
 
                 Log::debug('付属書類がない場合の処理');
-
                 $ret['status'] = 1;
-
                 return $ret;
 
             }
+
+            // 拡張子取得
+            $file_extension = $img_file->getClientOriginalExtension();
+            Log::debug('file_extension:'.$file_extension);
 
             // 種別
             $img_type = $request->input('img_type');
@@ -1597,18 +1599,30 @@ class BackCostController extends Controller
              * 画像登録処理
              */
             // ファイル名変更
-            $file_name = time() .'.' .$img_file->getClientOriginalExtension();
+            $file_name = time() .'.' .$file_extension;
             Log::debug('ファイル名:'.$file_name);
 
             // ファイルパス+ファイル名
             $tmp_file_path = $dir .'/' .$file_name;
             Log::debug('tmp_file_path :'.$tmp_file_path);
 
-            // ※ここにappを入れないとエラーになる
-            InterventionImage::make($img_file)->resize(380, null,
-            function ($constraint) {
-                $constraint->aspectRatio();
-            })->save(storage_path('app/public/' .$tmp_file_path));
+            // pdfの場合、通常の保存をする
+            if($file_extension == 'pdf'){
+
+                // 第一引数=dir,第二引数=ファイル名
+                Log::debug('PDFの処理');
+                $img_file->storeAs('/public/'. $dir, $file_name);
+
+            }else{
+
+                // pdf以外は、リサイズし、保存する
+                Log::debug('jpg,pngの処理');
+                InterventionImage::make($img_file)->resize(380, null,
+                function ($constraint) {
+                    $constraint->aspectRatio();
+                })->save(storage_path('app/public/' .$tmp_file_path));
+
+            }
 
             /**
              * 種別idがnullの場合、0を入れる

@@ -315,7 +315,19 @@
                                                                         <div class="col-12 col-md-12 col-lg-4 mt-3 mb-2">
                                                                             <div class="card" style="min-height:25rem;">
                                                                                 
-                                                                                <img src="storage/{{ $imgs->cost_img_path }}" class="card-img-top">
+                                                                                @php
+                                                                                    $file_type = explode('.', $imgs->cost_img_path)[1];
+                                                                                @endphp
+
+                                                                                <!-- ファイルタイプがPDFの場合 -->
+                                                                                @if($file_type == 'pdf')
+                                                                                    <div class="pdf_icon_box">
+                                                                                        <a href="storage/{{ $imgs->cost_img_path }}" target="_blank"><img src="./back/img/pdf_icon.jpeg" class="pdf_icon_size"></a>
+                                                                                    </div>
+                                                                                <!-- ファイルタイプがPDF以外の場合 -->
+                                                                                @else
+                                                                                    <img src="storage/{{ $imgs->cost_img_path }}" class="card-img-top">
+                                                                                @endif
                                                                                 
                                                                                 <!-- カードボディ -->
                                                                                 <div class="card-body">
