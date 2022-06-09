@@ -148,8 +148,14 @@ Route::any('backUserInit', 'Back\User\BackUserController@backUserInit')->middlew
 // 新規表示
 Route::get('backUserNewInit', 'Back\User\BackUserController@backUserNewInit')->middleware("cost_auth");
 
+// 編集表示
+Route::get('backUserEditInit', 'Back\User\BackUserController@backUserEditInit')->middleware("cost_auth");
+
 // 登録分岐（新規/編集）
 Route::post('backUserEditEntry', 'Back\User\BackUserController@backUserEditEntry')->middleware("cost_auth");
+
+// 削除
+Route::post('backUserDeleteEntry', 'Back\User\BackUserController@backUserDeleteEntry')->middleware("cost_auth");
 
 /**
  * CSV

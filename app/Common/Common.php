@@ -7,6 +7,18 @@ use Illuminate\Support\Facades\DB;
 
 class Common
 {   
+    // 権限リスト
+    public function getPermissionTypeList(){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from permission_types "
+        ."order by permission_type_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
 
     /**
      * 家主一覧

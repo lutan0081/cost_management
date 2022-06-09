@@ -242,8 +242,8 @@ $(function(){
         };
 
         // 値取得
-        let bank_id = $("#bank_id").val();
-        console.log(bank_id);
+        let create_user_id = $("#create_user_id").val();
+        console.log(create_user_id);
         
         // then() OKを押した時の処理
         swal(options)
@@ -263,7 +263,7 @@ $(function(){
                 // 送信用データ
                 let sendData = {
 
-                    "bank_id": bank_id,
+                    "create_user_id": create_user_id,
                 };
 
                 console.log(sendData);
@@ -275,7 +275,7 @@ $(function(){
                 $.ajax({
 
                     type: 'post',
-                    url: 'backBankDeleteEntry',
+                    url: 'backUserDeleteEntry',
                     dataType: 'json',
                     data: sendData,
                 
@@ -297,7 +297,7 @@ $(function(){
                         .then(function(val) {
                         if (val) {
 
-                            location.href="backBankInit"
+                            location.href = 'backUserInit';
                             
                         }
                     });

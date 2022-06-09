@@ -146,7 +146,7 @@ class BackUserController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backUserNewInit(Request $request){   
+    public function backUserNewInit(Request $request){
         Log::debug('start:' .__FUNCTION__);
 
         try {
@@ -156,8 +156,8 @@ class BackUserController extends Controller
 
             $common = new Common();
 
-            // 家主一覧
-            // $real_estate_list = $common->getRealEstateList();
+            // 権限種別
+            $permission_type_list = $common->getPermissionTypeList();
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -169,7 +169,7 @@ class BackUserController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backUserEdit' ,compact('create_user_list'));
+        return view('back.backUserEdit' ,compact('create_user_list', 'permission_type_list'));
     }
 
     /**
@@ -201,22 +201,18 @@ class BackUserController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backRoomEditInit(Request $request){   
+    public function backUserEditInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
 
             // 一覧取得
-            $room_info = $this->getEditList($request);
-            $room_list = $room_info[0];
+            $create_user_info = $this->getEditList($request);
+            $create_user_list = $create_user_info[0];
 
             $common = new Common();
 
-            // 家主一覧
-            $real_estate_list = $common->getRealEstateList();
-
-            // 部屋種別
-            $room_type_list = $common->getRoomTypeList();
+            $permission_type_list = $common->getPermissionTypeList();
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -226,7 +222,7 @@ class BackUserController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRoomEdit' ,compact('room_list','real_estate_list' ,'room_type_list'));
+        return view('back.backUserEdit' ,compact('create_user_list', 'permission_type_list'));
     }
 
     /**
@@ -240,27 +236,25 @@ class BackUserController extends Controller
 
         try{
             // 値設定
-            $room_id = $request->input('room_id');
+            $create_user_id = $request->input('create_user_id');
 
             // sql
             $str = "select "
-            ."rooms.room_id, "
-            ."rooms.room_name, "
-            ."rooms.room_size, "
-            ."rooms.real_estate_id, "
-            ."real_estates.real_estate_name, "
-            ."rooms.room_type_id, "
-            ."room_types.room_type_name, "
-            ."rooms.entry_user_id, "
-            ."rooms.entry_date, "
-            ."rooms.update_user_id, "
-            ."rooms.update_date "
-            ."from rooms "
-            ."left join room_types on "
-            ."room_types.room_type_id = rooms.room_type_id "
-            ."left join real_estates on "
-            ."real_estates.real_estate_id = rooms.real_estate_id "
-            ."where rooms.room_id = $room_id; ";
+            ."create_users.create_user_id, "
+            ."create_users.create_user_name, "
+            ."create_users.create_user_mail, "
+            ."create_users.create_user_password, "
+            ."create_users.permission_type_id, "
+            ."permission_types.permission_type_name, "
+            ."create_users.active_flag, "
+            ."create_users.entry_date, "
+            ."create_users.update_user_id, "
+            ."create_users.update_date "
+            ."from "
+            ."create_users "
+            ."left join permission_types on "
+            ."permission_types.permission_type_id = create_users.permission_type_id "
+            ."where create_user_id = $create_user_id ";
 
             Log::debug('sql:' .$str);
             
@@ -306,7 +300,7 @@ class BackUserController extends Controller
          * id=有:update
          */
         // 新規登録
-        if($request->input('room_id') == ""){
+        if($request->input('create_user_id') == ""){
 
             Log::debug('新規の処理');
 
@@ -318,8 +312,8 @@ class BackUserController extends Controller
 
             Log::debug('編集の処理');
 
-            // // $responseの値設定
-            // $ret = $this->updateData($request);
+            // $responseの値設定
+            $ret = $this->updateData($request);
 
         }
 
@@ -424,7 +418,7 @@ class BackUserController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $bank_info = $this->insertRoom($request);
+            $bank_info = $this->insertUser($request);
 
             // returnのステータスにtrueを設定
             $ret['status'] = $bank_info['status'];
@@ -461,7 +455,7 @@ class BackUserController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function insertRoom(Request $request){
+    private function insertUser(Request $request){
         
         Log::debug('log_start:' .__FUNCTION__);
 
@@ -556,7 +550,7 @@ class BackUserController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $room_info = $this->updateRoom($request);
+            $room_info = $this->updateUser($request);
 
             // returnのステータスにtrueを設定
             $ret['status'] = $room_info['status'];
@@ -593,7 +587,7 @@ class BackUserController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function updateRoom(Request $request){
+    private function updateUser(Request $request){
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
@@ -602,48 +596,47 @@ class BackUserController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
-            $room_id = $request->input('room_id');
-            $real_estate_id = $request->input('real_estate_name');
-            $roon_name = $request->input('roon_name');
-            $room_type_id = $request->input('room_type_id');
-            $room_size = $request->input('room_size');
+            $create_user_name = $request->input('create_user_name');
+            $create_user_mail = $request->input('create_user_mail');
+            $create_user_password = $request->input('create_user_password');
+            $permission_type_id = $request->input('permission_type_id');
+            $create_user_id = $request->input('create_user_id');
 
             // 現在の日付取得
             $date = now() .'.000';
-
-            // 物件名
-            if($real_estate_id == null){
-                $real_estate_id =0;
+    
+            // ユーザ名
+            if($create_user_name == null){
+                
+                $create_user_name ='';
             }
 
-            // 号室
-            if($roon_name == null){
-                $roon_name ='';
+            // ユーザID
+            if($create_user_mail == null){
+                $create_user_mail ='';
             }
 
-            // 種別
-            if($room_type_id == null){
-                $room_type_id =0;
+            // パスワード
+            if($create_user_password == null){
+                $create_user_password ='';
             }
 
-            // 専有面積
-            if($room_size == null){
-                $room_size = '';
+            // 権限
+            if($permission_type_id == null){
+                $permission_type_id =0;
             }
 
-            $str = "update "
-            ."rooms "
+            $str = "update create_users "
             ."set "
-            ."real_estate_id = $real_estate_id, "
-            ."room_name = '$roon_name', "
-            ."room_size = '$room_size', "
-            ."room_type_id = $room_type_id, "
-            ."entry_user_id = $session_id, "
-            ."entry_date = '$date', "
-            ."update_user_id = $session_id, "
-            ."update_date = '$date' "
+            ."create_user_name = '$create_user_name' "
+            .",create_user_mail = '$create_user_mail' "
+            .",create_user_password = '$create_user_password' "
+            .",permission_type_id = $permission_type_id "
+            .",active_flag = 0 "
+            .",update_user_id = $session_id "
+            .",update_date = '$date'"
             ."where "
-            ."room_id = $room_id ";
+            ."create_user_id = $session_id ";            
             
             Log::debug('sql:'.$str);
 
@@ -670,7 +663,7 @@ class BackUserController extends Controller
      * @param Request $request
      * @return void
      */
-    public function backRoomDeleteEntry(Request $request){
+    public function backUserDeleteEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -678,10 +671,10 @@ class BackUserController extends Controller
             // return初期値
             $response = [];
 
-            $room_info = $this->deleteRoom($request);
+            $user_info = $this->deleteUser($request);
 
             // js側での判定のステータス(true:OK/false:NG)
-            $response['status'] = $room_info['status'];
+            $response['status'] = $user_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -716,7 +709,7 @@ class BackUserController extends Controller
      * @param Request $request
      * @return void
      */
-    private function deleteRoom(Request $request){
+    private function deleteUser(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -724,13 +717,17 @@ class BackUserController extends Controller
             $ret = [];
 
             // 値取得
-            $room_id = $request->input('room_id');
+            $create_user_id = $request->input('create_user_id');
 
-            $str = "delete "
-            ."from "
-            ."rooms "
+            $date = now() .'.000';
+
+            $str = "update create_users "
+            ."set "
+            ."active_flag = 1 "
+            .",update_user_id = $create_user_id "
+            .",update_date = '$date' "
             ."where "
-            ."room_id = $room_id; ";
+            ."create_user_id = $create_user_id ";
             Log::debug('str:'.$str);
 
             // OK=1/NG=0

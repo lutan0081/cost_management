@@ -13,7 +13,8 @@ $(function(){
         $("#overlay").fadeIn(300);
 
         // tdのidを配列に分解
-        var id = $(this).attr("id");
+        var id_info = $(this).attr("id");
+        id = id_info.split('_')[1];
         console.log(id);
 
         setTimeout(function(){
@@ -21,7 +22,7 @@ $(function(){
         },500);
 
         // idをパラメーターでControllerに渡す
-        location.href = "backBankEditInit?bank_id=" + id;
+        location.href = "backUserEditInit?create_user_id=" + id;
     });
 
     // 編集(ラジオボタンの処理)
