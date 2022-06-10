@@ -1858,8 +1858,6 @@ class BackCostController extends Controller
             ."financial_name = '$financial_name', "
             ."financial_branch = '$financial_branch', "
             ."financial_summary = '$financial_summary', "
-            ."approval_id = 0, "
-            ."approval_date = '', "
             ."question_contents = '$question_contents', "
             ."answer_contents = '$answer_contents', "
             ."cost_flag_id = $cost_flag_id, "
@@ -2258,9 +2256,29 @@ class BackCostController extends Controller
             /**
              * 値取得
              */
+            // 承認on,offフラグ
+            $approval_flag = $request->input('approval_flag');
+            Log::debug('approval_flag:'.$approval_flag);
+
             // session_id
             $session_id = $request->session()->get('create_user_id');
             Log::debug('session_id:'.$session_id);
+
+            /**
+             * true:approval_id=登録者(session_id)
+             * false:approval_id=空白
+             */
+            if($approval_flag == 'true'){
+
+                $approval_id = $session_id;
+                $approval_date = now() .'.000';
+
+            }else{
+
+                $approval_id = 0;
+                $approval_date = '';
+
+            }
 
             // 経費id
             $cost_id = $request->input('cost_id');
@@ -2270,8 +2288,8 @@ class BackCostController extends Controller
 
             $str = "update costs "
             ."set "
-            ."approval_id=$session_id "
-            .",approval_date='$date' "
+            ."approval_id=$approval_id "
+            .",approval_date='$approval_date' "
             .",update_user_id=$session_id "
             .",update_date='$date' "
             ."where "

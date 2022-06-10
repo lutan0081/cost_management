@@ -56,7 +56,7 @@
                         </div>
 
                         <!-- 承諾者・承諾日 -->
-                        @if($cost_list->approval_id != '')
+                        @if($cost_list->approval_id != '0')
                             <div class="col-12 col-md-12 col-lg-12">
                                 <div class="form-check float-end">
                                     <label class="form-check-label" for="flexCheckDefault">
@@ -69,7 +69,7 @@
                         <!-- 承諾する -->
                         <div class="col-12 col-md-12 col-lg-12">
                             <div class="form-check form-switch float-end">
-                                <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id" @if($cost_list->approval_id == 1)checked @endif>
+                                <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id" @if($cost_list->approval_id != 0)checked @endif>
                                 <label class="form-check-label markerBlue" for="flexCheckDefault">
                                     承諾する
                                 </label>

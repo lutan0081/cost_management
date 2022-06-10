@@ -584,6 +584,29 @@ $(function() {
 
         e.preventDefault();
 
+        // 承認ボタンonの処理
+        if($('[name="approval_id"]').prop('checked')){
+
+            console.log('承認ボタンonの処理');
+            approval_checked_on();
+
+        // 承認ボタンoffの処理
+        }else{
+
+            console.log('承認ボタンoffの処理');
+            approval_checked_off();
+
+        }
+
+    });
+
+    /**
+     * 承認ボタンonの処理
+     */
+    function approval_checked_on(){
+
+        console.log('approvalcheck_onの処理');
+
         // alertの設定
         var options = {
             title: "承諾しますか？",
@@ -696,9 +719,17 @@ $(function() {
                     return false;
                 }
 
+                /**
+                 * 承認ボタンのon,offの判定
+                 */
+                // true/false
+                let approval_flag = true;
+                console.log('approval_flag:' + approval_flag);
+        
                 // 送信用データ
                 let sendData = {
                     "cost_id": cost_id,
+                    "approval_flag": approval_flag,
                 };
 
                 console.log(sendData);
@@ -740,5 +771,149 @@ $(function() {
             };
             // sweetalert
         });
-    });
+    }
+
+    /**
+     * 承認ボタンoffの処理
+     */
+    function approval_checked_off(){
+
+        console.log('approvalcheck_onの処理');
+
+        // 値取得
+        let cost_id = $("#cost_id").val();
+        console.log(cost_id);
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);
+
+        $('#nav-cost-tab').removeClass('bg_tab_error');
+        $('#nav-file-tab').removeClass('bg_tab_error');
+        $('#nav-other-tab').removeClass('bg_tab_error');
+
+        // バリデーション
+        // formの値数を取得
+        let forms = $('.needs-validation');
+        console.log('forms.length:' + forms[0].length);
+
+        // validationフラグ初期値
+        let v_check = true;
+
+        // formの項目数ループ処理
+        for (let i = 0; i < forms[0].length; i++) {
+
+            // タグ名、Id名取得
+            let form = forms[0][i];
+            console.log('from:'+ form);
+
+            // タグ名を取得 input or button
+            let tag = $(form).prop("tagName");
+            console.log('tag:'+ tag);
+
+            // 各項目のid取得
+            let f_id = $(form).prop("id");
+            console.log('id:'+ f_id);
+            
+            // form内のbuttonは通過
+            if (tag == 'BUTTON') {
+                continue;
+            }
+
+            // 必須ではない場合、以降を処理せず次のレコードに行く
+            let required = $(form).attr("required");
+
+            console.log('required:' + required);
+
+            if (required !== 'required') {
+
+                continue;
+            }
+
+            // 必須で値が空白の場合の処理
+            let val = $(form).val();
+
+            console.log('value:'+ val);
+
+            if (val === '') {
+
+                // エラーメッセージのidを作成
+                let f_id_error = f_id + '_error';
+
+                let error_message_id = $('#' + f_id_error).attr('class');
+                
+                // タブを赤色に変更する(引数:エラーメッセージのid)
+                tabError(error_message_id);
+
+                // blade側のformタグにwas-validatedを追加
+                $(forms).addClass("was-validated");
+                v_check = false;
+
+            }
+            
+        }
+
+        // チェック=falseの場合プログラム終了
+        console.log(v_check);
+        if (v_check === false) {
+
+            // ローディング画面停止
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            return false;
+        }
+
+        /**
+         * 承認ボタンのon,offの判定
+         */
+        // true/false
+        let approval_flag = false;
+        console.log('approval_flag:' + approval_flag);
+
+        // 送信用データ
+        let sendData = {
+            
+            "cost_id": cost_id,
+            "approval_flag": approval_flag,
+        };
+
+        console.log(sendData);
+
+        $.ajaxSetup({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+        });
+
+        $.ajax({
+            type: 'post',
+            url: 'backCostApprovalEntry',
+            dataType: 'json',
+            data: sendData,
+        
+        // 接続処理
+        }).done(function(data) {
+
+            console.log('status:' + data.status)
+            console.log('承諾ボタンの処理')
+            
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            location.reload();
+            // location.href = 'backCostInit';
+
+        // ajax接続失敗の時の処理
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+        });
+        
+    }
 });

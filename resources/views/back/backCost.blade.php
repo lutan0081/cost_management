@@ -220,7 +220,7 @@
                                                         <tr @if($cost_list->question_contents != '') class="table table-primary" @endif>
                                                             <td id="id_{{ $cost_list->cost_id }}" class="click_class" style="display:none"></td>
                                                             <td id="select_{{ $cost_list->cost_id }}" class="click_class"><input id="{{ $cost_list->cost_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
-                                                            <td id="approvalId_{{ $cost_list->cost_id }}" class="click_class">@if($cost_list->approval_id == 1) <i class="bi bi-check-lg"></i> @endif</td>
+                                                            <td id="approvalId_{{ $cost_list->cost_id }}" class="click_class">@if($cost_list->approval_id !== 0) <i class="bi bi-check-lg"></i> @endif</td>
                                                             <td id="costFlagId_{{ $cost_list->cost_id }}" class="click_class">@if($cost_list->cost_flag_id == 1) 経費 @endif</td>
                                                             <td id="bankName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->bank_name. '_' .$cost_list->bank_number}}</td>
                                                             <td id="accountDate_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->account_date }}</td>

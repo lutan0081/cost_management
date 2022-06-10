@@ -105,7 +105,10 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li>
-                                <a href="backUserInit">ユーザ一覧</a>
+                                <a href="backUserInit">ユーザ</a>
+                            </li>
+                            <li>
+                                <a href="backUserInit">勘定科目</a>
                             </li>
                         </ul>
                     </div>
