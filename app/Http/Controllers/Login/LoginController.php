@@ -26,6 +26,8 @@ class LoginController extends Controller
     {   
         Log::debug('log_start:' .__FUNCTION__);
 
+        $this->ipInsert($request);
+
         // session_idを取得
         $create_user_id = $request->session()->get('create_user_id');
 
@@ -67,9 +69,10 @@ class LoginController extends Controller
             /**
              * 値取得
              */
+            // パスワード
             $password = $request->input('password_request');
             
-            // メールアドレス
+            // ユーザid
             $mail = $request->input('mail_request');
             
             /**
@@ -178,7 +181,8 @@ class LoginController extends Controller
         ."into "
         ."accesses( "
         ."ip_address, "
-        ."create_date)values( "
+        ."entry_date "
+        .")values( "
         ."'$ip', "
         ."now() "
         ."); ";

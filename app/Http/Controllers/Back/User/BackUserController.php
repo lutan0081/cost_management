@@ -110,8 +110,8 @@ class BackUserController extends Controller
 
             // フリーワード
             if($free_word !== null){
-                $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
-                $where = $where ."or ifnull(financial_summary,'') like '%$free_word%'";
+                $where = $where ."and ifnull(create_user_name,'') like '%$free_word%'";
+                $where = $where ."or ifnull(create_user_mail,'') like '%$free_word%'";
             };
 
             $str = $str .$where;
@@ -121,7 +121,7 @@ class BackUserController extends Controller
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->orderByRaw("create_user_id desc")->paginate(10)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("create_user_id desc")->paginate(30)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];

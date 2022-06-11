@@ -35,7 +35,7 @@ Route::get('backBankEditInit', 'Back\Bank\BackBankController@backBankEditInit')-
 Route::post('backBankEditEntry', 'Back\Bank\BackBankController@backBankEditEntry')->middleware("cost_auth");
 
 // 削除
-Route::post('backBankDeleteEntry', 'Back\Profit\BackBankController@backBankDeleteEntry')->middleware("cost_auth");
+Route::post('backBankDeleteEntry', 'Back\Bank\BackBankController@backBankDeleteEntry')->middleware("cost_auth");
 
 /**
  * 家主マスタ

@@ -39,6 +39,18 @@ class BackOwnerController extends Controller
         try {
             // 家主一覧取得
             $owner_list = $this->getList($request);
+
+            /**
+             * フォームに値を保持させるためにそのまま返す
+             */
+            // フリーワード
+            $free_word = $request->input('free_word');
+
+            // ★リクエストパラメータをページネーション用の連想配列に格納★
+            $paginate_params = [
+
+                'free_word' => $free_word,
+            ];
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -50,7 +62,7 @@ class BackOwnerController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backOwner' ,$owner_list);
+        return view('back.backOwner' ,$owner_list, compact('paginate_params', 'free_word'));
     }
 
     /**
@@ -72,49 +84,24 @@ class BackOwnerController extends Controller
             $session_id = $request->session()->get('create_user_id');
             Log::debug('$session_id:' .$session_id);
 
-            $str = "select * from owners ";
+            $str = "select * from owners "
+            ."where 1 = 1 ";
 
             // where句
             $where = "";
 
             // フリーワード
             if($free_word !== null){
-
-                if($where == ""){
-
-                    $where = "where ";
-
-                }else{
-
-                    $where = "and ";
-                }
-
-                $where = $where ."ifnull(owner_name,'') like '%$free_word%'";
+                $where = $where ."and ifnull(owner_name,'') like '%$free_word%'";
             };
 
-            // id
-            if($where == ""){
-
-                $where = $where ."where "
-                ."entry_user_id = '$session_id' ";
-
-            }else{
-
-                $where = $where ."and "
-                ."entry_user_id = '$session_id' ";
-            }
-
-            // order by句
-            $order_by = "order by owner_id ";
-
-            $str = $str .$where .$order_by;
+            $str = $str .$where;
             Log::debug('$sql:' .$str);
-
             // query
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->paginate(10)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("owner_id asc")->paginate(30)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];

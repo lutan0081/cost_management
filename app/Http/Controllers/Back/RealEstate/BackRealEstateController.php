@@ -40,11 +40,21 @@ class BackRealEstateController extends Controller
         try {
             // 物件一覧
             $real_estate_list = $this->getRealEstateList($request);
+            // dd($real_estate_list);
 
             $common = new Common();
 
-            // 家主一覧
-            $owner_list = $common->getOwnerList();
+            /**
+             * フォームに値を保持させるためにそのまま返す
+             */
+            // フリーワード
+            $free_word = $request->input('free_word');
+
+            // ★リクエストパラメータをページネーション用の連想配列に格納★
+            $paginate_params = [
+
+                'free_word' => $free_word,
+            ];
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -56,7 +66,7 @@ class BackRealEstateController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backRealEstate' ,$real_estate_list ,compact('owner_list'));
+        return view('back.backRealEstate' ,$real_estate_list ,compact('paginate_params', 'free_word'));
     }
 
     /**
@@ -92,50 +102,26 @@ class BackRealEstateController extends Controller
             ."real_estates.update_date "
             ."from real_estates "
             ."left join owners "
-            ."on owners.owner_id = real_estates.owner_id ";
+            ."on owners.owner_id = real_estates.owner_id "
+            ."where 1 = 1 ";
 
             // where句
             $where = "";
 
             // フリーワード
             if($free_word !== null){
-
-                if($where == ""){
-
-                    $where = "where ";
-
-                }else{
-
-                    $where = "and ";
-                }
-
-                $where = $where ."ifnull(real_estate_name,'') like '%$free_word%'";
+                $where = $where ."and ifnull(real_estate_name,'') like '%$free_word%'";
                 $where = $where ."or ifnull(owner_name,'') like '%$free_word%'";
             };
 
-            // id
-            if($where == ""){
-
-                $where = $where ."where "
-                ."real_estates.entry_user_id = '$session_id' ";
-
-            }else{
-
-                $where = $where ."and "
-                ."real_estates.entry_user_id = '$session_id' ";
-            }
-
-            // order by句
-            $order_by = "order by owner_id ";
-
-            $str = $str .$where .$order_by;
+            $str = $str .$where;
             Log::debug('$sql:' .$str);
 
             // query
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->paginate(10)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("real_estate_id asc")->paginate(30)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];

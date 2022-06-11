@@ -74,7 +74,7 @@
                                                 <!-- フリーワード -->
                                                 <div class="col-7 col-md-8 col-lg-4">
                                                     <label for="">フリーワード</label>
-                                                    <input type="text" class="form-control" name="free_word" id="free_word" value="">
+                                                    <input type="text" class="form-control" name="free_word" id="free_word" value="{{ $free_word }}">
                                                 </div>
 
                                                 <!-- 検索ボタン -->
@@ -150,7 +150,7 @@
 
                             <!-- ぺージネーション -->   
                             <div id="links" style="display:none;" class="mt-3">
-                                {{ $res->links() }}
+                                {{ $res->appends($paginate_params)->links() }}
                             </div>
 
                         </div>

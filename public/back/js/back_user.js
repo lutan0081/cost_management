@@ -55,7 +55,11 @@ $(function(){
         var id = $('input[name=flexRadioDisabled]:checked').attr('id');
         console.log(id);
 
+        setTimeout(function(){
+            $("#overlay").fadeOut(300);
+        },500);
+
         // idをパラメーターでControllerに渡す
-        location.href = "backBankEditInit?bank_id=" + id;
+        location.href = "backUserEditInit?create_user_id=" + id;
     });
 });

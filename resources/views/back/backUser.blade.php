@@ -63,7 +63,7 @@
                             <!-- タイトル -->
                             
                             <div class="row">
-                                <form action="backBankInit" method="post">
+                                <form action="backUserInit" method="post">
                                     {{ csrf_field() }}
                                     <div class="col-sm-12">
                                         <div class="card border border-0">
@@ -72,12 +72,18 @@
                                                 <!-- フリーワード -->
                                                 <div class="col-7 col-md-8 col-lg-4">
                                                     <label for="">フリーワード</label>
-                                                    <input type="text" class="form-control" name="free_word" id="free_word" value="">
+                                                    <input type="text" class="form-control" name="free_word" id="free_word" value="{{ $free_word }}">
                                                 </div>
 
+                                                <div class="w-100"></div>
+
+                                                <!-- 色分けの説明 -->
+                                                <div class="col-6 col-md-6 col-lg-6 color_info_box">
+                                                    <label class="pink_line" for=""><i class="bi bi-cloud-slash me-1 icon_blue"></i>赤：ログイン不可</label>
+                                                </div>
 
                                                 <!-- 検索ボタン -->
-                                                <div class="col-5 col-md-4 col-lg-8">
+                                                <div class="col-5 col-md-4 col-lg-6 mt-2">
                                                     <input type="submit" class="btn btn-default btn-outline-primary float-end" value="検索">
                                                 </div>
                                                 <!-- 検索ボタン -->
@@ -109,7 +115,7 @@
                                     <!-- スクロール -->
                                     <div class="overflow-auto" style="height:35rem;">
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-condensed table-striped">
+                                            <table class="table table-hover table-condensed">
                                                 <!-- テーブルヘッド -->
                                                 <thead>
                                                     <tr>
@@ -126,7 +132,7 @@
                                                 <!-- テーブルボディ -->
                                                 <tbody>
                                                     @foreach($res as $user_list)
-                                                        <tr>
+                                                        <tr @if($user_list->active_flag == 1) class="table table-danger " @endif>
                                                             <td id="id_{{ $user_list->create_user_id }}" class="click_class" style="display:none"></td>
                                                             <td id="cb_{{ $user_list->create_user_id }}" class="click_class"><input id="{{ $user_list->create_user_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
                                                             <td id="name_{{ $user_list->create_user_id }}" class="click_class">{{ $user_list->create_user_name }}</td>

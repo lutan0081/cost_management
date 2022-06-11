@@ -39,6 +39,19 @@ class BackBankController extends Controller
         try {
             // 集金口座一覧
             $bank_list = $this->getList($request);
+
+            /**
+             * フォームに値を保持させるためにそのまま返す
+             */
+            // フリーワード
+            $free_word = $request->input('free_word');
+
+            // ★リクエストパラメータをページネーション用の連想配列に格納★
+            $paginate_params = [
+
+                'free_word' => $free_word,
+
+            ];
             
         // 例外処理
         } catch (\Throwable $e) {
@@ -50,7 +63,7 @@ class BackBankController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backBank' ,$bank_list);
+        return view('back.backBank' ,$bank_list, compact('paginate_params', 'free_word'));
     }
 
     /**
@@ -94,42 +107,18 @@ class BackBankController extends Controller
 
             // フリーワード
             if($free_word !== null){
-
-                if($where == ""){
-
-                    $where = "where ";
-
-                }else{
-
-                    $where = "and ";
-                }
-
-                $where = $where ."ifnull(bank_name,'') like '%$free_word%'";
+                $where = $where ."and ifnull(cost_memo,'') like '%$free_word%'";
+                $where = $where ."or ifnull(financial_summary,'') like '%$free_word%'";
             };
 
-            // id
-            if($where == ""){
-
-                $where = $where ."where "
-                ."banks.entry_user_id = '$session_id' ";
-
-            }else{
-
-                $where = $where ."and "
-                ."banks.entry_user_id = '$session_id' ";
-            }
-
-            // order by句
-            $order_by = "order by bank_id ";
-
-            $str = $str .$where .$order_by;
+            $str = $str .$where;
             Log::debug('$sql:' .$str);
 
             // query
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->paginate(10)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("bank_id desc")->paginate(30)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];
