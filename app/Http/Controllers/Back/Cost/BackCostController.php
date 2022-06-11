@@ -1228,7 +1228,7 @@ class BackCostController extends Controller
         $messages['balance_fee.integer'] = "残高の値が不正です。";
         $messages['question_contents.max'] = "質問の文字数が超過しています。";
         $messages['answer_contents.max'] = "回答の文字数が超過しています。";
-        $messages['cost_memo.max'] = "備考飲み時数が超過しています。";
+        $messages['cost_memo.max'] = "備考の文字数が超過しています。";
         
         $img_file = $request->file('img_file');
         Log::debug('バリデーション_img_file:' .$img_file);

@@ -103,6 +103,32 @@ $(function(){
         
         // id
         let profit_id = $("#profit_id").val();
+
+        /**
+         * その他
+         */
+        // 質問
+        let question_contents = $("#question_contents").val();
+        console.log(question_contents);
+
+        // 回答
+        let answer_contents = $("#answer_contents").val();
+        console.log(answer_contents);
+
+        /**
+         * 付属書類
+         */
+        // 画像ファイル取得
+        let img_file = $('#img_file').prop('files')[0];
+        console.log("img_file:" + img_file);
+
+        // 種別
+        let img_type = $("#img_type").val();
+        console.log("img_type:" + img_type);
+
+        // 備考
+        let img_text = $("#img_text").val();
+        console.log("img_text:" + img_text);
         
         // 送信データインスタンス化
         var sendData = new FormData();
@@ -116,6 +142,19 @@ $(function(){
         sendData.append('profit_memo', profit_memo);
         sendData.append('profit_id', profit_id);
         sendData.append('customer_name', customer_name);
+
+        /**
+         * 画像
+         */
+        sendData.append('img_file', img_file);
+        sendData.append('img_type', img_type);
+        sendData.append('img_text', img_text);
+
+        /**
+         * その他
+         */
+        sendData.append('question_contents', question_contents);
+        sendData.append('answer_contents', answer_contents);
         
         // ajaxヘッダー
         $.ajaxSetup({

@@ -184,7 +184,7 @@ class Common
     }
 
     /**
-     * 画像種別
+     * 画像種別（経費）
      *
      * @return void
      */
@@ -192,6 +192,23 @@ class Common
         Log::debug('log_start:'.__FUNCTION__);
 
         $str = "select * from cost_img_types "
+        ."order by sort_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
+    /**
+     * 画像種別（売上）
+     *
+     * @return void
+     */
+    public function getProfitImgTypes(){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from profit_img_types "
         ."order by sort_id asc ";
 
         $ret = DB::select($str);

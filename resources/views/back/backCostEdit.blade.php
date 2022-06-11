@@ -49,7 +49,7 @@
 
                         <!-- タイトル -->
                         <div class="col-12 col-md-12 col-lg-12">
-                            <div class="info_title mt-">
+                            <div class="info_title mt-2">
                                 <i class="fas bi bi-piggy-bank-fill icon_blue me-2"></i>経費一覧
                             </div>
                             <hr>
@@ -415,6 +415,9 @@
 
                                     <!-- 経費id -->
                                     <input type="text" name="cost_id" id="cost_id" value="{{ $cost_list->cost_id }}">
+                                    
+                                    <!-- 権限id -->
+                                    <input type="text" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
                                     
                                 </div>
                                 <!-- カード -->

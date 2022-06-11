@@ -104,7 +104,9 @@ class LoginController extends Controller
             ."where "
             ."create_user_password = '$password' "
             ."and "
-            ."create_user_mail = '$mail' ";
+            ."create_user_mail = '$mail' "
+            ."and "
+            ."active_flag = 0 ";
 
             Log::debug('login_sql:' .$str);
             $data = DB::select($str);
@@ -131,6 +133,9 @@ class LoginController extends Controller
                 
                 // アカウント名設定
                 $request->session()->put('create_user_name',$data[0]->create_user_name);
+
+                // 権限をsessionに登録
+                $request->session()->put('active_flag',$data[0]->active_flag);
 
                 // ture=自動フラグ設定
                 if($auto_login_flag == "true"){

@@ -153,6 +153,10 @@ class BackProfitController extends Controller
             ."profits.profit_date, "
             ."profits.profit_fee, "
             ."profits.profit_memo, "
+            ."profit_approval_id, "
+            ."profit_approval_date, "
+            ."profit_question_contents, "
+            ."profit_answer_contents, "
             ."profits.entry_user_id, "
             ."profits.entry_date, "
             ."profits.update_user_id, "
@@ -419,6 +423,9 @@ class BackProfitController extends Controller
             // 売上一覧
             $profit_list = $this->getNewList($request);
 
+            // 画像一覧
+            $profit_img_list = [];
+
             $common = new Common();
 
             // 不動産一覧
@@ -429,6 +436,9 @@ class BackProfitController extends Controller
 
             // アカウント一覧
             $create_user_list = $common->getCreateUsers();
+
+            // 画像種別
+            $profit_img_type_list = $common->getProfitImgTypes();
 
             // 新規表示の場合、号室不要の為から配列を渡す
             $room_list = [];
@@ -443,7 +453,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list'));
+        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list', 'profit_img_type_list', 'profit_img_list'));
     }
 
     /**
@@ -465,6 +475,10 @@ class BackProfitController extends Controller
         $obj->profit_memo = '';
         $obj->real_estate_id = '';
         $obj->customer_name = '';
+        $obj->profit_approval_id = '';
+        $obj->profit_approval_date = '';
+        $obj->profit_question_contents = '';
+        $obj->profit_answer_contents = '';
         
         $ret = [];
         $ret = $obj;
@@ -567,6 +581,52 @@ class BackProfitController extends Controller
     }
 
     /**
+     * 編集(画像一覧取得)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function getImgList(Request $request){
+
+        Log::debug('start:' .__FUNCTION__);
+
+        try{
+            // 値設定
+            $profit_id = $request->input('profit_id');
+
+            $str = "select "
+            ."profit_imgs.profit_img_id, "
+            ."profit_imgs.profit_id, "
+            ."profit_imgs.profit_img_type_id, "
+            ."profit_img_types.profit_img_type_name, "
+            ."profit_imgs.profit_img_path, "
+            ."profit_imgs.profit_img_memo, "
+            ."profit_imgs.entry_user_id, "
+            ."profit_imgs.entry_date, "
+            ."profit_imgs.update_user_id, "
+            ."profit_imgs.update_date "
+            ."from "
+            ."profit_imgs "
+            ."left join profit_img_types on "
+            ."profit_img_types.profit_img_type_id = profit_imgs.profit_img_type_id "
+            ."where profit_imgs.profit_id = $profit_id ";
+            Log::debug('sql:' .$str);
+
+            $ret = DB::select($str);
+
+        } catch (\Throwable $e) {
+
+            throw $e;
+
+        } finally {
+
+        }
+
+        Log::debug('end:' .__FUNCTION__);
+        return $ret;
+    }
+
+    /**
      *  編集(表示)
      *
      * @param Request $request(フォームデータ)
@@ -581,8 +641,11 @@ class BackProfitController extends Controller
             $profit_info = $this->getEditList($request);
             $profit_list = $profit_info[0];
 
+            // 部屋一覧
             $room_id = $profit_list->room_id;
-            Log::debug('room_id:'.$room_id);
+
+            // 画像パス取得
+            $profit_img_list = $this->getImgList($request);
 
             $common = new Common();
 
@@ -597,9 +660,9 @@ class BackProfitController extends Controller
 
             // 号室
             $room_list = $common->getRoomList($room_id);
-            // 配列デバック
-            $arrString = print_r($room_list , true);
-            Log::debug('room_list:'.$arrString);
+
+            // 画像種別
+            $profit_img_type_list = $common->getProfitImgTypes();
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -611,7 +674,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list'));
+        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list', 'profit_img_type_list', 'profit_img_list'));
     }
 
     /**
@@ -638,6 +701,10 @@ class BackProfitController extends Controller
             ."profits.profit_date, "
             ."profits.profit_fee, "
             ."profits.profit_memo, "
+            ."profits.profit_approval_id, "
+            ."profits.profit_approval_date, "
+            ."profits.profit_question_contents, "
+            ."profits.profit_answer_contents, "
             ."profits.entry_user_id, "
             ."profits.entry_date, "
             ."profits.update_user_id, "
@@ -746,21 +813,45 @@ class BackProfitController extends Controller
         $rules['profit_fee'] = "required|integer";
         $rules['profit_memo'] = "nullable|max:100";
         $rules['customer_name'] = "nullable|max:50";
+        $rules['question_contents'] = "nullable|max:500";
+        $rules['answer_contents'] = "nullable|max:500";
+
+        $img_file = $request->file('img_file');
+        Log::debug('バリデーション_img_file:' .$img_file);
+
+        if($img_file !== null){
+
+            Log::debug('画像が添付されています');
+            $rules['img_file'] = "nullable|mimes:jpeg,png,jpg,pdf";
+
+        }
+    
+        $rules['img_text'] = "nullable|max:20";
 
         /**
          * messages
          */
         $messages = [];
-
         $messages['profit_account_date.required'] = "勘定日は必須です。";
         $messages['profit_account_date.date'] = "勘定日の形式が不正です。";
-
         $messages['profit_fee.required'] = "利益額は必須です。";
         $messages['profit_fee.integer'] = "利益額の形式が不正です。";
-
         $messages['profit_memo.max'] = "備考の形式が不正です。";
-
         $messages['customer_name.max'] = "取引先の文字数が超過しています。";
+        $messages['question_contents.max'] = "質問の文字数が超過しています。";
+        $messages['answer_contents.max'] = "回答の文字数が超過しています。";
+
+        $img_file = $request->file('img_file');
+        Log::debug('バリデーション_img_file:' .$img_file);
+
+        if($img_file !== null){
+
+            Log::debug('画像が添付されています');
+            $messages['img_file.mimes'] = "画像ファイル(jpg.jpeg.png)でアップロードして下さい。";
+
+        }
+    
+        $messages['img_text.max'] = "備考の文字数が超過しています。";
     
         // validation判定
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -823,10 +914,21 @@ class BackProfitController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $bank_info = $this->insertProfit($request);
+            $profit_info = $this->insertProfit($request);
 
             // returnのステータスにtrueを設定
-            $ret['status'] = $bank_info['status'];
+            $ret['status'] = $profit_info['status'];
+
+            // 登録時のidを取得
+            $profit_id = $profit_info['profit_id'];
+            Log::debug('profit_id:'.$profit_id);
+
+            /**
+             * 画像
+             */            
+            $profit_img_info = $this->insertImg($request, $profit_id);
+
+            $ret['status'] = $profit_img_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -878,6 +980,8 @@ class BackProfitController extends Controller
             $room_id = $request->input('room_id');
             $profit_memo = $request->input('profit_memo');
             $customer_name = $request->input('customer_name');
+            $profit_question_contents = $request->input('question_contents');
+            $profit_answer_contents = $request->input('answer_contents');
 
             // 現在の日付取得
             $date = now() .'.000';
@@ -922,6 +1026,15 @@ class BackProfitController extends Controller
                 $customer_name = '';
             }
 
+            // 質問
+            if($profit_question_contents == null){
+                $profit_question_contents = '';
+            }
+
+            // 回答
+            if($profit_answer_contents == null){
+                $profit_answer_contents = '';
+            }
 
             $str = "insert "
             ."into "
@@ -934,6 +1047,11 @@ class BackProfitController extends Controller
             ."profit_date, "
             ."profit_fee, "
             ."profit_memo, "
+            ."profit_approval_id, "
+            ."profit_approval_date, "
+            ."profit_question_contents, "
+            ."profit_answer_contents, "
+            ."profit_deadline_flag, "
             ."entry_user_id, "
             ."entry_date, "
             ."update_user_id, "
@@ -946,6 +1064,11 @@ class BackProfitController extends Controller
             ."'$profit_account_date', "
             ."'$profit_fee', "
             ."'$profit_memo', "
+            ."0, "
+            ."'', "
+            ."'$profit_question_contents', "
+            ."'$profit_answer_contents', "
+            ."0, "
             ."$session_id, "
             ."'$date', "
             ."$session_id, "
@@ -956,6 +1079,24 @@ class BackProfitController extends Controller
 
             // OK=1/NG=0
             $ret['status'] = DB::insert($str);
+
+            // 登録したapplication_id取得
+            $str = "select * from profits "
+            ."where "
+            ."(profit_account_id = $profit_account_id) "
+            ."and "
+            ."(profit_fee = $profit_fee) "
+            ."and "
+            ."(entry_date = '$date') ";
+
+            Log::debug('select_profit:'.$str);
+            $profit_info = DB::select($str);
+
+            $arrString = print_r($profit_info , true);
+            Log::debug('profit_info:'.$arrString);
+
+            // id
+            $ret['profit_id'] = $profit_info[0]->profit_id;
 
         // 例外処理
         } catch (\Throwable  $e) {
@@ -969,6 +1110,145 @@ class BackProfitController extends Controller
 
         Log::debug('log_end:'.__FUNCTION__);
         return $ret;
+    }
+
+    /**
+     * 付属書類(登録)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function insertImg(Request $request, $profit_id){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try {
+            Log::debug('insertImg_profit_id:'.$profit_id);
+
+            /**
+             * 値取得
+             */
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+
+            $img_file = $request->file('img_file');
+            Log::debug('img_file:'.$img_file);
+            
+
+            // 付属書類がない場合の処理
+            if($img_file == null){
+
+                Log::debug('付属書類がない場合の処理');
+                $ret['status'] = 1;
+                return $ret;
+
+            }
+
+            // 拡張子取得
+            $file_extension = $img_file->getClientOriginalExtension();
+            Log::debug('file_extension:'.$file_extension);
+
+            // 種別
+            $img_type = $request->input('img_type');
+            Log::debug('img_type:'.$img_type);
+
+            // 備考
+            $img_text = $request->input('img_text');
+            Log::debug('img_text:'.$img_text);
+
+            // 現在の日付取得
+            $date = now() .'.000';
+        
+            // idごとのフォルダ作成のためのパス生成
+            $dir ='img/profit/' .$profit_id;
+            
+            // 任意のフォルダ作成
+            // ※appを入れるとエラーになる
+            Storage::makeDirectory('/public/' .$dir);
+
+            /**
+             * 画像登録処理
+             */
+            // ファイル名変更
+            $file_name = time() .'.' .$file_extension;
+            Log::debug('ファイル名:'.$file_name);
+
+            // ファイルパス+ファイル名
+            $tmp_file_path = $dir .'/' .$file_name;
+            Log::debug('tmp_file_path :'.$tmp_file_path);
+
+            // pdfの場合、通常の保存をする
+            if($file_extension == 'pdf'){
+
+                // 第一引数=dir,第二引数=ファイル名
+                Log::debug('PDFの処理');
+                $img_file->storeAs('/public/'. $dir, $file_name);
+
+            }else{
+
+                // pdf以外は、リサイズし、保存する
+                Log::debug('jpg,pngの処理');
+                InterventionImage::make($img_file)->resize(380, null,
+                function ($constraint) {
+                    $constraint->aspectRatio();
+                })->save(storage_path('app/public/' .$tmp_file_path));
+
+            }
+
+            /**
+             * 種別idがnullの場合、0を入れる
+             */
+            if($img_type == null){
+                $img_type = 0;
+            }
+
+            /**
+             * 画像データ(insert)
+             */
+            $str = "insert "
+            ."into "
+            ."profit_imgs "
+            ."( "
+            ."profit_id, "
+            ."profit_img_type_id, "
+            ."profit_img_path, "
+            ."profit_img_memo, "
+            ."entry_user_id, "
+            ."entry_date, "
+            ."update_user_id, "
+            ."update_date "
+            .")values( "
+            ."$profit_id, "
+            ."$img_type, "
+            ."'$tmp_file_path', "
+            ."'$img_text', "
+            ."$session_id, "
+            ."'$date', "
+            ."$session_id, "
+            ."'$date' "
+            ."); ";
+            
+            Log::debug('sql:'.$str);
+
+            // OK=1/NG=0
+            $ret['status'] = DB::insert($str);
+
+            Log::debug('status:'.$ret);
+            
+        } catch (\Throwable $e) {
+
+            Log::debug('error:'.$e);
+
+            // storage/app/public/imagesから、画像ファイルを削除する
+            Storage::delete($tmp_file_path);
+
+            throw $e;
+
+        }finally{
+
+            Log::debug('log_end:'.__FUNCTION__);
+            return $ret;
+
+        }
     }
 
     /**
@@ -993,6 +1273,12 @@ class BackProfitController extends Controller
 
             // returnのステータスにtrueを設定
             $ret['status'] = $profit_info['status'];
+
+            $profit_id = $request->input('profit_id');
+
+            $profit_img_info = $this->insertImg($request, $profit_id);
+
+            $ret['status'] = $profit_img_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -1044,6 +1330,8 @@ class BackProfitController extends Controller
             $room_id = $request->input('room_id');
             $profit_memo = $request->input('profit_memo');
             $customer_name = $request->input('customer_name');
+            $profit_question_contents = $request->input('question_contents');
+            $profit_answer_contents = $request->input('answer_contents');
 
             // 現在の日付取得
             $date = now() .'.000';
@@ -1088,8 +1376,18 @@ class BackProfitController extends Controller
                 $profit_memo = '';
             }
 
+            // 質問
+            if($profit_question_contents == null){
+                $profit_question_contents = '';
+            }
+
+            // 回答
+            if($profit_answer_contents == null){
+                $profit_answer_contents = '';
+            }
+
             $str = "update "
-            ."cost_management.profits "
+            ."profits "
             ."set "
             ."profit_person_id = $profit_person_id, "
             ."customer_name = '$customer_name', "
@@ -1098,6 +1396,9 @@ class BackProfitController extends Controller
             ."profit_date = '$profit_account_date', "
             ."profit_fee = $profit_fee, "
             ."profit_memo = '$profit_memo', "
+            ."profit_question_contents = '$profit_question_contents', "
+            ."profit_answer_contents = '$profit_answer_contents', "
+            ."profit_deadline_flag = 0, "
             ."entry_user_id = $session_id, "
             ."entry_date = '$date', "
             ."update_user_id = $session_id, "

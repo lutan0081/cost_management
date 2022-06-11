@@ -72,47 +72,52 @@
                     </div>
                 </li>
 
-                <li class="sidebar-dropdown">
-                    <a href="#">
-                        <i class="fas fa-key me-2"></i>
-                        <span>マスタ</span>
-                        <span class="badge badge-pill badge-danger"></span>
-                    </a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li>
-                                <a href="backOwnerInit">家主一覧</a>
-                            </li>
-                            <li>
-                                <a href="backRealEstateInit">物件一覧</a>
-                            </li>
-                            <li>
-                                <a href="backRoomInit">部屋一覧</a>
-                            </li>
-                            <li>
-                                <a href="backBankInit">銀行一覧</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                @if(Session::get('permission_type_id') == 1)
+                    <li class="sidebar-dropdown">
+                        <a href="#">
+                            <i class="fas fa-key me-2"></i>
+                            <span>マスタ</span>
+                            <span class="badge badge-pill badge-danger"></span>
+                        </a>
 
-                <li class="sidebar-dropdown">
-                    <a href="#">
-                        <i class="far fa-gem"></i>
-                        <span>設定</span>
-                        <span class="badge badge-pill badge-danger"></span>
-                    </a>
-                    <div class="sidebar-submenu">
-                        <ul>
-                            <li>
-                                <a href="backUserInit">ユーザ</a>
-                            </li>
-                            <li>
-                                <a href="backUserInit">勘定科目</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                        <div class="sidebar-submenu">
+                            <ul>
+                                <li>
+                                    <a href="backOwnerInit">家主一覧</a>
+                                </li>
+                                <li>
+                                    <a href="backRealEstateInit">物件一覧</a>
+                                </li>
+                                <li>
+                                    <a href="backRoomInit">部屋一覧</a>
+                                </li>
+                                <li>
+                                    <a href="backBankInit">銀行一覧</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                @endif
+
+                @if(Session::get('permission_type_id') == 1)
+                    <li class="sidebar-dropdown">
+                        <a href="#">
+                            <i class="far fa-gem"></i>
+                            <span>設定</span>
+                            <span class="badge badge-pill badge-danger"></span>
+                        </a>
+                        <div class="sidebar-submenu">
+                            <ul>
+                                <li>
+                                    <a href="backUserInit">ユーザ</a>
+                                </li>
+                                <li>
+                                    <a href="backUserInit">勘定科目</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                @endif
 
             </ul>
             <!-- 親要素ul -->

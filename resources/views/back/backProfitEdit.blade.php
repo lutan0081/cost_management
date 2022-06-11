@@ -42,34 +42,79 @@
         @endcomponent
 		<!-- sidebar-wrapper  -->
 		
-		<!-- page-content" -->
-		<main class="page-content">
+            <!-- page-content" -->
+            <main class="page-content">
+
+                <div class="container mt-3">
+                    <div class="row">
+
+                        <!-- タイトル -->
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="info_title mt-2">
+                                <i class="fas bi bi-piggy-bank-fill icon_blue me-2"></i>売上一覧
+                            </div>
+                            <hr>
+                        </div>
+
+                        <!-- 承諾者・承諾日 -->
+                        
+                            <div class="col-12 col-md-12 col-lg-12">
+                                <div class="form-check float-end">
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        承諾日:　承諾者:
+                                    </label>
+                                </div>
+                            </div>
+                
+
+                        <!-- 承諾する -->
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <div class="form-check form-switch float-end">
+                                <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id">
+                                <label class="form-check-label markerBlue" for="flexCheckDefault">
+                                    承諾する
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
 
                 <!-- 入力項目 -->
-                <div class="container mt-3">
+                <div class="container">
                     <div class="row">
                         <div class="col-12 col-md-12 col-lg-12">
 
                             <form id="editForm" class="needs-validation" novalidate>
-
-                                <div class="info_title mt-3">
-                                    <i class="fas bi bi-piggy-bank-fill icon_blue me-2"></i>売上詳細
-                                </div>
-
-                                <!-- 境界線 -->
-                                <hr>
-
+                    
                                 <!-- カード -->
                                 <div class="card border border-0">
+
+                                    <!-- タブタイトル -->
+                                    <div class="row">
+                                        <div class="col-12 col-md-12 col-lg-12 mt-2">
+                                            <!-- ナビゲーションの設定 -->
+                                            <nav>
+                                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                                    <a class="nav-link active" id="nav-cost-tab" data-bs-toggle="tab" href="#nav-cost" role="tab" aria-controls="nav-cost" aria-selected="true">売上概要</a>
+                                                    <a class="nav-link" id="nav-file-tab" data-bs-toggle="tab" href="#nav-file" role="tab" aria-controls="nav-file" aria-selected="false">付属書類</a>
+                                                    <a class="nav-link" id="nav-other-tab" data-bs-toggle="tab" href="#nav-other" role="tab" aria-controls="nav-other" aria-selected="false">連絡事項</a>
+                                                </div>
+                                            </nav>
+                                            <!-- ナビゲーションの設定 -->
+                                        </div>
+                                    </div>
+                                    <!-- タブタイトル -->
 
                                     <!-- タブ内のコンテンツ -->
                                     <div class="col-12 col-md-12 col-lg-12 mb-3">
                                         <!-- 内容 -->
                                         <div class="tab-content" id="nav-tabContent">
                                         
-                                            <div class="tab-pane fade show active" id="nav-contract_progress" role="tabpanel" aria-labelledby="nav-contract_progress-tab">
+                                            <!-- 概要 -->
+                                            <div class="tab-pane fade show active" id="nav-cost" role="tabpanel" aria-labelledby="nav-cost-tab">
                                                 
-                                                <div class="row row-cols-2">
+                                                <div class="row row-cols-3">
 
                                                     <!-- 売上担当 -->
                                                     <div class="col-12 col-md-12 col-lg-3 mt-3">
@@ -192,39 +237,163 @@
                                                         </div> 
                                                     </div>
                                                     <!-- 備考 -->
-
+                                
                                                 </div>
 
                                             </div>
-                                
+                                            <!-- 業者 -->
+
+                                            <!-- 画像 -->
+                                            <div class="tab-pane fade" id="nav-file" role="tabpanel" aria-labelledby="nav-file-tab">
+                                                <div class="row row-cols-3">
+
+                                                    <!-- 添付書類 -->
+                                                    <div class="col-12 col-md-6 col-lg-6 mt-2">
+                                                        <label class="mb-2 label_any"></label>アップロード
+                                                        <input class="form-control" type="file" id="img_file">
+                                                        <!-- エラーメッセージ -->
+                                                        <div class="file-tab invalid-feedback" id ="img_file_error"></div>
+                                                    </div>
+
+                                                    <!-- 改行 -->
+                                                    <div class="w-100"></div>
+
+                                                    <!-- 種別 -->
+                                                    <div class="col-12 col-md-12 col-lg-3 mt-2">
+                                                        <label class="mb-2 label_any"></label>ファイル種別
+                                                        <select class="label_any form-select" name="img_type" id="img_type">
+                                                            <option selected></option>
+                                                            @foreach($profit_img_type_list as $profit_img_type)
+                                                                <option value="{{$profit_img_type->profit_img_type_id}}">{{ $profit_img_type->profit_img_type_name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <div class="file-tab invalid-feedback" id ="img_type_error"></div>
+                                                    </div>
+
+                                                    <!-- 補足 -->
+                                                    <div class="col-12 col-md-12 col-lg-12 mt-2">
+                                                        <label class="label_any" for=""></label>備考
+                                                        <textarea class="form-control" name="img_text" id="img_text" rows="2" placeholder="例：自由に入力"></textarea>
+                                                        <div class="file-tab invalid-feedback" id ="img_text_error"></div>
+                                                    </div>
+
+                                                    <!-- 画像ファイル -->
+                                                    @if(count($profit_img_list) > 0)
+                                                        <div class="col-12 col-md-12 col-lg-12 mt-4">
+
+                                                            <!-- タイトル -->
+                                                            <i class="fas fa-file icon_blue me-2"></i>付属書類
+                                                            <hr class="hr_album">
+
+                                                            <div class="row">
+                                                                
+                                                                @foreach($profit_img_list as $imgs)
+                                                                    <div class="col-12 col-md-12 col-lg-4 mt-3 mb-2">
+                                                                        <div class="card" style="min-height:25rem;">
+                                                                            
+                                                                            @php
+                                                                                $file_type = explode('.', $imgs->profit_img_path)[1];
+                                                                            @endphp
+
+                                                                            <!-- ファイルタイプがPDFの場合 -->
+                                                                            @if($file_type == 'pdf')
+                                                                                <div class="pdf_icon_box">
+                                                                                    <a href="storage/{{ $imgs->profit_img_path }}" target="_blank"><img src="./back/img/pdf_icon.jpeg" class="pdf_icon_size"></a>
+                                                                                </div>
+                                                                            <!-- ファイルタイプがPDF以外の場合 -->
+                                                                            @else
+                                                                                <img src="storage/{{ $imgs->profit_img_path }}" class="card-img-top">
+                                                                            @endif
+                                                                            
+                                                                            <!-- カードボディ -->
+                                                                            <div class="card-body">
+                                                                                <ul class="list-group list-group-flush">
+                                                                                    <li class="list-group-item">種別：{{ $imgs->profit_img_type_name }}</li>
+                                                                                    <li class="list-group-item">備考：{{ $imgs->profit_img_memo }}</li>
+                                                                                </ul>
+                                                                            </div>
+                                                                            <!-- カードボディ -->
+
+                                                                            <!-- 削除ボタン -->
+                                                                            <div class="card-footer">
+                                                                                <span id="{{ $imgs->profit_img_id }}" class="btn_img_delete text_red float-end" style="cursor: hand; cursor:pointer;">削除</span>
+                                                                            </div>
+                                                                            <!-- 削除ボタン -->
+
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach                        
+
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                    <!-- 画像ファイル -->
+
+
+                                                </div>
+                                            </div>
+                                            <!-- 画像 -->
+
+                                            <!-- 質問 -->
+                                            <div class="tab-pane fade" id="nav-other" role="tabpanel" aria-labelledby="nav-other-tab">
+                                                <div class="row row-cols-2">
+
+                                                    <!-- 質問内容 -->
+                                                    <div class="col-12 col-md-12 col-lg-6 mt-2">
+                                                        <label class="label_any" for=""></label>質問内容
+                                                        <textarea class="form-control" name="question_contents" id="question_contents" rows="8" placeholder="例：内容を自由に入力">{{ $profit_list->profit_question_contents }}</textarea>
+                                                        <div class="other-tab invalid-feedback" id ="question_contents_error"></div>
+                                                    </div>
+
+                                                    <!-- 回答内容 -->
+                                                    <div class="col-12 col-md-12 col-lg-6 mt-2">
+                                                        <label class="label_any" for=""></label>回答内容
+                                                        <textarea class="form-control" name="answer_contents" id="answer_contents" rows="8" placeholder="例：内容を自由に入力">{{ $profit_list->profit_answer_contents }}</textarea>
+                                                        <div class="other-tab invalid-feedback" id ="answer_contents_error"></div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <!-- 質問 -->   
+
                                         </div>
                                         <!-- 内容 -->
                                     </div>
                                     <!-- タブ内のコンテンツ -->
-                                    
+
                                     <!-- 境界線 -->
                                     <hr>
+                                    <!-- 境界線 -->
 
                                     <!-- ボタン -->
                                     <div class="row row-cols-2 mb-5">
 
                                         <!-- 削除 -->
-                                        <div class="col-6 col-md-6 col-lg-6 mt-3">
-                                            <button id="btn_delete" class="btn btn-outline-danger btn-default">削除</button>
+                                        <div class="col-12 col-md-6 col-lg-6 mt-2">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" id="btn_delete" class="btn btn-outline-danger btn-default">削除</button>
+                                                <button type="button" id="btn_url_again" class="btn btn-outline-primary btn-default" data-bs-toggle="modal" data-bs-target="#urlModal">URL発行</button>
+                                            </div>
                                         </div>
-                                        
+                                        <!-- 削除 -->
+
                                         <!-- 登録、帳票 -->
-                                        <div class="col-6 col-md-6 col-lg-6 mt-3">
-                                            <!-- 契約詳細id='':帳票ボタン非表示 -->
-                                            <button id="btn_edit" class="btn btn-outline-primary btn-default float-end">登録</button>
+                                        <div class="col-12 col-md-6 col-lg-6 mt-2">
+                                            <div class="btn-group float-xl-end" role="group">
+
+                                                <!-- 登録 -->
+                                                <button id="btn_edit" class="btn btn-outline-primary btn-default">登録</button>
+
+                                            </div>
                                         </div>
+                                        <!-- 登録、帳票 -->
 
                                     </div>     
                                     <!-- ボタン -->
 
-                                <!-- id -->
-                                <input type="hidden" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
-
+                                    <!-- 売上id -->
+                                    <input type="hidden" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
+                                    
                                 </div>
                                 <!-- カード -->
                             </form>
@@ -233,9 +402,8 @@
                 </div>
                 <!-- 入力項目 -->
 
-
-		</main>
-		<!-- page-content" -->
+            </main>
+            <!-- page-content" -->
 
 		</div>
 		<!-- page-wrapper -->
