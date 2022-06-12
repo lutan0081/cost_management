@@ -912,7 +912,7 @@ $(function(){
         }).done(function(data) {
 
             console.log('status:' + data.status)
-            console.log('承諾ボタンの処理')
+            console.log('承諾の処理')
             
             setTimeout(function(){
                 $("#overlay").fadeOut(300);
