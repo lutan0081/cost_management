@@ -9,6 +9,10 @@ $(function(){
 
         e.preventDefault();
 
+        $('#nav-profit-tab').removeClass('bg_tab_error');
+        $('#nav-file-tab').removeClass('bg_tab_error');
+        $('#nav-other-tab').removeClass('bg_tab_error');
+
         // ローディング画面
         $("#overlay").fadeIn(300);
 
@@ -56,6 +60,14 @@ $(function(){
             console.log('value:'+ val);
 
             if (val === '') {
+
+                // エラーメッセージのidを作成
+                let f_id_error = f_id + '_error';
+
+                let error_message_id = $('#' + f_id_error).attr('class');
+                
+                // タブを赤色に変更する(引数:エラーメッセージのid)
+                tabError(error_message_id);
 
                 // blade側のformタグにwas-validatedを追加
                 $(forms).addClass("was-validated");
@@ -244,6 +256,11 @@ $(function(){
 
                             // 表示箇所のMessageのkey取得
                             let msg_key = "#" + data.errkeys[i] + "_error"
+                            
+                            let error_message_id = $(msg_key).attr('class');
+
+                            tabError(error_message_id);
+
                             // error_messageテキスト追加
                             $(msg_key).text(data.messages[i]);
                             $(msg_key).show();
@@ -475,4 +492,488 @@ $(function(){
         
     });
 
+    /**
+     * 削除(画像)
+     */
+    $(".btn_img_delete").on('click', function(e) {
+
+        console.log('画像削除の処理');
+
+        e.preventDefault();
+
+        // id取得
+        var img_id = $(this).attr("id");
+        console.log(img_id);
+
+        // alertの設定
+        var options = {
+            title: "削除しますか？",
+            text: "※一度削除したデータは復元出来ません。",
+            icon: 'warning',
+            buttons: {
+                cancel: "Cancel", // キャンセルボタン
+                OK: true
+            }
+        };
+        
+        // then() OKを押した時の処理
+        swal(options)
+            .then(function(val) {
+
+            if(val == null){
+
+                console.log('キャンセルの処理');
+
+                return false;
+            }
+
+            if (val == "OK") {
+
+                console.log('OKの処理');
+
+                // 送信用データ
+                let sendData = {
+
+                    "img_id": img_id,
+                };
+
+                console.log(sendData);
+
+                // ajaxヘッダー
+                $.ajaxSetup({
+
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+                
+                });
+
+                $.ajax({
+
+                    type: 'post',
+                    url: 'backProfitDeleteEntryImgDetail',
+                    dataType: 'json',
+                    data: sendData,
+                
+                // 接続処理
+                }).done(function(data) {
+
+                    console.log('status:' + data.status)
+
+                    if(data.status == true){
+
+                        var options = {
+                            title: "削除が完了しました。",
+                            icon: 'success',
+                            buttons: {
+                                ok: true
+                            }
+                        };
+    
+                        // then() OKを押した時の処理
+                        swal(options)
+                            .then(function(val) {
+                            if (val) {
+                                // 画面更新
+                                window.location.reload();
+                            }
+                        });
+                    }
+
+                // ajax接続失敗の時の処理
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
+
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                });
+            };
+            // sweetalert
+        });
+    });
+
+    /**
+     * 承諾ボタンの処理
+     */
+    $("#approval_id").click(function(e){
+
+        console.log("承認ボタンの処理");
+
+        e.preventDefault();
+
+        // 承認ボタンonの処理
+        if($('[name="approval_id"]').prop('checked')){
+
+            console.log('承認ボタンonの処理');
+            approval_checked_on();
+
+        // 承認ボタンoffの処理
+        }else{
+
+            console.log('承認ボタンoffの処理');
+            approval_checked_off();
+
+        }
+    });
+
+    /**
+     * 承認ボタンonの処理
+     */
+    function approval_checked_on(){
+
+        console.log('approvalcheck_onの処理');
+
+        // alertの設定
+        var options = {
+            title: "承諾しますか？",
+            text: "一度承諾をすると編集ができません。\n編集が必要な場合、システム管理者にお問合せください。",
+            icon: 'warning',
+            buttons: {
+                Cancel: "Cancel", // キャンセルボタン
+                OK: true
+            }
+        };
+
+        // 値取得
+        let profit_id = $("#profit_id").val();
+        console.log('profit_id:' + profit_id);
+        
+        // then() OKを押した時の処理
+        swal(options)
+            .then(function(val) {
+            
+            // Cancelの処理
+            if(val == null){
+
+                console.log('Cancel');
+
+                return false;
+            }
+    
+            // OKの処理
+            if (val == "OK") {
+
+                console.log('OK');
+
+                // ローディング画面
+                $("#overlay").fadeIn(300);
+
+                $('#nav-profit-tab').removeClass('bg_tab_error');
+                $('#nav-file-tab').removeClass('bg_tab_error');
+                $('#nav-other-tab').removeClass('bg_tab_error');
+        
+                // バリデーション
+                // formの値数を取得
+                let forms = $('.needs-validation');
+                console.log('forms.length:' + forms[0].length);
+        
+                // validationフラグ初期値
+                let v_check = true;
+        
+                // formの項目数ループ処理
+                for (let i = 0; i < forms[0].length; i++) {
+        
+                    // タグ名、Id名取得
+                    let form = forms[0][i];
+                    console.log('from:'+ form);
+        
+                    // タグ名を取得 input or button
+                    let tag = $(form).prop("tagName");
+                    console.log('tag:'+ tag);
+        
+                    // 各項目のid取得
+                    let f_id = $(form).prop("id");
+                    console.log('id:'+ f_id);
+                    
+                    // form内のbuttonは通過
+                    if (tag == 'BUTTON') {
+                        continue;
+                    }
+        
+                    // 必須ではない場合、以降を処理せず次のレコードに行く
+                    let required = $(form).attr("required");
+        
+                    console.log('required:' + required);
+        
+                    if (required !== 'required') {
+        
+                        continue;
+                    }
+        
+                    // 必須で値が空白の場合の処理
+                    let val = $(form).val();
+        
+                    console.log('value:'+ val);
+        
+                    if (val === '') {
+        
+                        // エラーメッセージのidを作成
+                        let f_id_error = f_id + '_error';
+        
+                        let error_message_id = $('#' + f_id_error).attr('class');
+                        
+                        // タブを赤色に変更する(引数:エラーメッセージのid)
+                        tabError(error_message_id);
+        
+                        // blade側のformタグにwas-validatedを追加
+                        $(forms).addClass("was-validated");
+                        v_check = false;
+        
+                    }
+                    
+                }
+        
+                // チェック=falseの場合プログラム終了
+                console.log(v_check);
+                if (v_check === false) {
+        
+                    // ローディング画面停止
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
+        
+                    return false;
+                }
+
+                /**
+                 * 承認ボタンのon,offの判定
+                 */
+                // true/false
+                let approval_flag = true;
+                console.log('approval_flag:' + approval_flag);
+        
+                // 送信用データ
+                let sendData = {
+                    "profit_id": profit_id,
+                    "approval_flag": approval_flag,
+                };
+
+                console.log(sendData);
+
+                $.ajaxSetup({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+                });
+
+                $.ajax({
+                    type: 'post',
+                    url: 'backProfitApprovalEntry',
+                    dataType: 'json',
+                    data: sendData,
+                
+                // 接続処理
+                }).done(function(data) {
+
+                    console.log('status:' + data.status)
+                    console.log('承諾ボタンの処理')
+                    
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
+
+                    location.reload();
+                    // location.href = 'backCostInit';
+
+                // ajax接続失敗の時の処理
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
+
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                });
+            };
+            // sweetalert
+        });
+    }
+
+    /**
+     * 承認ボタンoffの処理
+     */
+    function approval_checked_off(){
+
+        console.log('approvalcheck_onの処理');
+
+        // 値取得
+        let profit_id = $("#profit_id").val();
+        console.log(profit_id);
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);
+
+        $('#nav-profit-tab').removeClass('bg_tab_error');
+        $('#nav-file-tab').removeClass('bg_tab_error');
+        $('#nav-other-tab').removeClass('bg_tab_error');
+
+        // バリデーション
+        // formの値数を取得
+        let forms = $('.needs-validation');
+        console.log('forms.length:' + forms[0].length);
+
+        // validationフラグ初期値
+        let v_check = true;
+
+        // formの項目数ループ処理
+        for (let i = 0; i < forms[0].length; i++) {
+
+            // タグ名、Id名取得
+            let form = forms[0][i];
+            console.log('from:'+ form);
+
+            // タグ名を取得 input or button
+            let tag = $(form).prop("tagName");
+            console.log('tag:'+ tag);
+
+            // 各項目のid取得
+            let f_id = $(form).prop("id");
+            console.log('id:'+ f_id);
+            
+            // form内のbuttonは通過
+            if (tag == 'BUTTON') {
+                continue;
+            }
+
+            // 必須ではない場合、以降を処理せず次のレコードに行く
+            let required = $(form).attr("required");
+
+            console.log('required:' + required);
+
+            if (required !== 'required') {
+
+                continue;
+            }
+
+            // 必須で値が空白の場合の処理
+            let val = $(form).val();
+
+            console.log('value:'+ val);
+
+            if (val === '') {
+
+                // エラーメッセージのidを作成
+                let f_id_error = f_id + '_error';
+
+                let error_message_id = $('#' + f_id_error).attr('class');
+                
+                // タブを赤色に変更する(引数:エラーメッセージのid)
+                tabError(error_message_id);
+
+                // blade側のformタグにwas-validatedを追加
+                $(forms).addClass("was-validated");
+                v_check = false;
+
+            }
+            
+        }
+
+        // チェック=falseの場合プログラム終了
+        console.log(v_check);
+        if (v_check === false) {
+
+            // ローディング画面停止
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            return false;
+        }
+
+        /**
+         * 承認ボタンのon,offの判定
+         */
+        // true/false
+        let approval_flag = false;
+        console.log('approval_flag:' + approval_flag);
+
+        // 送信用データ
+        let sendData = {
+            
+            "profit_id": profit_id,
+            "approval_flag": approval_flag,
+        };
+
+        console.log(sendData);
+
+        $.ajaxSetup({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+        });
+
+        $.ajax({
+            type: 'post',
+            url: 'backProfitApprovalEntry',
+            dataType: 'json',
+            data: sendData,
+        
+        // 接続処理
+        }).done(function(data) {
+
+            console.log('status:' + data.status)
+            console.log('承諾ボタンの処理')
+            
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            location.reload();
+            // location.href = 'backCostInit';
+
+        // ajax接続失敗の時の処理
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+        });
+        
+    }
+
+    /**
+     * エラー時のタブ背景色の設定
+     */
+    function tabError(error_message_id){
+
+        // error_message_idがある場合の処理
+        if(error_message_id !== undefined){
+
+            // error_message_id内にあるclassのtab名を取得
+            let tab_class = error_message_id.split(' ')[0];
+            console.log('tab_class:' + tab_class);
+            
+            // 経費概要
+            if(tab_class == 'profit-tab'){
+                                
+                console.log('売上概要');
+
+                $('#nav-profit-tab').addClass('bg_tab_error');
+                
+            } 
+
+            // 付属書類
+            if(tab_class == 'file-tab'){
+                                
+                console.log('付属書類');
+
+                $('#nav-file-tab').addClass('bg_tab_error');
+                
+            }
+
+            // 質問
+            if(tab_class == 'other-tab'){
+                                
+                console.log('質問');
+
+                $('#nav-other-tab').addClass('bg_tab_error');
+                
+            }
+
+        }
+    }
 });

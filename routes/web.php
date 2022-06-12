@@ -115,6 +115,12 @@ Route::post('backProfitEditEntry', 'Back\Profit\BackProfitController@backProfitE
 // 削除
 Route::post('backProfitDeleteEntry', 'Back\Profit\BackProfitController@backProfitDeleteEntry')->middleware("cost_auth");
 
+// 削除（詳細）
+Route::post('backProfitDeleteEntryImgDetail', 'Back\Profit\BackProfitController@backProfitDeleteEntryImgDetail')->middleware("cost_auth");
+
+// 承認の処理
+Route::post('backProfitApprovalEntry', 'Back\Profit\BackProfitController@backProfitApprovalEntry')->middleware("cost_auth");
+
 /**
  * 経費管理
  */

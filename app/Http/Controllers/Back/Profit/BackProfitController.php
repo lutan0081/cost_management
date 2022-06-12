@@ -479,6 +479,7 @@ class BackProfitController extends Controller
         $obj->profit_approval_date = '';
         $obj->profit_question_contents = '';
         $obj->profit_answer_contents = '';
+        $obj->create_user_name = '';
         
         $ret = [];
         $ret = $obj;
@@ -702,6 +703,7 @@ class BackProfitController extends Controller
             ."profits.profit_fee, "
             ."profits.profit_memo, "
             ."profits.profit_approval_id, "
+            ."create_users.create_user_name, "
             ."profits.profit_approval_date, "
             ."profits.profit_question_contents, "
             ."profits.profit_answer_contents, "
@@ -716,6 +718,8 @@ class BackProfitController extends Controller
             ."rooms.room_id = profits.room_id "
             ."left join real_estates on "
             ."real_estates.real_estate_id = rooms.real_estate_id "
+            ."left join create_users on "
+            ."create_users.create_user_id = profits.profit_approval_id "
             ."where profit_id = $profit_id ";
 
             Log::debug('sql:' .$str);
@@ -1436,6 +1440,8 @@ class BackProfitController extends Controller
 
         try{
 
+            DB::beginTransaction();
+
             // return初期値
             $response = [];
 
@@ -1443,6 +1449,308 @@ class BackProfitController extends Controller
 
             // js側での判定のステータス(true:OK/false:NG)
             $response['status'] = $profit_info['status'];
+
+            /**
+             * 補足資料
+             */
+            $img_info = $this->deleteEntryImg($request);
+
+            // js側での判定のステータス(true:OK/false:NG)
+            $ret['status'] = $img_info['status'];
+
+            // js側での判定のステータス(true:OK/false:NG)
+            $response["status"] = $ret['status'];
+
+            DB::commit();
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            DB::rollback();
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            $response['status'] = 0;
+
+        // status:OK=1/NG=0
+        } finally {
+
+            if($response['status'] == 1){
+
+                Log::debug('status:trueの処理');
+                $response['status'] = true;
+
+            }else{
+
+                Log::debug('status:falseの処理');
+                $response['status'] = false;
+            }
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * 削除(sql)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function deleteProfit(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            // return初期値
+            $ret = [];
+
+            // 値取得
+            $profit_id = $request->input('profit_id');
+
+            $str = "delete "
+            ."from "
+            ."profits "
+            ."where "
+            ."profit_id = $profit_id; ";
+            Log::debug('str:'.$str);
+
+            // OK=1/NG=0
+            $ret['status'] = DB::delete($str);
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            throw $e;
+
+        // status:OK=1/NG=0
+        } finally {
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return $ret;
+    }
+
+    /**
+     * 削除(画像)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function deleteEntryImg(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            $ret = [];
+
+            // 値取得
+            $profit_id = $request->input('profit_id');
+
+            /**
+             * 画像削除
+             * 1.契約者Idごとの画像データ取得
+             * 2.パス取得
+             * 3.フォルダ削除
+             * 4.データ(DB)削除
+             */
+            $str = "select * from profit_imgs "
+            ."where profit_id = '$profit_id' ";
+            Log::debug('select_sql:'.$str);
+            $img_list = DB::select($str);
+
+            // デバック
+            $arrString = print_r($img_list , true);
+            Log::debug('log_Imgs:'.$arrString);
+
+            /**
+             * 画像データが存在しない場合
+             * 削除対象が無のため、return=trueを返却
+             */
+            if(count($img_list) == 0){
+
+                Log::debug('画像データが存在しない場合の処理');
+
+                $ret['status'] = 1;
+
+                return $ret;
+            }
+
+            // 画像パスを"/"で分解->配列化
+            $arr = explode('/', $img_list[0]->profit_img_path);
+
+            // appを除外し文字結合(public/img/214)
+            $img_dir_path = $arr[0] ."/" .$arr[1]."/" .$arr[2];
+
+            // フォルダ削除
+            Storage::deleteDirectory('/public/' .$img_dir_path);
+
+            // 画像データ削除(DB)
+            $str = "delete from profit_imgs "
+            ."where profit_id = '$profit_id' ";
+            Log::debug('delete_sql:'.$str);
+
+            $ret['status'] = DB::delete($str);
+            Log::debug($ret['status']);
+            
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            throw $e;
+
+        // status:OK=1/NG=0
+        } finally {
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return $ret;
+    }
+
+    /**
+     * 削除(画像:詳細)
+     *
+     * @param Request $request
+     * @return $ret['status'] OK=true/NG=false
+     */
+    public function backProfitDeleteEntryImgDetail(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            // トランザクション
+            DB::beginTransaction();
+
+            $response = [];
+
+            // 値取得
+            $profit_img_id = $request->input('img_id');
+
+            /**
+             * 画像削除
+             * 1.契約者Idごとの画像データ取得
+             * 2.パス取得
+             * 3.フォルダ削除
+             * 4.データ(DB)削除
+             */
+            $str = "select * from profit_imgs "
+            ."where profit_img_id = '$profit_img_id' ";
+            Log::debug('select_sql:'.$str);
+            $img_list = DB::select($str);
+
+            // デバック
+            $arrString = print_r($img_list , true);
+            Log::debug('imgs:'.$arrString);
+
+            // 画像データが存在しない場合、削除対象が無のため、return=trueを返却
+            if(count($img_list) == 0){
+
+                Log::debug('画像が存在しない場合の処理');
+
+                $ret['status'] = true;
+
+                // コミット(記載無しの場合、処理が実行されない)
+                DB::commit();
+
+                return response()->json($response);
+            }
+            
+            /**
+             * 画像ファイル削除
+             */
+            // 画像パスを"/"で分解->配列化
+            $img_name_path = $img_list[0]->profit_img_path;
+            Log::debug('img_name_path:'.$img_name_path);
+
+            // ファイル削除(例:Storage::delete('public/img/214/1637578613.jpg');
+            Storage::delete('/public/' .$img_name_path);
+
+            /**
+             * 画像フォルダ削除
+             */
+             // 画像パスを"/"で分解->配列化
+            $arr = explode('/', $img_list[0]->profit_img_path);
+            $img_dir_path = $arr[0] ."/" .$arr[1]."/" .$arr[2];
+
+            // フォルダの中身を確認
+            $img_arr = Storage::files('/public/' .$img_dir_path);
+
+            // デバック(ファイルの中身を確認)
+            Log::debug('img_arr:'.$arrString);
+            $arrString = print_r($img_arr , true);
+
+            // 参照の値が空白の場合、フォルダ削除
+            if(empty($img_arr)){
+
+                Log::debug('フォルダの中身がない場合の処理');
+
+                // フォルダ削除
+                Storage::deleteDirectory('/public/' .$img_dir_path);
+            }
+
+            // 画像データ削除(DB)
+            $str = "delete from profit_imgs "
+            ."where profit_img_id = '$profit_img_id' ";
+            Log::debug('delete_sql:'.$str);
+
+            $response['status'] = DB::delete($str);
+            Log::debug($response['status']);
+            
+            // コミット
+            DB::commit();
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            DB::rollback();
+
+            $response['status'] = 0;
+
+        // status:OK=1/NG=0
+        } finally {
+
+            if($response['status'] == 1){
+
+                Log::debug('status:trueの処理');
+                $response['status'] = true;
+
+            }else{
+
+                Log::debug('status:falseの処理');
+                $response['status'] = false;
+            }
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * 承認の処理
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function backProfitApprovalEntry(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            // return初期値
+            $response = [];
+
+            /**
+             * 売上概要
+             */
+            $approval_info = $this->updateApproval($request);
+
+            // js側での判定のステータス(true:OK/false:NG)
+            $response['status'] = $approval_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -1472,30 +1780,63 @@ class BackProfitController extends Controller
     }
 
     /**
-     * 削除
+     * 承認の処理(sql)
      *
      * @param Request $request
      * @return void
      */
-    private function deleteProfit(Request $request){
+    private function updateApproval(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
             // return初期値
             $ret = [];
 
-            // 値取得
+            /**
+             * 値取得
+             */
+            // 承認on,offフラグ
+            $approval_flag = $request->input('approval_flag');
+            Log::debug('approval_flag:'.$approval_flag);
+
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('session_id:'.$session_id);
+
+            /**
+             * true:approval_id=登録者(session_id)
+             * false:approval_id=空白
+             */
+            if($approval_flag == 'true'){
+
+                $approval_id = $session_id;
+                $approval_date = now() .'.000';
+
+            }else{
+
+                $approval_id = 0;
+                $approval_date = '';
+
+            }
+
+            // id
             $profit_id = $request->input('profit_id');
 
-            $str = "delete "
-            ."from "
-            ."profits "
+            // 日付
+            $date = now() .'.000';
+
+            $str = "update profits "
+            ."set "
+            ."profit_approval_id=$approval_id "
+            .",profit_approval_date='$approval_date' "
+            .",update_user_id=$session_id "
+            .",update_date='$date' "
             ."where "
-            ."profit_id = $profit_id; ";
+            ."profit_id=$profit_id ";
             Log::debug('str:'.$str);
 
             // OK=1/NG=0
-            $ret['status'] = DB::delete($str);
+            $ret['status'] = DB::update($str);
 
         // 例外処理
         } catch (\Throwable $e) {

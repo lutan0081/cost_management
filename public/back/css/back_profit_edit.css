@@ -102,3 +102,11 @@ PDFの画像の調整
     text-align: center !important;
 }
 
+/*==================================
+タブのエラー
+===================================*/
+.bg_tab_error {
+    background-color: #C44 !important;
+    color: #ffffff !important;
+    text-decoration: none;
+}

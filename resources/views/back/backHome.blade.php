@@ -61,7 +61,7 @@
 
                                             <div class="col-12 col-md-12 col-lg-12 pt-5">
                                                 <span class="dashboard_box_title">
-                                                    <i class="fas bi bi-piggy-bank me-2"></i>PROFIT
+                                                    <i class="fas bi bi-piggy-bank me-2"></i>売上
                                                 </span> 
                                             </div>
                                             
@@ -89,7 +89,7 @@
                                             <div class="col-12 col-md-12 col-lg-12 pt-5">
                                                 <span class="dashboard_box_title">
                                                 <i class="bi bi-wallet2"></i>
-                                                    COST
+                                                    経費
                                                 </span> 
                                             </div>
                                             
@@ -117,12 +117,16 @@
                                             <div class="col-12 col-md-12 col-lg-12 pt-5">
                                                 <span class="dashboard_box_title">
                                                     <i class="bi bi-hand-thumbs-up"></i>
-                                                    AGREEMENT
+                                                    承諾前
                                                 </span> 
                                             </div>
                                             
                                             <div class="col-12 col-md-12 col-lg-12 pt-2">
-                                                未承諾: <span class="count dashboard_box_num">12345678</span>
+                                                売上: <span class="count dashboard_box_num">12345678</span>
+                                            </div>
+
+                                            <div class="col-12 col-md-12 col-lg-12">
+                                                経費: <span class="count dashboard_box_num">12345678</span>
                                             </div>
                                             
                                         </div>

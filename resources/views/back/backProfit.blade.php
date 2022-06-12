@@ -132,8 +132,14 @@
                                                 </div>
                                                 <!-- 勘定項目 -->
 
+                                                <!-- 色分けの説明 -->
+                                                <div class="col-6 col-md-6 col-lg-6 color_info_box">
+                                                    <label class="markerBlue" for=""><i class="bi bi-question-circle me-1"></i>青：Q&A</label>
+                                                </div>
+
+
                                                 <!-- 検索ボタン -->
-                                                <div class="col-5 col-md-4 col-lg-5 mt-2">
+                                                <div class="col-5 col-md-4 col-lg-6 mt-2">
                                                     <input type="submit" class="btn btn-default btn-outline-primary float-end" value="検索">
                                                 </div>
                                                 <!-- 検索ボタン -->
@@ -165,13 +171,14 @@
                                     <!-- スクロール -->
                                     <div class="overflow-auto" style="height:30rem;">
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-condensed table-striped">
+                                            <table class="table table-hover table-condensed">
 
                                                 <!-- テーブルヘッド -->
                                                 <thead>
                                                     <tr>
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
                                                         <th><i class="bi bi-check2-square"></i></th>
+                                                        <th scope="col" id="approval_id">承諾</th>
                                                         <th scope="col" id="legal_place_address">勘定日</th>
                                                         <th scope="col" id="legal_place_post_number">勘定科目</th>
                                                         <th scope="col" id="legal_place_name">取引先</th>
@@ -186,9 +193,10 @@
                                                 <!-- テーブルボディ -->
                                                 <tbody>
                                                     @foreach($res as $profit_list)
-                                                        <tr>
+                                                        <tr @if($profit_list->profit_question_contents != '') class="table table-primary" @endif>
                                                             <td id="id_{{ $profit_list->profit_id }}" class="click_class" style="display:none"></td>
                                                             <td id="select_{{ $profit_list->profit_id }}" class="click_class"><input id="{{ $profit_list->profit_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
+                                                            <td id="approvalId_{{ $profit_list->profit_id }}" class="click_class">@if($profit_list->profit_approval_id !== 0) <i class="bi bi-check-lg"></i> @endif</td>
                                                             <td id="date_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_date }}</td>
                                                             <td id="account_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->profit_account_name }}</td>
                                                             <td id="customer_{{ $profit_list->profit_id }}" class="click_class">{{ $profit_list->customer_name }}</td>
@@ -224,7 +232,7 @@
 
                                 <div class="col-12 col-md-8 col-lg-12">
                                     <div class="form-group">
-                                        <label for="">利益額</label>
+                                        <label for=""><i class="bi bi-piggy-bank me-1 icon_blue"></i>利益額</label>
                                         <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($profit_fee_sum_list->profit_fee) }}" style="text-align:right" disabled>
                                     </div>
                                 </div>

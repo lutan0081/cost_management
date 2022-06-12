@@ -57,20 +57,20 @@
                         </div>
 
                         <!-- 承諾者・承諾日 -->
-                        
+                        @if($profit_list->profit_approval_id != '0')
                             <div class="col-12 col-md-12 col-lg-12">
                                 <div class="form-check float-end">
                                     <label class="form-check-label" for="flexCheckDefault">
-                                        承諾日:　承諾者:
+                                        承諾日:{{ $profit_list->profit_approval_date }}　承諾者:{{ $profit_list->create_user_name }}
                                     </label>
                                 </div>
                             </div>
-                
+                        @endif
 
                         <!-- 承諾する -->
                         <div class="col-12 col-md-12 col-lg-12">
                             <div class="form-check form-switch float-end">
-                                <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id">
+                                <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id" @if($profit_list->profit_approval_id != 0)checked @endif>
                                 <label class="form-check-label markerBlue" for="flexCheckDefault">
                                     承諾する
                                 </label>
@@ -96,7 +96,7 @@
                                             <!-- ナビゲーションの設定 -->
                                             <nav>
                                                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                                    <a class="nav-link active" id="nav-cost-tab" data-bs-toggle="tab" href="#nav-cost" role="tab" aria-controls="nav-cost" aria-selected="true">売上概要</a>
+                                                    <a class="nav-link active" id="nav-profit-tab" data-bs-toggle="tab" href="#nav-profit" role="tab" aria-controls="nav-profit" aria-selected="true">売上概要</a>
                                                     <a class="nav-link" id="nav-file-tab" data-bs-toggle="tab" href="#nav-file" role="tab" aria-controls="nav-file" aria-selected="false">付属書類</a>
                                                     <a class="nav-link" id="nav-other-tab" data-bs-toggle="tab" href="#nav-other" role="tab" aria-controls="nav-other" aria-selected="false">連絡事項</a>
                                                 </div>
@@ -112,7 +112,7 @@
                                         <div class="tab-content" id="nav-tabContent">
                                         
                                             <!-- 概要 -->
-                                            <div class="tab-pane fade show active" id="nav-cost" role="tabpanel" aria-labelledby="nav-cost-tab">
+                                            <div class="tab-pane fade show active" id="nav-profit" role="tabpanel" aria-labelledby="nav-profit-tab">
                                                 
                                                 <div class="row row-cols-3">
 
@@ -126,7 +126,7 @@
                                                                 <option value="{{$create_users->create_user_id}}" @if($profit_list->profit_person_id == $create_users->create_user_id) selected @endif>{{ $create_users->create_user_name }}</option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="invalid-feedback" id =profit_person_id_error">
+                                                        <div class="profit-tab invalid-feedback" id =profit_person_id_error">
                                                             売上担当は必須です。
                                                         </div>
                                                     </div>
@@ -142,7 +142,7 @@
                                                                 <option value="{{ $profit_accounts->profit_account_id }}" @if($profit_list->profit_account_id == $profit_accounts->profit_account_id) selected @endif>{{ $profit_accounts->profit_account_name }}</option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="invalid-feedback" id ="profit_account_id_error">
+                                                        <div class="profit-tab invalid-feedback" id ="profit_account_id_error">
                                                             勘定科目は必須です。
                                                         </div>
                                                     </div>
@@ -155,7 +155,7 @@
                                                         <label class="label_required mb-2" for="textBox"></label>勘定日
                                                         <input type="text" class="form-control" name="profit_account_date" id="profit_account_date" placeholder="例：2022/05/17" value="{{ $profit_list->profit_date }}" required>
                                                         <!-- エラーメッセージ -->
-                                                        <div class="invalid-feedback" id ="profit_account_date_error">
+                                                        <div class="profit-tab invalid-feedback" id ="profit_account_date_error">
                                                             勘定日は必須です。
                                                         </div>
                                                     </div>
@@ -166,7 +166,7 @@
                                                         <label class="label_required mb-2" for="textBox"></label>利益額
                                                         <input type="text" class="form-control" name="profit_fee" id="profit_fee" placeholder="例：3000000" value="{{ $profit_list->profit_fee }}" style="text-align:right" required>
                                                         <!-- エラーメッセージ -->
-                                                        <div class="invalid-feedback" id ="profit_fee_error">
+                                                        <div class="profit-tab invalid-feedback" id ="profit_fee_error">
                                                             利益額は必須です。
                                                         </div>
                                                     </div>
@@ -181,7 +181,7 @@
                                                         <label class="label_any mb-2" for="textBox"></label>取引先
                                                         <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="例：株式会社〇〇〇〇不動産" value="{{ $profit_list->customer_name }}">
                                                         <!-- エラーメッセージ -->
-                                                        <div class="invalid-feedback" id ="customer_name_error">
+                                                        <div class="profit-tab invalid-feedback" id ="customer_name_error">
                                                             取引先は必須です。
                                                         </div>
                                                     </div>
@@ -202,7 +202,7 @@
                                                             </select>
                                                             <button id="real_estate-zip" class="btn btn-outline-primary btn_zip"><i class="fas fa-search"></i></button>
                                                         </div>
-                                                        <div class="invalid-feedback" id ="real_estate_id_error">
+                                                        <div class="profit-tab invalid-feedback" id ="real_estate_id_error">
                                                         </div>
                                                     </div>
                                                     <!-- 物件名 -->
@@ -220,7 +220,7 @@
                                                                 <option value="{{$rooms->room_id}}" @if($profit_list->room_id == $rooms->room_id) selected @endif>{{ $rooms->room_name }}</option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="invalid-feedback" id ="room_id_error">
+                                                        <div class="profit-tab invalid-feedback" id ="room_id_error">
                                                         </div>
                                                     </div>
                                                     <!-- 部屋番号 -->
@@ -233,7 +233,7 @@
                                                     <div class="col-6 col-md-8 col-lg-12 mt-3">
                                                         <label class="label_any mb-2" for="textBox"></label>備考
                                                         <textarea class="form-control" name="profit_memo" id="profit_memo" rows="5" placeholder="自由に入力">{{ $profit_list->profit_memo }}</textarea>
-                                                        <div class="invalid-feedback" id ="profit_memo_error">
+                                                        <div class="profit-tab invalid-feedback" id ="profit_memo_error">
                                                         </div> 
                                                     </div>
                                                     <!-- 備考 -->
@@ -392,7 +392,7 @@
                                     <!-- ボタン -->
 
                                     <!-- 売上id -->
-                                    <input type="hidden" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
+                                    <input type="text" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
                                     
                                 </div>
                                 <!-- カード -->
