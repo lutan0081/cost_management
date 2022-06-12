@@ -26,7 +26,7 @@
             <div class="user-info">
 
                 <span class="user-name">
-                    <i class="bi bi-person-fill me-1"></i></i></i></i>{{ Session::get('create_user_name') }}
+                    <i class="bi bi-person-fill me-1"></i>{{ Session::get('create_user_name') }}
                 </span>
 
                 <span class="user-role">
@@ -50,8 +50,8 @@
             <ul>
                 <li>
                     <a href="backHomeInit">
-                        <i class="fas fa-laptop-house"></i>
-                        <span>ホーム</span>
+                        <i class="fas bi bi-house-fill"></i>
+                        <span>Home</span>
                     </a>
                 </li>
 
@@ -94,23 +94,6 @@
                                 <li>
                                     <a href="backBankInit">銀行一覧</a>
                                 </li>
-                            </ul>
-                        </div>
-                    </li>
-                @endif
-
-                @if(Session::get('permission_type_id') == 1)
-                    <li class="sidebar-dropdown">
-                        <a href="#">
-                            <i class="far fa-gem"></i>
-                            <span>設定</span>
-                            <span class="badge badge-pill badge-danger"></span>
-                        </a>
-                        <div class="sidebar-submenu">
-                            <ul>
-                                <li>
-                                    <a href="backUserInit">ユーザ</a>
-                                </li>
                                 <li>
                                     <a href="backUserInit">勘定科目</a>
                                 </li>
@@ -118,6 +101,47 @@
                         </div>
                     </li>
                 @endif
+
+                
+                    <li class="sidebar-dropdown">
+                        <a href="#">
+                            <i class="fas bi bi-gear-fill"></i>
+                            <span>設定</span>
+                            <span class="badge badge-pill badge-danger"></span>
+                        </a>
+                        <div class="sidebar-submenu">
+                            <ul>
+                                @if(Session::get('permission_type_id') == 1)
+                                    <li>
+                                        <a href="backUserInit">ユーザ一覧</a>
+                                    </li>
+                                @endif
+                                <li>
+                                    <a href="backUserInfoInit">ユーザ情報</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                
+
+                <li class="sidebar-dropdown">
+                    <a href="#">
+                        <i class="far fa-gem"></i>
+                        <span>サービス</span>
+                        <span class="badge badge-pill badge-danger"></span>
+                    </a>
+                    <div class="sidebar-submenu">
+                        <ul>
+
+                            <li>
+                                <a href="backUserInit">ファイル一覧</a>
+                            </li>
+                            <li>
+                                <a href="backUserInit">新着情報一覧</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
 
             </ul>
             <!-- 親要素ul -->

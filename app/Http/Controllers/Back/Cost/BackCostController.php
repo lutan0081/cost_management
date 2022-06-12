@@ -1589,7 +1589,7 @@ class BackCostController extends Controller
             $date = now() .'.000';
         
             // idごとのフォルダ作成のためのパス生成
-            $dir ='img/' .$cost_id;
+            $dir ='img/cost/' .$cost_id;
             
             // 任意のフォルダ作成
             // ※appを入れるとエラーになる
@@ -2042,7 +2042,7 @@ class BackCostController extends Controller
             $arr = explode('/', $img_list[0]->cost_img_path);
 
             // appを除外し文字結合(public/img/214)
-            $img_dir_path = $arr[0] ."/" .$arr[1];
+            $img_dir_path = $arr[0] ."/" .$arr[1] ."/" .$arr[2];
 
             // フォルダ削除
             Storage::deleteDirectory('/public/' .$img_dir_path);
@@ -2134,7 +2134,7 @@ class BackCostController extends Controller
              */
              // 画像パスを"/"で分解->配列化
             $arr = explode('/', $img_list[0]->cost_img_path);
-            $img_dir_path = $arr[0] ."/" .$arr[1];
+            $img_dir_path = $arr[0] ."/" .$arr[1] ."/" .$arr[2];
 
             // フォルダの中身を確認
             $img_arr = Storage::files('/public/' .$img_dir_path);

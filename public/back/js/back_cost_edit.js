@@ -1,69 +1,15 @@
 $(function() {
+    /**
+     * 一般ユーザは操作不可にする
+     */
+    let permission_type_id = $("#permission_type_id").val();
+    console.log('permission_type_id:' + permission_type_id);
 
-    // /**
-    //  * 申込以外(1)の場合、非活性に設定
-    //  */
-    // let contract_progress_id = $("#contract_progress_id").val();
-    // console.log('contract_progress_id:' + contract_progress_id);
+    // OK=質問欄入力・承諾・CSV出力/NG = 編集(質問欄除く)
+    if(permission_type_id != 1){
+        $(".disabled_class").prop('disabled', true);
+    }
 
-    // switch (contract_progress_id){
-
-    //     // 1=入居申込
-    //     case '1':
-    //         $("#editForm").find("input,textarea,select,button").prop("disabled", false);
-    //         $("#contract_progress_id").prop('disabled', true);
-    //         $("#housemate_name").prop('disabled', true);
-    //         $("#housemate_ruby").prop('disabled', true);
-    //         $("#housemate_sex_id").prop('disabled', true);
-    //         $("#housemate_link_id").prop('disabled', true);
-    //         $("#housemate_birthday").prop('disabled', true);
-    //         $("#housemate_age").prop('disabled', true);
-    //         $("#housemate_home_tel").prop('disabled', true);
-    //         $("#housemate_mobile_tel").prop('disabled', true);
-
-    //         // 1 = 連帯保証人有以外の場合、連帯保証人箇所を編集不可にする
-    //         if(guarantor_flag !== 1){
-                
-    //             console.log('guarantor_flag:' + guarantor_flag);
-
-    //             $(".guarantor_disable_flag").prop('disabled', true);
-    //         }
-
-    //         break;
-    //     // 2=入居審査中:全てを編集不可にする
-    //     case '2':
-    //         $("#editForm").find("input,textarea,select,button").prop("disabled", true);
-    //         $("#btn_make_report").prop('disabled', false);
-    //         break;
-
-    //     // 3=契約手続中:全てを編集不可にする
-    //     case '3':
-    //         $("#editForm").find("input,textarea,select,button").prop("disabled", true);
-    //         $("#btn_make_report").prop('disabled', false);
-    //         break;
-
-    //     // それ以外=契約手続中:全てを編集不可にする
-    //     default:
-    //         $("#editForm").find("input,textarea,select,button").prop("disabled", false);
-    //         $("#contract_progress_id").prop('disabled', true);
-    //         $("#housemate_name").prop('disabled', true);
-    //         $("#housemate_ruby").prop('disabled', true);
-    //         $("#housemate_sex_id").prop('disabled', true);
-    //         $("#housemate_link_id").prop('disabled', true);
-    //         $("#housemate_birthday").prop('disabled', true);
-    //         $("#housemate_age").prop('disabled', true);
-    //         $("#housemate_home_tel").prop('disabled', true);
-    //         $("#housemate_mobile_tel").prop('disabled', true);
-    //         $("#btn_make_report").prop('disabled', false);
-
-    //         // 1 = 連帯保証人有以外の場合、連帯保証人箇所を編集不可にする
-    //         if(guarantor_flag !== 1){
-                
-    //             console.log('guarantor_flag:' + guarantor_flag);
-
-    //             $(".guarantor_disable_flag").prop('disabled', true);
-    //         }
-    // }
     /**
      * 登録
      */

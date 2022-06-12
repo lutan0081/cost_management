@@ -54,7 +54,7 @@
                             <div class="row">
                                 <div class="col-12 col-md-12 col-lg-12 mb-2">
                                     <div class="info_title mt-3">
-                                        <i class="far fa-gem icon_blue me-2"></i>ユーザ一覧
+                                        <i class="bi bi-gear-fill icon_blue me-2"></i>ユーザ一覧
                                     </div>
                                     <!-- 境界線 -->
                                     <hr>

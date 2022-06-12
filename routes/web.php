@@ -164,6 +164,11 @@ Route::post('backUserEditEntry', 'Back\User\BackUserController@backUserEditEntry
 Route::post('backUserDeleteEntry', 'Back\User\BackUserController@backUserDeleteEntry')->middleware("cost_auth");
 
 /**
+ * ユーザ情報
+ */
+Route::get('backUserInfoInit', 'Back\UserInfo\BackUserInfoController@backUserInfoInit')->middleware("cost_auth");
+
+/**
  * CSV
  */
 // 売上出力

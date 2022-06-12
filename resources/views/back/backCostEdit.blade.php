@@ -174,7 +174,7 @@
                                                     <!-- 経費か否か -->
                                                     <div class="col-12 col-md-12 col-lg-12 mt-2">
                                                         <div class="form-check form-switch">
-                                                            <input class="form-check-input" type="checkbox" id="cost_flag_id" name="cost_flag_id" @if($cost_list->cost_flag_id == 1)checked @endif>
+                                                            <input class="form-check-input disabled_class" type="checkbox" id="cost_flag_id" name="cost_flag_id" @if($cost_list->cost_flag_id == 1)checked @endif>
                                                             <label class="form-check-label pink_line" for="cost_flag_id">経費か否か</label>
                                                         </div>
                                                     </div>
@@ -183,7 +183,7 @@
                                                     <div class="col-6 col-md-8 col-lg-4 mt-3">
                                                         <label class="label_required mb-2"></label>出金区分
                                                         
-                                                        <select class="form-select" name="private_or_bank_id" id="private_or_bank_id" required>
+                                                        <select class="form-select disabled_class" name="private_or_bank_id" id="private_or_bank_id" required>
                                                             <option></option>
                                                             @foreach($private_or_bank_list as $private_or_bank)
                                                                 <option value="{{$private_or_bank->private_or_bank_id}}" @if($cost_list->private_or_bank_id == $private_or_bank->private_or_bank_id) selected @endif>{{ $private_or_bank->private_or_bank_name }}</option>
@@ -197,7 +197,7 @@
                                                     <!-- 勘定日 -->
                                                     <div class="col-6 col-md-6 col-lg-4 mt-3">
                                                         <label class="label_required mb-2" for=""></label>勘定日
-                                                        <input type="text" class="form-control" id="account_date" name="account_date" autocomplete="off" value="{{ $cost_list->account_date }}" required>
+                                                        <input type="text" class="form-control disabled_class" id="account_date" name="account_date" autocomplete="off" value="{{ $cost_list->account_date }}" required>
                                                         <div class="cost-tab invalid-feedback" id ="account_date_error">
                                                             勘定日は必須です。
                                                         </div>
@@ -206,7 +206,7 @@
                                                     <!-- 勘定科目 -->
                                                     <div class="col-6 col-md-8 col-lg-4 mt-3">
                                                         <label class="label_required mb-2"></label>勘定科目
-                                                        <select class="form-select" name="cost_account_id" id="cost_account_id" required>
+                                                        <select class="form-select disabled_class" name="cost_account_id" id="cost_account_id" required>
                                                             <option></option>
                                                             @foreach($cost_account_list as $cost_account)
                                                                 <option value="{{$cost_account->cost_account_id}}" @if($cost_list->cost_account_id == $cost_account->cost_account_id) selected @endif>{{ $cost_account->cost_account_name }}</option>
@@ -222,7 +222,7 @@
                                                     <!-- 出金額 -->
                                                     <div class="col-6 col-md-8 col-lg-4 mt-3">
                                                         <label class="label_required mb-2" for="textBox"></label>出金額
-                                                        <input type="number" class="form-control" name="outgo_fee" id="outgo_fee" value="{{ $cost_list->outgo_fee }}" placeholder="例：100000" style="text-align:right" required>
+                                                        <input type="number" class="form-control disabled_class" name="outgo_fee" id="outgo_fee" value="{{ $cost_list->outgo_fee }}" placeholder="例：100000" style="text-align:right" required>
                                                         <!-- バリデーション -->
                                                         <div class="cost-tab invalid-feedback" id ="outgo_fee_error">
                                                             出金額は必須です。
@@ -232,7 +232,7 @@
                                                     <!-- 入金額 -->
                                                     <div class="col-6 col-md-8 col-lg-4 mt-2">
                                                         <label class="label_required mb-2" for="textBox"></label>入金額
-                                                        <input type="number" class="form-control" name="income_fee" id="income_fee" value="{{ $cost_list->income_fee }}" placeholder="例：100000" style="text-align:right" required>
+                                                        <input type="number" class="form-control disabled_class" name="income_fee" id="income_fee" value="{{ $cost_list->income_fee }}" placeholder="例：100000" style="text-align:right" required>
                                                         <!-- バリデーション -->
                                                         <div class="cost-tab invalid-feedback" id ="income_fee_error">
                                                             入金額は必須です。
@@ -256,7 +256,7 @@
                                                     <!-- 備考 -->
                                                     <div class="col-12 col-md-12 col-lg-12 mt-2">
                                                         <label class="label_any" for=""></label>備考
-                                                        <textarea class="form-control" name="cost_memo" id="cost_memo" rows="4" placeholder="例：自由に入力">{{ $cost_list->cost_memo }}</textarea>
+                                                        <textarea class="form-control disabled_class" name="cost_memo" id="cost_memo" rows="4" placeholder="例：自由に入力">{{ $cost_list->cost_memo }}</textarea>
                                                         <div class="cost-tab invalid-feedback" id ="cost_memo_error">
                                                         </div>
                                                     </div>
@@ -273,7 +273,7 @@
                                                     <!-- 添付書類 -->
                                                     <div class="col-12 col-md-6 col-lg-6 mt-2">
                                                         <label class="mb-2 label_any"></label>アップロード
-                                                        <input class="form-control" type="file" id="img_file">
+                                                        <input class="form-control disabled_class" type="file" id="img_file">
                                                         <!-- エラーメッセージ -->
                                                         <div class="file-tab invalid-feedback" id ="img_file_error"></div>
                                                     </div>
@@ -284,7 +284,7 @@
                                                     <!-- 種別 -->
                                                     <div class="col-12 col-md-12 col-lg-3 mt-2">
                                                         <label class="mb-2 label_any"></label>ファイル種別
-                                                        <select class="label_any form-select" name="img_type" id="img_type">
+                                                        <select class="label_any form-select disabled_class" name="img_type" id="img_type">
                                                             <option selected></option>
                                                             @foreach($cost_img_type_list as $cost_img_type)
                                                                 <option value="{{$cost_img_type->cost_img_type_id}}">{{ $cost_img_type->cost_img_type_name }}</option>
@@ -296,7 +296,7 @@
                                                     <!-- 補足 -->
                                                     <div class="col-12 col-md-12 col-lg-12 mt-2">
                                                         <label class="label_any" for=""></label>備考
-                                                        <textarea class="form-control" name="img_text" id="img_text" rows="2" placeholder="例：自由に入力"></textarea>
+                                                        <textarea class="form-control disabled_class" name="img_text" id="img_text" rows="2" placeholder="例：自由に入力"></textarea>
                                                         <div class="file-tab invalid-feedback" id ="img_text_error"></div>
                                                     </div>
 
@@ -338,9 +338,11 @@
                                                                             <!-- カードボディ -->
 
                                                                             <!-- 削除ボタン -->
-                                                                            <div class="card-footer">
-                                                                                <span id="{{ $imgs->cost_img_id }}" class="btn_img_delete text_red float-end" style="cursor: hand; cursor:pointer;">削除</span>
-                                                                            </div>
+                                                                            @if(Session::get('permission_type_id') == 1)
+                                                                                <div class="card-footer">
+                                                                                    <span id="{{ $imgs->cost_img_id }}" class="btn_img_delete text_red float-end" style="cursor: hand; cursor:pointer;">削除</span>
+                                                                                </div>
+                                                                            @endif
                                                                             <!-- 削除ボタン -->
 
                                                                         </div>
@@ -370,7 +372,7 @@
                                                     <!-- 回答内容 -->
                                                     <div class="col-12 col-md-12 col-lg-6 mt-2">
                                                         <label class="label_any" for=""></label>回答内容
-                                                        <textarea class="form-control" name="answer_contents" id="answer_contents" rows="8" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
+                                                        <textarea class="form-control disabled_class" name="answer_contents" id="answer_contents" rows="8" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
                                                         <div class="other-tab invalid-feedback" id ="answer_contents_error"></div>
                                                     </div>
 
@@ -393,7 +395,7 @@
                                         <!-- 削除 -->
                                         <div class="col-12 col-md-6 col-lg-6 mt-2">
                                             <div class="btn-group" role="group">
-                                                <button type="button" id="btn_delete" class="btn btn-outline-danger btn-default">削除</button>
+                                                <button type="button" id="btn_delete" class="btn btn-outline-danger btn-default disabled_class">削除</button>
                                                 <button type="button" id="btn_url_again" class="btn btn-outline-primary btn-default" data-bs-toggle="modal" data-bs-target="#urlModal">URL発行</button>
                                             </div>
                                         </div>
@@ -414,10 +416,10 @@
                                     <!-- ボタン -->
 
                                     <!-- 経費id -->
-                                    <input type="text" name="cost_id" id="cost_id" value="{{ $cost_list->cost_id }}">
+                                    <input type="hidden" name="cost_id" id="cost_id" value="{{ $cost_list->cost_id }}">
                                     
                                     <!-- 権限id -->
-                                    <input type="text" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
+                                    <input type="hidden" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
                                     
                                 </div>
                                 <!-- カード -->

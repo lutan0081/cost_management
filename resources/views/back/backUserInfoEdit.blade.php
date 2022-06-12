@@ -2,14 +2,14 @@
 <html lang="ja">
 
 	<head>
-        <title>ユーザ詳細/COST</title>
+        <title>ユーザ情報/COST</title>
 
 		<!-- head -->
         @component('component.backHead')
         @endcomponent
 
 		<!-- 自作css -->
-		<link rel="stylesheet" href="{{ asset('back/css/back_user_edit.css') }}">  
+		<link rel="stylesheet" href="{{ asset('back/css/back_user_info_edit.css') }}">  
 		
         <style>
 
@@ -53,7 +53,7 @@
                         <form id="editForm" class="needs-validation" novalidate>
 
                             <div class="info_title mt-2">
-                                <i class="bi bi-gear-fill icon_blue me-2"></i>ユーザ詳細
+                                <i class="bi bi-gear-fill icon_blue me-2"></i>ユーザ情報
                             </div>
 
                             <!-- 境界線 -->
@@ -69,20 +69,19 @@
 
                                     <!-- 削除 -->
                                     <div class="col-6 col-md-6 col-lg-6 mt-3">
-                                        <button id="btn_delete" class="btn btn-outline-danger btn-default">削除</button>
+                                        <button id="btn_edit" class="btn btn-outline-primary btn-default float-start">ユーザ申請</button>
                                     </div>
                                     
                                     <!-- 登録、帳票 -->
                                     <div class="col-6 col-md-6 col-lg-6 mt-3">
-                                        <!-- 契約詳細id='':帳票ボタン非表示 -->
                                         <button id="btn_edit" class="btn btn-outline-primary btn-default float-end">登録</button>
                                     </div>
 
                                 </div>     
                                 <!-- ボタン -->
 
-                            <!-- id -->
-                            <input type="hidden" name="create_user_id" id="create_user_id" value="{{ $create_user_list->create_user_id }}">
+                                <!-- id -->
+                                <input type="hidden" name="create_user_id" id="create_user_id" value="{{ $create_user_list->create_user_id }}">
 
                             </div>
                             <!-- カード -->
@@ -102,7 +101,7 @@
         @endcomponent
 
 		<!-- 自作js -->
-		<script src="{{ asset('back/js/back_user_edit.js') }}"></script>
+		<script src="{{ asset('back/js/back_user_info_edit.js') }}"></script>
 	</body>
 	
 </html>

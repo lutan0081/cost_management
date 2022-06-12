@@ -119,7 +119,7 @@
                                                     <!-- 売上担当 -->
                                                     <div class="col-12 col-md-12 col-lg-3 mt-3">
                                                         <label class="label_required mb-2" for="textBox"></label>売上担当
-                                                        <select class="form-select" name="profit_person_id" id="profit_person_id" required>
+                                                        <select class="form-select disabled_class" name="profit_person_id" id="profit_person_id" required>
                                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                                             <option></option>
                                                             @foreach($create_user_list as $create_users)
@@ -135,7 +135,7 @@
                                                     <!-- 勘定科目 -->
                                                     <div class="col-12 col-md-12 col-lg-3 mt-3">
                                                         <label class="label_required mb-2" for="textBox"></label>勘定科目
-                                                        <select class="form-select" name="profit_account_id" id="profit_account_id" value="{{ $profit_list->profit_account_id }}" required>
+                                                        <select class="form-select disabled_class" name="profit_account_id" id="profit_account_id" value="{{ $profit_list->profit_account_id }}" required>
                                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                                             <option></option>
                                                             @foreach($profit_account_list as $profit_accounts)
@@ -153,7 +153,7 @@
                                                     <!-- 勘定日 -->
                                                     <div class="col-12 col-md-12 col-lg-3 mt-3">
                                                         <label class="label_required mb-2" for="textBox"></label>勘定日
-                                                        <input type="text" class="form-control" name="profit_account_date" id="profit_account_date" placeholder="例：2022/05/17" value="{{ $profit_list->profit_date }}" required>
+                                                        <input type="text" class="form-control disabled_class" name="profit_account_date" id="profit_account_date" placeholder="例：2022/05/17" value="{{ $profit_list->profit_date }}" required>
                                                         <!-- エラーメッセージ -->
                                                         <div class="profit-tab invalid-feedback" id ="profit_account_date_error">
                                                             勘定日は必須です。
@@ -164,7 +164,7 @@
                                                     <!-- 金額 -->
                                                     <div class="col-12 col-md-12 col-lg-3 mt-3">
                                                         <label class="label_required mb-2" for="textBox"></label>利益額
-                                                        <input type="text" class="form-control" name="profit_fee" id="profit_fee" placeholder="例：3000000" value="{{ $profit_list->profit_fee }}" style="text-align:right" required>
+                                                        <input type="text" class="form-control disabled_class" name="profit_fee" id="profit_fee" placeholder="例：3000000" value="{{ $profit_list->profit_fee }}" style="text-align:right" required>
                                                         <!-- エラーメッセージ -->
                                                         <div class="profit-tab invalid-feedback" id ="profit_fee_error">
                                                             利益額は必須です。
@@ -179,7 +179,7 @@
                                                     <!-- 取引先 -->
                                                     <div class="col-12 col-md-12 col-lg-6 mt-3">
                                                         <label class="label_any mb-2" for="textBox"></label>取引先
-                                                        <input type="text" class="form-control" name="customer_name" id="customer_name" placeholder="例：株式会社〇〇〇〇不動産" value="{{ $profit_list->customer_name }}">
+                                                        <input type="text" class="form-control disabled_class" name="customer_name" id="customer_name" placeholder="例：株式会社〇〇〇〇不動産" value="{{ $profit_list->customer_name }}">
                                                         <!-- エラーメッセージ -->
                                                         <div class="profit-tab invalid-feedback" id ="customer_name_error">
                                                             取引先は必須です。
@@ -193,14 +193,14 @@
                                                     <div class="col-12 col-md-8 col-lg-6 mt-3">
                                                         <label class="label_any mb-2" for="textBox"></label>物件名
                                                         <div class="input-group">
-                                                            <select class="form-select" name="real_estate_id" id="real_estate_id" class="real_estate_id">
+                                                            <select class="form-select disabled_class" name="real_estate_id" id="real_estate_id" class="real_estate_id">
                                                                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                                                 <option></option>
                                                                 @foreach($real_estate_list as $real_estates)
                                                                     <option value="{{$real_estates->real_estate_id}}" @if($profit_list->real_estate_id == $real_estates->real_estate_id) selected @endif>{{ $real_estates->real_estate_name }}</option>
                                                                 @endforeach
                                                             </select>
-                                                            <button id="real_estate-zip" class="btn btn-outline-primary btn_zip"><i class="fas fa-search"></i></button>
+                                                            <button id="real_estate-zip" class="btn btn-outline-primary btn_zip disabled_class"><i class="fas fa-search"></i></button>
                                                         </div>
                                                         <div class="profit-tab invalid-feedback" id ="real_estate_id_error">
                                                         </div>
@@ -213,7 +213,7 @@
                                                     <div class="col-12 col-md-8 col-lg-2 mt-3">
                                                         <label class="label_any mb-2" for="textBox"></label>号室
                                                         
-                                                        <select class="form-select" name="room_id" id="room_id">
+                                                        <select class="form-select disabled_class" name="room_id" id="room_id">
                                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                                             <option></option>
                                                             @foreach($room_list as $rooms)
@@ -232,7 +232,7 @@
                                                     <!-- 備考 -->
                                                     <div class="col-6 col-md-8 col-lg-12 mt-3">
                                                         <label class="label_any mb-2" for="textBox"></label>備考
-                                                        <textarea class="form-control" name="profit_memo" id="profit_memo" rows="5" placeholder="自由に入力">{{ $profit_list->profit_memo }}</textarea>
+                                                        <textarea class="form-control disabled_class" name="profit_memo" id="profit_memo" rows="5" placeholder="自由に入力">{{ $profit_list->profit_memo }}</textarea>
                                                         <div class="profit-tab invalid-feedback" id ="profit_memo_error">
                                                         </div> 
                                                     </div>
@@ -250,7 +250,7 @@
                                                     <!-- 添付書類 -->
                                                     <div class="col-12 col-md-6 col-lg-6 mt-2">
                                                         <label class="mb-2 label_any"></label>アップロード
-                                                        <input class="form-control" type="file" id="img_file">
+                                                        <input class="form-control disabled_class" type="file" id="img_file">
                                                         <!-- エラーメッセージ -->
                                                         <div class="file-tab invalid-feedback" id ="img_file_error"></div>
                                                     </div>
@@ -261,7 +261,7 @@
                                                     <!-- 種別 -->
                                                     <div class="col-12 col-md-12 col-lg-3 mt-2">
                                                         <label class="mb-2 label_any"></label>ファイル種別
-                                                        <select class="label_any form-select" name="img_type" id="img_type">
+                                                        <select class="label_any form-select disabled_class" name="img_type" id="img_type">
                                                             <option selected></option>
                                                             @foreach($profit_img_type_list as $profit_img_type)
                                                                 <option value="{{$profit_img_type->profit_img_type_id}}">{{ $profit_img_type->profit_img_type_name }}</option>
@@ -273,7 +273,7 @@
                                                     <!-- 補足 -->
                                                     <div class="col-12 col-md-12 col-lg-12 mt-2">
                                                         <label class="label_any" for=""></label>備考
-                                                        <textarea class="form-control" name="img_text" id="img_text" rows="2" placeholder="例：自由に入力"></textarea>
+                                                        <textarea class="form-control disabled_class" name="img_text" id="img_text" rows="2" placeholder="例：自由に入力"></textarea>
                                                         <div class="file-tab invalid-feedback" id ="img_text_error"></div>
                                                     </div>
 
@@ -315,9 +315,11 @@
                                                                             <!-- カードボディ -->
 
                                                                             <!-- 削除ボタン -->
-                                                                            <div class="card-footer">
-                                                                                <span id="{{ $imgs->profit_img_id }}" class="btn_img_delete text_red float-end" style="cursor: hand; cursor:pointer;">削除</span>
-                                                                            </div>
+                                                                            @if(Session::get('permission_type_id') == 1)
+                                                                                <div class="card-footer">
+                                                                                    <span id="{{ $imgs->profit_img_id }}" class="btn_img_delete text_red float-end" style="cursor: hand; cursor:pointer;">削除</span>
+                                                                                </div>
+                                                                            @endif
                                                                             <!-- 削除ボタン -->
 
                                                                         </div>
@@ -348,7 +350,7 @@
                                                     <!-- 回答内容 -->
                                                     <div class="col-12 col-md-12 col-lg-6 mt-2">
                                                         <label class="label_any" for=""></label>回答内容
-                                                        <textarea class="form-control" name="answer_contents" id="answer_contents" rows="8" placeholder="例：内容を自由に入力">{{ $profit_list->profit_answer_contents }}</textarea>
+                                                        <textarea class="form-control disabled_class" name="answer_contents" id="answer_contents" rows="8" placeholder="例：内容を自由に入力">{{ $profit_list->profit_answer_contents }}</textarea>
                                                         <div class="other-tab invalid-feedback" id ="answer_contents_error"></div>
                                                     </div>
 
@@ -371,7 +373,7 @@
                                         <!-- 削除 -->
                                         <div class="col-12 col-md-6 col-lg-6 mt-2">
                                             <div class="btn-group" role="group">
-                                                <button type="button" id="btn_delete" class="btn btn-outline-danger btn-default">削除</button>
+                                                <button type="button" id="btn_delete" class="btn btn-outline-danger btn-default disabled_class">削除</button>
                                                 <button type="button" id="btn_url_again" class="btn btn-outline-primary btn-default" data-bs-toggle="modal" data-bs-target="#urlModal">URL発行</button>
                                             </div>
                                         </div>
@@ -392,8 +394,11 @@
                                     <!-- ボタン -->
 
                                     <!-- 売上id -->
-                                    <input type="text" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
+                                    <input type="hidden" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
                                     
+                                    <!-- 権限id sessionから取得 -->
+                                    <input type="hidden" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
+
                                 </div>
                                 <!-- カード -->
                             </form>
