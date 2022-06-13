@@ -98,6 +98,8 @@ $(function(){
 
             return false;
         }
+        // 照会口座id
+        let bank_id = $("#bank_id").val();
 
         // 売上担当id
         let profit_person_id = $("#profit_person_id").val();
@@ -155,6 +157,8 @@ $(function(){
         // 送信データインスタンス化
         var sendData = new FormData();
         
+        
+        sendData.append('bank_id', bank_id);
         sendData.append('profit_person_id', profit_person_id);
         sendData.append('profit_account_id', profit_account_id);
         sendData.append('profit_account_date', profit_account_date);

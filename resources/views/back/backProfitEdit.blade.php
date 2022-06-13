@@ -116,6 +116,24 @@
                                                 
                                                 <div class="row row-cols-3">
 
+                                                    <!-- 照会口座名 -->
+                                                    <div class="col-12 col-md-12 col-lg-6 mt-3">
+                                                        <label class="label_required mb-2" for="textBox"></label>照会口座名
+                                                        <select class="form-select disabled_class" name="bank_id" id="bank_id" required>
+                                                            <!-- タグ内に値を追加、値追加後同一の場合選択する -->
+                                                            <option></option>
+                                                            @foreach($profit_bank_list as $profit_bank)
+                                                                <option value="{{$profit_bank->bank_id}}" @if($profit_list->bank_id == $profit_bank->bank_id) selected @endif>{{ $profit_bank->bank_name }}_{{ $profit_bank->bank_number }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <div class="profit-tab invalid-feedback" id =bank_id_error">
+                                                            照会口座名は必須です。
+                                                        </div>
+                                                    </div>
+                                                    <!-- 照会口座名 -->
+
+                                                    <div class="w-100"></div>
+
                                                     <!-- 売上担当 -->
                                                     <div class="col-12 col-md-12 col-lg-3 mt-3">
                                                         <label class="label_required mb-2" for="textBox"></label>売上担当

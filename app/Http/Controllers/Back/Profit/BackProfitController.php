@@ -440,6 +440,9 @@ class BackProfitController extends Controller
             // 画像種別
             $profit_img_type_list = $common->getProfitImgTypes();
 
+            // 銀行名
+            $profit_bank_list = $common->getBanks();
+
             // 新規表示の場合、号室不要の為から配列を渡す
             $room_list = [];
     
@@ -453,7 +456,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list', 'profit_img_type_list', 'profit_img_list'));
+        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list', 'profit_img_type_list', 'profit_img_list', 'profit_bank_list'));
     }
 
     /**
@@ -480,6 +483,7 @@ class BackProfitController extends Controller
         $obj->profit_question_contents = '';
         $obj->profit_answer_contents = '';
         $obj->create_user_name = '';
+        $obj->bank_id = '';
         
         $ret = [];
         $ret = $obj;
@@ -665,6 +669,9 @@ class BackProfitController extends Controller
             // 画像種別
             $profit_img_type_list = $common->getProfitImgTypes();
 
+            // 銀行名
+            $profit_bank_list = $common->getBanks();
+
         // 例外処理
         } catch (\Throwable $e) {
 
@@ -675,7 +682,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list', 'profit_img_type_list', 'profit_img_list'));
+        return view('back.backProfitEdit' ,compact('profit_list', 'real_estate_list' ,'create_user_list' ,'profit_account_list', 'room_list', 'profit_img_type_list', 'profit_img_list', 'profit_bank_list'));
     }
 
     /**
@@ -694,6 +701,7 @@ class BackProfitController extends Controller
             // sql
             $str = "select "
             ."profits.profit_id, "
+            ."profits.bank_id, "
             ."profits.profit_person_id, "
             ."profits.customer_name, "
             ."profits.room_id, "
@@ -976,6 +984,7 @@ class BackProfitController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
+            $bank_id = $request->input('bank_id');
             $profit_person_id = $request->input('profit_person_id');
             $profit_account_id = $request->input('profit_account_id');
             $profit_account_date = $request->input('profit_account_date');
@@ -990,6 +999,12 @@ class BackProfitController extends Controller
             // 現在の日付取得
             $date = now() .'.000';
     
+            
+            // 銀行id
+            if($bank_id == null){
+                $bank_id = 0;
+            }
+
             // 売上担当id
             if($profit_person_id == null){
                 $profit_person_id = 0;
@@ -1044,6 +1059,7 @@ class BackProfitController extends Controller
             ."into "
             ."cost_management.profits "
             ."( "
+            ."bank_id, "
             ."profit_person_id, "
             ."customer_name, "
             ."room_id, "
@@ -1061,6 +1077,7 @@ class BackProfitController extends Controller
             ."update_user_id, "
             ."update_date "
             .")values( "
+            ."$bank_id, "
             ."$profit_person_id, "
             ."'$customer_name', "
             ."$room_id, "
@@ -1326,6 +1343,7 @@ class BackProfitController extends Controller
             // 値取得
             $session_id = $request->session()->get('create_user_id');
             $profit_id = $request->input('profit_id');
+            $bank_id = $request->input('bank_id');
             $profit_person_id = $request->input('profit_person_id');
             $profit_account_id = $request->input('profit_account_id');
             $profit_account_date = $request->input('profit_account_date');
@@ -1339,6 +1357,11 @@ class BackProfitController extends Controller
 
             // 現在の日付取得
             $date = now() .'.000';
+
+            // 銀行id
+            if($bank_id == null){
+                $bank_id = 0;
+            }
 
             // 取引先
             if($customer_name == null){
@@ -1393,6 +1416,7 @@ class BackProfitController extends Controller
             $str = "update "
             ."profits "
             ."set "
+            ."bank_id = $bank_id, "
             ."profit_person_id = $profit_person_id, "
             ."customer_name = '$customer_name', "
             ."room_id = $room_id, "
