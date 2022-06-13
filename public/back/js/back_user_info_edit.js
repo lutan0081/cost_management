@@ -108,7 +108,7 @@ $(function(){
 
         $.ajax({
             type: 'post',
-            url: 'backUserEditEntry',
+            url: 'backUserInfoEditEntry',
             dataType: 'json',
             data: sendData,
             cache:false,

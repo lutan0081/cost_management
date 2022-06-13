@@ -113,7 +113,7 @@ class BackUserInfoController extends Controller
      * @param $request(edit.blade.phpの各項目)
      * @return $response(status:true=OK/false=NG)
      */
-    public function backUserEditEntry(Request $request){
+    public function backUserInfoEditEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
         
         // return初期値

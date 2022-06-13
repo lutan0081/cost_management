@@ -102,7 +102,6 @@
                     </li>
                 @endif
 
-                
                     <li class="sidebar-dropdown">
                         <a href="#">
                             <i class="fas bi bi-gear-fill"></i>
@@ -123,25 +122,23 @@
                         </div>
                     </li>
                 
-
-                <li class="sidebar-dropdown">
-                    <a href="#">
-                        <i class="far fa-gem"></i>
-                        <span>サービス</span>
-                        <span class="badge badge-pill badge-danger"></span>
-                    </a>
-                    <div class="sidebar-submenu">
-                        <ul>
-
-                            <li>
-                                <a href="backUserInit">ファイル一覧</a>
-                            </li>
-                            <li>
-                                <a href="backUserInit">新着情報一覧</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+                    <li class="sidebar-dropdown">
+                        <a href="#">
+                            <i class="far fa-gem"></i>
+                            <span>サービス</span>
+                            <span class="badge badge-pill badge-danger"></span>
+                        </a>
+                        <div class="sidebar-submenu">
+                            <ul>
+                                <li>
+                                    <a href="backUserInit">ファイル一覧</a>
+                                </li>
+                                <li>
+                                    <a href="backUserInit">新着情報一覧</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
 
             </ul>
             <!-- 親要素ul -->

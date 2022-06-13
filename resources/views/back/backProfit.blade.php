@@ -137,7 +137,6 @@
                                                     <label class="markerBlue" for=""><i class="bi bi-question-circle me-1"></i>青：Q&A</label>
                                                 </div>
 
-
                                                 <!-- 検索ボタン -->
                                                 <div class="col-5 col-md-4 col-lg-6 mt-2">
                                                     <input type="submit" class="btn btn-default btn-outline-primary float-end" value="検索">

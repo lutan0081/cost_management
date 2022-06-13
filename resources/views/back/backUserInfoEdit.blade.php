@@ -67,7 +67,7 @@
                                 <!-- ボタン -->
                                 <div class="row row-cols-2 mb-5">
 
-                                    <!-- 削除 -->
+                                    <!-- ユーザ申請 -->
                                     <div class="col-6 col-md-6 col-lg-6 mt-3">
                                         <button id="btn_edit" class="btn btn-outline-primary btn-default float-start">ユーザ申請</button>
                                     </div>
