@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<link rel="icon" href="./img/lutan_logo_64.ico">
+<link rel="icon" href="./img/cost_logo_64.ico">
 
 <link rel="apple-touch-icon" href="./img/lutan_logo_64.ico">
 <!--==============レイアウトを制御する独自のCSSを読み込み===============-->

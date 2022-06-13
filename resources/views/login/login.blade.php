@@ -20,7 +20,7 @@
 
                 <!-- Icon -->
                 <div class="fadeIn first">
-                    <img src="./login/images/lutan_logo.png" id="icon" alt="User Icon" />
+                    <img src="./login/images/cost_logo.png" id="icon" alt="User Icon" />
                 </div>
 
                 <!-- Login Form -->
