@@ -149,8 +149,13 @@
                                             </div>
                                             
                                             <div class="col-12 col-md-12 col-lg-12 pt-2">
-                                                未回答: <span class="count dashboard_box_num">12345678</span>
+                                                質問: <span class="count dashboard_box_num">12345678</span>
                                             </div>
+
+                                            <div class="col-12 col-md-12 col-lg-12">
+                                                回答: <span class="count dashboard_box_num">12345678</span>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

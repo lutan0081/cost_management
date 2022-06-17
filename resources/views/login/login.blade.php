@@ -30,7 +30,7 @@
                     <div style="display:none" class="msg"></div>
 
                     <!-- Id -->
-                    <label for="">E-mail<br></label>
+                    <label for="">User Id<br></label>
                     <input type="text" id="mail_request" class="fadeIn second" name="login" required>
                     
                     <!-- パスワード -->
