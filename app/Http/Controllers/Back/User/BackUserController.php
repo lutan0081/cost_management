@@ -704,7 +704,7 @@ class BackUserController extends Controller
     }
 
     /**
-     * 削除
+     * 削除(sql)
      *
      * @param Request $request
      * @return void
@@ -748,4 +748,97 @@ class BackUserController extends Controller
         Log::debug('log_end:' .__FUNCTION__);
         return $ret;
     }
+
+    /**
+     * 権限付与
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function backSetAuthorityEntry(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            // return初期値
+            $response = [];
+
+            $user_info = $this->setAuthorityUser($request);
+
+            // js側での判定のステータス(true:OK/false:NG)
+            $response['status'] = $user_info['status'];
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            $response['status'] = 0;
+
+        // status:OK=1/NG=0
+        } finally {
+
+            if($response['status'] == 1){
+
+                Log::debug('status:trueの処理');
+                $response['status'] = true;
+
+            }else{
+
+                Log::debug('status:falseの処理');
+                $response['status'] = false;
+            }
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * 権限付与(sql)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function setAuthorityUser(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            // return初期値
+            $ret = [];
+
+            // 値取得
+            $create_user_id = $request->input('create_user_id');
+
+            $date = now() .'.000';
+
+            $str = "update create_users "
+            ."set "
+            ."active_flag = 0 "
+            .",update_user_id = $create_user_id "
+            .",update_date = '$date' "
+            ."where "
+            ."create_user_id = $create_user_id ";
+            Log::debug('str:'.$str);
+
+            // OK=1/NG=0
+            $ret['status'] = DB::delete($str);
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            throw $e;
+
+        // status:OK=1/NG=0
+        } finally {
+
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return $ret;
+    }
+
 } 

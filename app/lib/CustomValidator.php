@@ -14,13 +14,14 @@ use Illuminate\Support\Facades\DB;
  *
  */
 class CustomValidator extends Validator {
+
     /**
-     * メールの重複確認
+     * ユーザId重複
      * Controller側のrules.massageの設定は小文字でやるvalidateMaildb->maildb
      * valueにController側の$requestの中のkeyの値がくる
      * retrun true|falseのみ
      */
-    public function validateMaildb($attribute, $value, $parameters) {
+    public function validateUserid($attribute, $value, $parameters) {
         Log::debug('log_start:' .__FUNCTION__);
 
         $str = "select * from create_users "
@@ -71,4 +72,6 @@ class CustomValidator extends Validator {
             return true;
         } 
     }
+
+
 }

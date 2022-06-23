@@ -1,6 +1,6 @@
 $(function(){
     /**
-     * 権限IDで判断っし、一般ユーザは操作不可にする
+     * 権限IDで判断し、一般ユーザは操作不可にする
      */
     let permission_type_id = $("#permission_type_id").val();
     console.log('permission_type_id:' + permission_type_id);

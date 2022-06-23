@@ -69,7 +69,7 @@
 
                                         <!-- ユーザ申請 -->
                                         <div class="col-6 col-md-6 col-lg-6 mt-3">
-                                            <button type="button" class="btn btn-outline-primary btn-default float-start" data-bs-toggle="modal" data-bs-target="#addUseModal">ユーザ追加</button>
+                                            <button type="button" class="btn btn-outline-primary btn-default float-start" data-bs-toggle="modal" data-bs-target="#addUseModal">追加申請</button>
                                         </div>
                                         
                                         <!-- 登録、帳票 -->
@@ -82,6 +82,9 @@
 
                                     <!-- id -->
                                     <input type="hidden" name="create_user_id" id="create_user_id" value="{{ $create_user_list->create_user_id }}">
+                                    
+                                    <!-- 権限id sessionから取得 -->
+                                    <input type="hidden" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
 
                                 </div>
                                 <!-- カード -->
@@ -106,7 +109,7 @@
                             
                             <!-- モーダルボディ -->
                             <div class="modal-body">
-                                <form>
+                                <form autocomplete="off">
                                     <div class="container mt-3">
                                         <div class="row">
                                             <!-- 入力フォーム -->
@@ -117,10 +120,22 @@
                                                     <!-- ユーザ名 -->
                                                     <div class="col-12 col-md-10 col-lg-10">
                                                         <label class="label_required mb-2" for="textBox"></label>ユーザ名
-                                                        <input type="text" class="form-control" name="create_user_name" id="create_user_name" placeholder="例：長谷　亘" value="" required>
+                                                        <input type="text" class="form-control" name="modal_create_user_name" id="modal_create_user_name" placeholder="例：長谷　亘" required>
                                                         <!-- エラーメッセージ -->
-                                                        <div class="invalid-feedback" id ="create_user_name_error">
+                                                        <div class="invalid-feedback" id ="modal_create_user_name_error">
                                                             ユーザ名は必須です。
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="w-100"></div>
+
+                                                    <!-- ユーザid -->
+                                                    <div class="col-12 col-md-10 col-lg-10 mt-3">
+                                                        <label class="label_required mb-2" for="textBox"></label>ユーザID
+                                                        <input type="text" class="form-control" name="modal_create_user_mail" id="modal_create_user_mail" placeholder="例：lutan0081.h@gmail.com" style="ime-inactive;" required>
+                                                        <!-- エラーメッセージ -->
+                                                        <div class="invalid-feedback" id ="modal_create_user_mail_error">
+                                                            ユーザIDは必須です。
                                                         </div>
                                                     </div>
 
@@ -128,21 +143,10 @@
 
                                                     <!-- パスワード -->
                                                     <div class="col-12 col-md-10 col-lg-10 mt-3">
-                                                        <label class="label_required mb-2" for="textBox"></label>ユーザID
-                                                        <input type="text" class="form-control" name="create_user_mail" id="create_user_mail" placeholder="例：lutan0081" value="" required>
-                                                        <!-- エラーメッセージ -->
-                                                        <div class="invalid-feedback" id ="create_user_mail_error">
-                                                            ユーザIDは必須です。
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="w-100"></div>
-
-                                                    <div class="col-12 col-md-10 col-lg-10 mt-3">
                                                         <label class="label_required mb-2" for="textBox"></label>パスワード
-                                                        <input type="password" class="form-control" name="create_user_password" id="create_user_password" placeholder="例：lutan0081.h@gmail.com" value="" required>
+                                                        <input type="password" class="form-control" name="modal_create_user_password" id="modal_create_user_password" placeholder="例：lutan0081" required>
                                                         <!-- エラーメッセージ -->
-                                                        <div class="invalid-feedback" id ="create_user_password_error">
+                                                        <div class="invalid-feedback" id ="modal_create_user_password_error">
                                                             パスワードは必須です。
                                                         </div>
                                                     </div>
@@ -150,9 +154,9 @@
                                                     <!-- パスワード再入力 -->
                                                     <div class="col-12 col-md-10 col-lg-10 mt-3">
                                                         <label class="label_required mb-2" for="textBox"></label>パスワード(確認用)
-                                                        <input type="password" class="form-control" name="create_user_password" id="create_user_password" placeholder="例：lutan0081" value="" required>
+                                                        <input type="password" class="form-control" name="modal_create_user_password_confirm" id="modal_create_user_password_confirm" placeholder="例：lutan0081" required>
                                                         <!-- エラーメッセージ -->
-                                                        <div class="invalid-feedback" id ="create_user_password_error">
+                                                        <div class="invalid-feedback" id ="modal_create_user_password_confirm_error">
                                                             パスワードは必須です。
                                                         </div>
                                                     </div>
@@ -167,9 +171,10 @@
 
                             <!-- ボタン -->
                             <div class="modal-footer">
-                                <button type="button" id="btn_modal_add_user" class="btn btn-outline-secondary btn-default" data-bs-dismiss="modal">閉じる</button>
+                                <button type="button" id="btn_modal_back" class="btn btn-outline-secondary btn-default" data-bs-dismiss="modal">閉じる</button>
                                 <button type="button" id="btn_modal_add_user" class="btn btn-outline-primary btn-default">申請</button>
                             </div>
+
                         </div>
                     </div>
                 </div>

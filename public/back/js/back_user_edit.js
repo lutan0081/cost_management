@@ -1,5 +1,15 @@
 $(function(){
+    /**
+     * 権限IDで判断し、一般ユーザは操作不可にする
+     */
+    let permission_type_id = $("#permission_type_id").val();
+    console.log('permission_type_id:' + permission_type_id);
 
+    // OK=質問欄入力・承諾・CSV出力/NG = 編集(質問欄除く)
+    if(permission_type_id != 1){
+        $(".disabled_class").prop('disabled', true);
+    }
+    
     /**
      * 登録
      */
@@ -317,5 +327,101 @@ $(function(){
             // sweetalert
         });
     });
+
+    /**
+     * 権限付与
+     */
+    $("#btn_set_authority").on('click', function(e) {
+
+        console.log('権限付与の処理');
+
+        e.preventDefault();
+
+        // alertの設定
+        var options = {
+            title: "ユーザ権限を付与しますか？",
+            icon: 'warning',
+            buttons: {
+                Cancel: "Cancel", // キャンセルボタン
+                OK: true
+            }
+        };
+
+        // 値取得
+        let create_user_id = $("#create_user_id").val();
+        console.log(create_user_id);
+        
+        // then() OKを押した時の処理
+        swal(options)
+            .then(function(val) {
+
+            if(val == null){
+
+                console.log('キャンセルの処理');
+
+                return false;
+            }
+
+            if (val == "OK") {
+
+                console.log('OKの処理');
+
+                // 送信用データ
+                let sendData = {
+
+                    "create_user_id": create_user_id,
+                };
+
+                console.log(sendData);
+
+                $.ajaxSetup({
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+                });
+
+                $.ajax({
+
+                    type: 'post',
+                    url: 'backSetAuthorityEntry',
+                    dataType: 'json',
+                    data: sendData,
+                
+                // 接続処理
+                }).done(function(data) {
+
+                    console.log('status:' + data.status)
+
+                    var options = {
+                        title: "権限付与が完了しました。",
+                        icon: "success",
+                        buttons: {
+                            ok: true
+                        }
+                    };
+
+                    // then() OKを押した時の処理
+                    swal(options)
+                        .then(function(val) {
+                        if (val) {
+
+                            location.href = 'backUserInit';
+                            
+                        }
+                    });
+
+                // ajax接続失敗の時の処理
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+
+                    setTimeout(function(){
+                        $("#overlay").fadeOut(300);
+                    },500);
+
+                    console.log(jqXHR);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                });
+            };
+            // sweetalert
+        });
+    }); 
 
 });

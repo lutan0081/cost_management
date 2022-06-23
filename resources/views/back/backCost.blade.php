@@ -222,7 +222,7 @@
                                                             <td id="select_{{ $cost_list->cost_id }}" class="click_class"><input id="{{ $cost_list->cost_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
                                                             <td id="approvalId_{{ $cost_list->cost_id }}" class="click_class">@if($cost_list->approval_id !== 0) <i class="bi bi-check-lg"></i> @endif</td>
                                                             <td id="costFlagId_{{ $cost_list->cost_id }}" class="click_class">@if($cost_list->cost_flag_id == 1) 経費 @endif</td>
-                                                            <td id="bankName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->bank_name. '_' .$cost_list->bank_number}}</td>
+                                                            <td id="bankName_{{ $cost_list->cost_id }}" class="click_class">@if($cost_list->bank_name != ""){{ $cost_list->bank_name. '_' .$cost_list->bank_number}}@endif</td>
                                                             <td id="accountDate_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->account_date }}</td>
                                                             <td id="privateOrBankName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->private_or_bank_name }}</td>
                                                             <td id="costAccountName_{{ $cost_list->cost_id }}" class="click_class">{{ $cost_list->cost_account_name }}</td>

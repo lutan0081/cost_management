@@ -41,7 +41,7 @@
         <!-- 権限 -->
         <div class="col-6 col-md-6 col-lg-3 mt-3 mb-4">
             <label class="label_required mb-2" for="textBox"></label>権限
-            <select class="form-select " name="permission_type_id" id="permission_type_id" @if($create_user_list->permission_type_id !== 1) disabled @endif required>
+            <select class="form-select disabled_class" name="permission_type_id" id="permission_type_id" required>
                 <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                 <option></option>
                 @foreach($permission_type_list as $permission_type)

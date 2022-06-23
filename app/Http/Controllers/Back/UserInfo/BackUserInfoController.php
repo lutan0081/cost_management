@@ -23,6 +23,11 @@ use Illuminate\Support\Facades\Crypt;
 // config内のapp.phpに定義
 use Common;
 
+// use App\Config;
+
+// メール
+use Illuminate\Support\Facades\Mail;
+
 /**
  * 表示・編集
  */
@@ -356,6 +361,248 @@ class BackUserInfoController extends Controller
 
         Log::debug('log_end:'.__FUNCTION__);
         return $ret;
+    }
+
+    /**
+     * ユーザ追加申請
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function backUserInfoMailEntry(Request $request){
+        Log::debug('start:' .__FUNCTION__);
+
+        try {
+
+            // トランザクション
+            DB::beginTransaction();
+
+            // 出力値
+            $response = [];
+
+            // バリデーション:OK=true NG=false
+            $response = $this->addUserValidation($request);
+
+            if($response["status"] == false){
+
+                Log::debug('validator_status:falseのif文通過');
+                return response()->json($response);
+
+            }
+
+            /**
+             * 値取得
+             */
+            // ログインセッションid取得
+            $session_id = $request->session()->get('create_user_id');
+
+            /**
+             * session_idからデータ申請者を取得する
+             */
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('$session_id:' .$session_id);
+
+            // sql
+            $str = "select "
+            ."* "
+            ."from "
+            ."create_users "
+            ."where create_user_id = $session_id ";
+            Log::debug('sql:' .$str);
+            $create_user_info = DB::select($str);
+
+            // 申請者
+            $create_user_name = $create_user_info[0]->create_user_name;
+
+            // ユーザ名
+            $modal_create_user_name = $request->input('modal_create_user_name');
+
+            // ユーザid
+            $modal_create_user_mail = $request->input('modal_create_user_mail');
+
+            // パスワード
+            $modal_create_user_password = $request->input('modal_create_user_password');
+
+            // パスワード確認
+            $modal_create_user_password_confirm = $request->input('modal_create_user_password_confirm');
+
+            // 送信先のアドレス
+            $to_mail = 'lutan0081.h@gmail.com';
+
+            // 件名
+            $subject_title = '【COST】ユーザ申請のお知らせ';
+
+            // 現在の日付取得
+            $date = now() .'.000';
+
+            //　自身のメールアドレス(cost0081.h@gmail.com)をconfigファイルから取得(key:address)
+            $from = config('mail.from');
+            $from = $from['address'];
+            Log::debug('from:' .$from);
+
+            // 本文設定
+            $mail_text = "☆───────────────────────────────────────────☆\n"
+            ."下記ユーザからユーザ追加申請のお知らせ。\n"
+            ."☆───────────────────────────────────────────☆\n\n"
+            ."ユーザ追加申請は以下の通りです。\n"
+            ."----------------------------------------------------------\n\n"
+            ."申請者：$modal_create_user_name\n"
+            ."ユーザ名：$modal_create_user_name\n"
+            ."ユーザID：$modal_create_user_mail\n"
+            ."パスワード：$modal_create_user_password\n\n"
+            ."※本メールは送信専用メールアドレスから配信されています。\n"
+            ."ご返信いただいても回答いたしかねます。ご了承ください。\n\n"
+            ."☆───────────────────────────────────────────☆\n"
+            ."ユーザ一覧より、追加承認を行ってください。\n"
+            ."☆───────────────────────────────────────────☆n";
+
+            /**
+             * ユーザ(仮データ)の登録
+             */
+            $str = "insert into "
+            ."create_users( "
+            ."create_user_name "
+            .",create_user_mail "
+            .",create_user_password "
+            .",permission_type_id "
+            .",active_flag "
+            .",entry_date "
+            .",update_user_id "
+            .",update_date "
+            .") "
+            ."values( "
+            ."'$modal_create_user_name' "
+            .",'$modal_create_user_mail' "
+            .",'$modal_create_user_password' "
+            .",2 "
+            .",1 "
+            .",'$date' "
+            .",$session_id "
+            .",'$date' "
+            .") ";
+
+            Log::debug('insert_sql:'.$str);
+            $ret['status'] = DB::insert($str);
+            
+            /**
+             * 仮登録のお知らせメールの送信
+             */
+            Mail::raw($mail_text, function($message) use($to_mail,$from,$subject_title){
+                $message->to($to_mail)
+                ->from($from)
+                ->subject($subject_title);
+            });
+
+            $response['status'] = 1;
+
+            // コミット
+            DB::commit();
+
+        // 例外処理
+        } catch (\Exception $e) { 
+
+            // ログ
+            Log::debug('error:'.$e);
+
+            DB::rollback();
+
+            // 失敗の場合falseを返す
+            $response['status'] = 0;
+            
+            
+        // status=1の場合、true/status=1以外の場合、false
+        } finally {
+
+            if($response['status'] == 1){
+
+                $response['status'] = true;
+                
+            }else{
+                
+                $response['status'] = false;
+            }
+
+        }
+
+        Log::debug('end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * バリデーション(ユーザ申請)
+     *
+     * @param Request $request(bladeの項目)
+     * @return response(status=NG/msg="入力を確認して下さい/messages=$msgs/$errkeys=$keys)
+     */
+    private function addUserValidation(Request $request){
+
+        // returnの出力値
+        $response = [];
+
+        // 初期値
+        $response["status"] = true;
+
+        /**
+         * rules
+         */
+        $rules = [];
+        $rules['modal_create_user_name'] = "required|max:50";
+        $rules['modal_create_user_mail'] = "required|max:50|userid";
+        $rules['modal_create_user_password'] = "required|max:10";
+
+        /**
+         * messages
+         */
+        $messages = [];
+        $messages['modal_create_user_name.required'] = "ユーザ名は必須です。";
+        $messages['modal_create_user_name.max'] = "ユーザ名の文字数が超過しています。";
+        $messages['modal_create_user_mail.required'] = "ユーザIDが必須です。";
+        $messages['modal_create_user_mail.max'] = "ユーザIDの文字数が超過しています。";
+        $messages['modal_create_user_mail.userid'] = "ユーザIDが重複しています。";
+        $messages['modal_create_user_password.required'] = "パスワードは必須です。";
+        $messages['modal_create_user_password.max'] = "パスワードは10文字以内で設定してください。";
+    
+        // validation判定
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // エラーがある場合処理
+        if ($validator->fails()) {
+            Log::debug('validator:失敗');
+
+            // response初期値
+            $keys = [];
+            $msgs = [];
+
+            // errorsをjson形式に変換(true=連想配列)
+            $ary = json_decode($validator->errors(), true);
+            
+            // ループ&値をvalueに設定
+            foreach ($ary as $key => $value) {
+                // キーを配列に設定
+                $keys[] = $key;
+                // 値(メッセージ)を設定
+                $msgs[] = $value;
+            }
+
+            // keyデバック
+            $arrKeys = print_r($keys , true);
+            Log::debug('keys:'.$arrKeys);
+
+            // msgsデバック
+            $arrMsgs = print_r($msgs , true);
+            Log::debug('msgs:'.$arrMsgs);
+
+            // response値設定
+            // status = falseの場合js側でerrorメッセージ表示
+            $response["status"] = false;
+            $response['msg'] = "入力を確認して下さい。";
+            $response["messages"] = $msgs;
+            $response["errkeys"] = $keys;
+            
+            Log::debug('log_end:' .__FUNCTION__);
+        }
+        return $response;
     }
 
 } 

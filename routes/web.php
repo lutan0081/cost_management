@@ -163,10 +163,17 @@ Route::post('backUserEditEntry', 'Back\User\BackUserController@backUserEditEntry
 // 削除
 Route::post('backUserDeleteEntry', 'Back\User\BackUserController@backUserDeleteEntry')->middleware("cost_auth");
 
+// 権限付与
+Route::post('backSetAuthorityEntry', 'Back\User\BackUserController@backSetAuthorityEntry')->middleware("cost_auth");
+
 /**
- * ユーザ情報
+ * ユーザ情報（個別）
  */
+// 表示
 Route::get('backUserInfoInit', 'Back\UserInfo\BackUserInfoController@backUserInfoInit')->middleware("cost_auth");
+
+// ユーザ申請
+Route::post('backUserInfoMailEntry', 'Back\UserInfo\BackUserInfoController@backUserInfoMailEntry')->middleware("cost_auth");
 
 /**
  * CSV

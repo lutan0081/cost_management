@@ -67,9 +67,12 @@
                                 <!-- ボタン -->
                                 <div class="row row-cols-2 mb-5">
 
-                                    <!-- 削除 -->
+                                    <!-- 削除・付与 -->
                                     <div class="col-6 col-md-6 col-lg-6 mt-3">
-                                        <button id="btn_delete" class="btn btn-outline-danger btn-default">削除</button>
+                                        <div class="btn-group" role="group">
+                                            <button id="btn_delete" class="btn btn-outline-danger btn-default">削除</button>
+                                            <button id="btn_set_authority" class="btn btn-outline-primary btn-default">権限付与</button>
+                                        </div>
                                     </div>
                                     
                                     <!-- 登録、帳票 -->
