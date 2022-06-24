@@ -94,9 +94,6 @@
                                 <li>
                                     <a href="backBankInit">銀行一覧</a>
                                 </li>
-                                <li>
-                                    <a href="backUserInit">勘定科目</a>
-                                </li>
                             </ul>
                         </div>
                     </li>

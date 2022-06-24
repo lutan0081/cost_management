@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Crypt;
 
+use DateTime;
+
 use Common;
 
 /**
@@ -34,6 +36,22 @@ class BackHomeController extends Controller
         Log::debug('start:' .__FUNCTION__);
 
         try {
+            // 現在の日付から月初を取得
+            $start_date = new DateTime('first day of this month');
+            $start_date = $start_date->format('Y-m-d'). ' 00:00:00.000';
+            Log::debug('start_date:' .$start_date);
+
+            // 現在の日付から来月の月初を取得
+            $end_date = new DateTime('first day of next month');
+            $end_date = $end_date->format('Y-m-d'). ' 00:00:00.000';
+            Log::debug('end_date:' .$end_date);
+
+            // 当月売上
+            $thisMonthProfit = $this->getThisMonthProfit($request, $start_date, $end_date);
+            Log::debug('thisMonthProfit:' .$thisMonthProfit);
+            // 年間売上
+
+
 
         // 例外処理
         } catch (\Exception $e) {
@@ -48,4 +66,37 @@ class BackHomeController extends Controller
 
         return view('back.backHome' ,compact([]));
     }
+
+    /**
+     * 当月の売上習得
+     * @param Request $request
+     * @param [type] $start_date
+     * @param [type] $end_date
+     * @return void
+     */
+    private function getThisMonthProfit(Request $request, $start_date, $end_date){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            
+
+            // 実行
+            Log::debug('sql:'.$str);
+            $ret = DB::select($str)[0];
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
+
+
 }

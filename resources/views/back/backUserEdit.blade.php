@@ -87,6 +87,9 @@
                             <!-- id -->
                             <input type="hidden" name="create_user_id" id="create_user_id" value="{{ $create_user_list->create_user_id }}">
 
+                            <!-- ログインユーザの権限id sessionから取得 -->
+                            <input type="hidden" name="user_permission_type_id" id="user_permission_type_id" value="{{ Session::get('permission_type_id') }}">
+
                             </div>
                             <!-- カード -->
                         </form>

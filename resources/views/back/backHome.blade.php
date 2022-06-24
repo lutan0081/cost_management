@@ -2,7 +2,7 @@
 <html lang="ja">
 
 	<head>
-		<title>ホーム/COST</title>
+		<title>Home/COST</title>
 
 		<!-- head -->
         @component('component.backHead')
@@ -19,6 +19,7 @@
             }
 
 		</style>
+        
 	</head>
 
 	<body>
