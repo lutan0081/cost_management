@@ -47,11 +47,11 @@ class BackHomeController extends Controller
             Log::debug('end_date:' .$end_date);
 
             // 当月売上
-            $thisMonthProfit = $this->getThisMonthProfit($request, $start_date, $end_date);
-            Log::debug('thisMonthProfit:' .$thisMonthProfit);
+            $thisMonthProfit_list = $this->getThisMonthProfit($request, $start_date, $end_date);
+            // dd($thisMonthProfit_list);
+
             // 年間売上
-
-
+            $thisYearProfit_list = $this->getThisYearProfit($request, $start_date, $end_date);
 
         // 例外処理
         } catch (\Exception $e) {
@@ -64,7 +64,7 @@ class BackHomeController extends Controller
 
         Log::debug('end:' .__FUNCTION__);
 
-        return view('back.backHome' ,compact([]));
+        return view('back.backHome', compact('thisMonthProfit_list'));
     }
 
     /**
@@ -79,7 +79,12 @@ class BackHomeController extends Controller
 
         try{
 
-            
+            $str = "select "
+            ."count(*) as row_count, "
+            ."sum(profit_fee) as profit_fee "
+            ."from profits "
+            ."where "
+            ."profits.profit_date between '2022/06/01' and '2022/06/30' ";
 
             // 実行
             Log::debug('sql:'.$str);
@@ -98,5 +103,40 @@ class BackHomeController extends Controller
         return $ret;
     }
 
+    /**
+     * 年月の売上習得
+     * @param Request $request
+     * @param [type] $start_date
+     * @param [type] $end_date
+     * @return void
+     */
+    private function getThisYearProfit(Request $request, $start_date, $end_date){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            $str = "select "
+            ."count(*) as row_count, "
+            ."sum(profit_fee) as profit_fee "
+            ."from profits "
+            ."where "
+            ."profits.profit_date between '2022/06/01' and '2022/06/30' ";
+
+            // 実行
+            Log::debug('sql:'.$str);
+            $ret = DB::select($str)[0];
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
 
 }

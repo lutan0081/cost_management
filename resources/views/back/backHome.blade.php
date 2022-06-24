@@ -67,11 +67,11 @@
                                             </div>
                                             
                                             <div class="col-12 col-md-12 col-lg-12 pt-2">
-                                                月間: <span class="count dashboard_box_num">12345678</span>
+                                                月間: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($thisMonthProfit_list->profit_fee) }}</span><span class="ms-1">円</span>
                                             </div>
 
                                             <div class="col-12 col-md-12 col-lg-12">
-                                                年間: <span class="count dashboard_box_num">12345678</span>
+                                                年間: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($thisMonthProfit_list->profit_fee) }}</span><span class="ms-1">円</span>
                                             </div>
                                             
                                         </div>
