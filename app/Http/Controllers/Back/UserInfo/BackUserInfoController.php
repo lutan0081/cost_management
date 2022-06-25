@@ -23,8 +23,6 @@ use Illuminate\Support\Facades\Crypt;
 // config内のapp.phpに定義
 use Common;
 
-// use App\Config;
-
 // メール
 use Illuminate\Support\Facades\Mail;
 
