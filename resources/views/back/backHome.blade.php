@@ -71,7 +71,7 @@
                                             </div>
 
                                             <div class="col-12 col-md-12 col-lg-12">
-                                                年間: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($thisMonthProfit_list->profit_fee) }}</span><span class="ms-1">円</span>
+                                                年間: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($thisYearProfit_list->profit_fee) }}</span><span class="ms-1">円</span>
                                             </div>
                                             
                                         </div>
@@ -95,11 +95,11 @@
                                             </div>
                                             
                                             <div class="col-12 col-md-12 col-lg-12 pt-2">
-                                                月間: <span class="count dashboard_box_num">12345678</span>
+                                                月間: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($thisMonthCost_list->outgo_fee) }}</span><span class="ms-1">円</span>
                                             </div>
 
                                             <div class="col-12 col-md-12 col-lg-12">
-                                                年間: <span class="count dashboard_box_num">12345678</span>
+                                                年間: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($thisYearCost_list->outgo_fee) }}</span><span class="ms-1">円</span>
                                             </div>
                                             
                                         </div>
@@ -118,16 +118,16 @@
                                             <div class="col-12 col-md-12 col-lg-12 pt-5">
                                                 <span class="dashboard_box_title">
                                                     <i class="bi bi-hand-thumbs-up"></i>
-                                                    承諾前
+                                                    未承諾
                                                 </span> 
                                             </div>
                                             
                                             <div class="col-12 col-md-12 col-lg-12 pt-2">
-                                                売上: <span class="count dashboard_box_num">12345678</span>
+                                                売上: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($profitApproval_list->row_count) }}</span><span class="ms-1">件</span>
                                             </div>
-
+                                        
                                             <div class="col-12 col-md-12 col-lg-12">
-                                                経費: <span class="count dashboard_box_num">12345678</span>
+                                                経費: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($costApproval_list->row_count) }}</span><span class="ms-1">件</span>
                                             </div>
                                             
                                         </div>
@@ -150,11 +150,11 @@
                                             </div>
                                             
                                             <div class="col-12 col-md-12 col-lg-12 pt-2">
-                                                質問: <span class="count dashboard_box_num">12345678</span>
+                                                売上: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($profit_quetion_list->row_count) }}</span><span class="ms-1">件</span>
                                             </div>
-
+                                        
                                             <div class="col-12 col-md-12 col-lg-12">
-                                                回答: <span class="count dashboard_box_num">12345678</span>
+                                                経費: <span class="count dashboard_box_num">{{ Common::format_three_digit_separator($cost_quetion_list->row_count) }}</span><span class="ms-1">件</span>
                                             </div>
 
                                         </div>
