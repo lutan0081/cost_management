@@ -582,7 +582,7 @@ class BackInformationController extends Controller
      * @param Request $request
      * @return void
      */
-    public function backUserDeleteEntry(Request $request){
+    public function backInformationDeleteEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -590,7 +590,7 @@ class BackInformationController extends Controller
             // return初期値
             $response = [];
 
-            $user_info = $this->deleteUser($request);
+            $user_info = $this->deleteInformation($request);
 
             // js側での判定のステータス(true:OK/false:NG)
             $response['status'] = $user_info['status'];
@@ -628,7 +628,7 @@ class BackInformationController extends Controller
      * @param Request $request
      * @return void
      */
-    private function deleteUser(Request $request){
+    private function deleteInformation(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -636,17 +636,13 @@ class BackInformationController extends Controller
             $ret = [];
 
             // 値取得
-            $create_user_id = $request->input('create_user_id');
+            $information_id = $request->input('information_id');
 
-            $date = now() .'.000';
-
-            $str = "update create_users "
-            ."set "
-            ."active_flag = 1 "
-            .",update_user_id = $create_user_id "
-            .",update_date = '$date' "
+            $str = "delete "
+            ."from "
+            ."cost_management.informations "
             ."where "
-            ."create_user_id = $create_user_id ";
+            ."information_id = $information_id ";
             Log::debug('str:'.$str);
 
             // OK=1/NG=0

@@ -202,3 +202,5 @@ Route::post('backInformationEditEntry', 'Back\Information\BackInformationControl
 // 編集表示
 Route::post('backInformationEditInit', 'Back\Information\BackInformationController@backInformationEditInit')->middleware("cost_auth");
 
+// 削除
+Route::post('backInformationDeleteEntry', 'Back\Information\BackInformationController@backInformationDeleteEntry')->middleware("cost_auth");

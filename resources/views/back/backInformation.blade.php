@@ -63,7 +63,7 @@
                             <!-- タイトル -->
                             
                             <div class="row">
-                                <form action="backUserInit" method="post">
+                                <form action="backInformationInit" method="post">
                                     {{ csrf_field() }}
                                     <div class="col-sm-12">
                                         <div class="card border border-0">
