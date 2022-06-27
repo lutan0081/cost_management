@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Back\Owner;
+namespace App\Http\Controllers\Back\Information;
 
 use Illuminate\Http\Request;
 
@@ -14,18 +14,13 @@ use Illuminate\Support\Facades\Log;
 
 use Storage;
 
-// データ縮小
-use InterventionImage;
-
-// 暗号化
-use Illuminate\Support\Facades\Crypt;
-
+// config内のapp.phpに定義
 use Common;
 
 /**
- * 家主マスタ(表示・登録、編集、削除)
+ * 表示・登録、編集、削除
  */
-class BackOwnerController extends Controller
+class BackInformationController extends Controller
 {   
     /**
      *  一覧(表示)
@@ -33,12 +28,16 @@ class BackOwnerController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backOwnerInit(Request $request){   
+    public function backInformationInit(Request $request){   
         Log::debug('start:' .__FUNCTION__);
 
         try {
-            // 家主一覧取得
-            $owner_list = $this->getList($request);
+
+            // 一覧取得
+            $information_list = $this->getInformationList($request);
+
+            // 新着情報種別
+            $information_type_list = $this->getInformationTypeList($request);
 
             /**
              * フォームに値を保持させるためにそのまま返す
@@ -50,6 +49,7 @@ class BackOwnerController extends Controller
             $paginate_params = [
 
                 'free_word' => $free_word,
+
             ];
             
         // 例外処理
@@ -62,15 +62,16 @@ class BackOwnerController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backOwner' ,$owner_list, compact('paginate_params', 'free_word'));
+        return view('back.backInformation', $information_list, compact('paginate_params', 'free_word', 'information_type_list'));
+
     }
 
     /**
      * 一覧(sql)
      *
-     * @return $ret(銀行一覧)
+     * @return $ret(部屋一覧)
      */
-    private function getList(Request $request){
+    private function getInformationList(Request $request){
 
         Log::debug('log_start:'.__FUNCTION__);
 
@@ -84,24 +85,40 @@ class BackOwnerController extends Controller
             $session_id = $request->session()->get('create_user_id');
             Log::debug('$session_id:' .$session_id);
 
-            $str = "select * from owners "
-            ."where 1 = 1 ";
+            $str = "select "
+            ."informations.information_id "
+            .",informations.information_name "
+            .",informations.information_type_id "
+            .",information_types.information_type_name "
+            .",informations.information_contents "
+            .",informations.entry_user_id "
+            .",informations.entry_date "
+            .",informations.update_user_id "
+            .",informations.update_date "
+            ."from "
+            ."informations "
+            ."left join information_types on "
+            ."information_types.information_type_id = informations.information_type_id "
+            ."where "
+            ."1=1 ";
 
             // where句
             $where = "";
 
             // フリーワード
             if($free_word !== null){
-                $where = $where ."and ifnull(owner_name,'') like '%$free_word%'";
+                $where = $where ."and ifnull(information_name,'') like '%$free_word%'";
+                $where = $where ."or ifnull(information_contents,'') like '%$free_word%'";
             };
 
             $str = $str .$where;
             Log::debug('$sql:' .$str);
+
             // query
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->orderByRaw("owner_id asc")->paginate(30)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("information_id desc")->paginate(30)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];
@@ -121,101 +138,24 @@ class BackOwnerController extends Controller
     }
 
     /**
-     *  新規(表示)
+     * 新着情報種別リスト
      *
-     * @param Request $request(フォームデータ)
-     * @return
-     */
-    public function backOwnerNewInit(Request $request){   
-        Log::debug('start:' .__FUNCTION__);
-
-        try {
-
-            // 家主一覧
-            $owner_list = $this->getNewList($request);
-            
-        // 例外処理
-        } catch (\Throwable $e) {
-
-            Log::debug('error:'.$e);
-
-        } finally {
-
-        }
-
-        Log::debug('end:' .__FUNCTION__);
-        return view('back.backOwnerEdit' ,compact('owner_list'));
-    }
-
-    /**
-     * 新規(ダミー値取得)
-     *
-     * @return $ret(空の配列)
-     */
-    private function getNewList(Request $request){
-        Log::debug('log_start:'.__FUNCTION__);
-        $obj = new \stdClass();
-        
-        // 募集要項
-        $obj->owner_id  = '';
-        $obj->owner_name = '';
-        $obj->owner_post_number = '';
-        $obj->owner_address = '';
-        $obj->owner_tel = '';
-        $obj->owner_fax = '';
-
-        $ret = [];
-        $ret = $obj;
-
-        Log::debug('log_end:'.__FUNCTION__);
-        return $ret;
-    }
-
-    /**
-     *  編集(表示)
-     *
-     * @param Request $request(フォームデータ)
-     * @return
-     */
-    public function backOwnerEditInit(Request $request){   
-        Log::debug('start:' .__FUNCTION__);
-
-        try {
-
-            // 一覧取得
-            $owner_info = $this->getEditList($request);
-            $owner_list = $owner_info[0];
-
-        // 例外処理
-        } catch (\Throwable $e) {
-
-            Log::debug('error:'.$e);
-
-        } finally {
-
-        }
-
-        Log::debug('end:' .__FUNCTION__);
-        return view('back.backOwnerEdit' ,compact('owner_list'));
-    }
-
-    /**
-     * 編集(表示:sql)
-     *
+     * @param Request $request
      * @return void
      */
-    private function getEditList(Request $request){
+    private function getInformationTypeList(Request $request){
         Log::debug('start:' .__FUNCTION__);
 
         try{
             // 値設定
-            $owner_id = $request->input('owner_id');
+            $create_user_id = $request->input('create_user_id');
 
             // sql
-            $str = "select * "
-            ."from owners "
-            ."where "
-            ."owners.owner_id = $owner_id ";
+            $str = "select "
+            ."* "
+            ."from "
+            ."information_types ";
+
             Log::debug('sql:' .$str);
             
             $ret = DB::select($str);
@@ -226,7 +166,6 @@ class BackOwnerController extends Controller
             throw $e;
 
         } finally {
-
         }
         
         Log::debug('start:' .__FUNCTION__);
@@ -239,7 +178,7 @@ class BackOwnerController extends Controller
      * @param $request(edit.blade.phpの各項目)
      * @return $response(status:true=OK/false=NG)
      */
-    public function backOwnerEditEntry(Request $request){
+    public function backInformationEditEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
         
         // return初期値
@@ -249,10 +188,8 @@ class BackOwnerController extends Controller
         $response = $this->editValidation($request);
 
         if($response["status"] == false){
-
             Log::debug('validator_status:falseのif文通過');
             return response()->json($response);
-
         }
 
         /**
@@ -260,7 +197,7 @@ class BackOwnerController extends Controller
          * id=有:update
          */
         // 新規登録
-        if($request->input('owner_id') == ""){
+        if($request->input('information_id') == ""){
 
             Log::debug('新規の処理');
 
@@ -302,25 +239,17 @@ class BackOwnerController extends Controller
          * rules
          */
         $rules = [];
-        $rules['owner_name'] = "required|max:50";
-        $rules['owner_post_number'] = "required|zip";
-        $rules['owner_address'] = "required|max:100";
-        $rules['owner_tel'] = "required|jptel";
-        $rules['owner_fax'] = "nullable|jptel";
+        $rules['information_title'] = "required|max:100";
+        $rules['information_contents'] = "required|max:500";
 
         /**
          * messages
          */
         $messages = [];
-        $messages['owner_name.required'] = "家主名は必須です。";
-        $messages['owner_name.max'] = "家主名の文字数が超過しています。";
-        $messages['owner_post_number.required'] = "郵便番号は必須です。";
-        $messages['owner_post_number.zip'] = "郵便番号の形式が不正です。";
-        $messages['owner_address.required'] = "住所は必須です。";
-        $messages['owner_address.max:100'] = "住所の文字数が超過しています。";
-        $messages['owner_tel.required'] = "TELは必須です。";
-        $messages['owner_tel.jptel'] = "TELの形式が不正です。";
-        $messages['owner_fax.jptel'] = "FAXの形式が不正です。";
+        $messages['information_title.required'] = "タイトルは必須です。";
+        $messages['information_title.max'] = "タイトルの文字数が超過しています。100字以内で入力してください。";
+        $messages['information_contents.required'] = "内容は必須です。";
+        $messages['information_contents.max'] = "内容の文字数が超過しています。500文字以内で入力してください。";
     
         // validation判定
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -371,21 +300,23 @@ class BackOwnerController extends Controller
      * @return ret(true:登録OK/false:登録NG、maxId(contract_id)、session_id(create_user_id))
      */
     private function insertData(Request $request){
+        
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
 
-            // retrun初期値
+            // 戻値の配列作成
             $ret = [];
+            // 戻値の初期値
             $ret['status'] = true;
 
             /**
              * status:OK=1 NG=0
              */
-            $bank_info = $this->insertBackOwner($request);
+            $information_info = $this->insertInformation($request);
 
             // returnのステータスにtrueを設定
-            $ret['status'] = $bank_info['status'];
+            $ret['status'] = $information_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -419,7 +350,8 @@ class BackOwnerController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function insertBackOwner(Request $request){
+    private function insertInformation(Request $request){
+        
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
@@ -428,67 +360,50 @@ class BackOwnerController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
-            $owner_name = $request->input('owner_name');
-            $owner_post_number = $request->input('owner_post_number');
-            $owner_address = $request->input('owner_address');
-            $owner_tel = $request->input('owner_tel');
-            $owner_fax = $request->input('owner_fax');
+            $information_title = $request->input('information_title');
+            $information_type = $request->input('information_type');
+            $information_contents = $request->input('information_contents');
+            $information_id = $request->input('information_id');
 
             // 現在の日付取得
             $date = now() .'.000';
     
-            // 家主名
-            if($owner_name == null){
-                $owner_name ='';
+            // タイトル
+            if($information_title == null){
+                $information_title ='';
             }
 
-            // 郵便番号
-            if($owner_post_number == null){
-                $owner_post_number ='';
+            // 種別
+            if($information_type == null){
+                $information_type =0;
             }
 
-            // 住所
-            if($owner_address == null){
-                $owner_address ='';
-            }
-
-            // TEL
-            if($owner_tel == null){
-                $owner_tel = '';
-            }
-
-            // FAX
-            if($owner_fax == null){
-                $owner_fax = '';
+            // 内容
+            if($information_contents == null){
+                $information_contents ='';
             }
 
             // 登録
             $str = "insert "
-            ."into "
-            ."owners "
-            ."( "
-            ."owner_name, "
-            ."owner_post_number, "
-            ."owner_address, "
-            ."owner_tel, "
-            ."owner_fax, "
-            ."entry_user_id, "
-            ."entry_date, "
-            ."update_user_id, "
-            ."update_date "
-            .")values( "
-            ."'$owner_name', "
-            ."'$owner_post_number', "
-            ."'$owner_address', "
-            ."'$owner_tel', "
-            ."'$owner_fax', "
-            ."$session_id, "
-            ."'$date', "
-            ."$session_id, "
-            ."'$date' "
-            ."); ";
+            ."into informations( "
+            ."information_name "
+            .",information_type_id "
+            .",information_contents "
+            .",entry_user_id "
+            .",entry_date "
+            .",update_user_id "
+            .",update_date "
+            .") values ( "
+            ."'$information_title' "
+            .",$information_type "
+            .",'$information_contents' "
+            .",$session_id "
+            .",'$date' "
+            .",$session_id "
+            .",'$date' "
+            .") ";
             
-            Log::debug('sql:'.$str);
+            Log::debug('str:'.$str);
 
             // OK=1/NG=0
             $ret['status'] = DB::insert($str);
@@ -525,10 +440,10 @@ class BackOwnerController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $legal_place_info = $this->updateBackOwner($request);
+            $room_info = $this->updateUser($request);
 
             // returnのステータスにtrueを設定
-            $ret['status'] = $legal_place_info['status'];
+            $ret['status'] = $room_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -562,7 +477,7 @@ class BackOwnerController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function updateBackOwner(Request $request){
+    private function updateUser(Request $request){
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
@@ -571,60 +486,38 @@ class BackOwnerController extends Controller
 
             // 値取得
             $session_id = $request->session()->get('create_user_id');
-            $owner_id = $request->input('owner_id');
-            $owner_name = $request->input('owner_name');
-            $owner_post_number = $request->input('owner_post_number');
-            $owner_address = $request->input('owner_address');
-            $owner_tel = $request->input('owner_tel');
-            $owner_fax = $request->input('owner_fax');
+            $information_id = $request->input('information_id');
+            $information_title = $request->input('information_title');
+            $information_type = $request->input('information_type');
+            $information_contents = $request->input('information_contents');
 
             // 現在の日付取得
             $date = now() .'.000';
     
-            // id
-            if($owner_id == null){
-                $owner_id = 0;
+            // タイトル
+            if($information_title == null){
+                $information_title ='';
             }
 
-            // 家主名
-            if($owner_name == null){
-                $owner_name ='';
+            // 種別
+            if($information_type == null){
+                $information_type =0;
             }
 
-            // 郵便番号
-            if($owner_post_number == null){
-                $owner_post_number ='';
+            // 内容
+            if($information_contents == null){
+                $information_contents ='';
             }
 
-            // 住所
-            if($owner_address == null){
-                $owner_address ='';
-            }
-
-            // TEL
-            if($owner_tel == null){
-                $owner_tel = '';
-            }
-
-            // FAX
-            if($owner_fax == null){
-                $owner_fax = '';
-            }
-
-            $str = "update "
-            ."owners "
+            $str = "update informations "
             ."set "
-            ."owner_name = '$owner_name', "
-            ."owner_post_number = '$owner_post_number', "
-            ."owner_address = '$owner_address', "
-            ."owner_tel = '$owner_tel', "
-            ."owner_fax = '$owner_fax', "
-            ."entry_user_id = $session_id, "
-            ."entry_date = '$date', "
-            ."update_user_id = $session_id, "
-            ."update_date = '$date' "
+            ."information_name = '$information_title' "
+            .",information_type_id = $information_type "
+            .",information_contents = '$information_contents' "
+            .",update_user_id = $session_id "
+            .",update_date = '$date' "
             ."where "
-            ."owner_id = $owner_id; ";
+            ."information_id = $information_id ";
             
             Log::debug('sql:'.$str);
 
@@ -646,12 +539,50 @@ class BackOwnerController extends Controller
     }
 
     /**
+     *  編集(表示)
+     *
+     * @param Request $request(フォームデータ)
+     * @return
+     */
+    public function backInformationEditInit(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $information_id = $request->input('information_id');
+        
+        // return初期値
+        $response = [];
+
+        $str = "select "
+        ."informations.information_id "
+        .",informations.information_name "
+        .",informations.information_type_id "
+        .",information_types.information_type_name "
+        .",information_contents "
+        .",informations.entry_user_id "
+        .",informations.entry_date "
+        .",informations.update_user_id "
+        .",informations.update_date "
+        ."from "
+        ."informations "
+        ."left join information_types on "
+        ."information_types.information_type_id = informations.information_type_id "
+        ."where "
+        ."information_id = $information_id ";
+        Log::debug('str:' .$str);
+
+        $response['information_list'] = DB::select($str);
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
      * 削除
      *
      * @param Request $request
      * @return void
      */
-    public function backOwnerDeleteEntry(Request $request){
+    public function backUserDeleteEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -659,10 +590,10 @@ class BackOwnerController extends Controller
             // return初期値
             $response = [];
 
-            $owner_info = $this->deleteOwner($request);
+            $user_info = $this->deleteUser($request);
 
             // js側での判定のステータス(true:OK/false:NG)
-            $response['status'] = $owner_info['status'];
+            $response['status'] = $user_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -692,12 +623,12 @@ class BackOwnerController extends Controller
     }
 
     /**
-     * 削除
+     * 削除(sql)
      *
      * @param Request $request
      * @return void
      */
-    private function deleteOwner(Request $request){
+    private function deleteUser(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -705,13 +636,17 @@ class BackOwnerController extends Controller
             $ret = [];
 
             // 値取得
-            $owner_id = $request->input('owner_id');
+            $create_user_id = $request->input('create_user_id');
 
-            $str = "delete "
-            ."from "
-            ."owners "
+            $date = now() .'.000';
+
+            $str = "update create_users "
+            ."set "
+            ."active_flag = 1 "
+            .",update_user_id = $create_user_id "
+            .",update_date = '$date' "
             ."where "
-            ."owner_id = $owner_id; ";
+            ."create_user_id = $create_user_id ";
             Log::debug('str:'.$str);
 
             // OK=1/NG=0

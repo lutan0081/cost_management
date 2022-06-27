@@ -128,10 +128,10 @@
                         <div class="sidebar-submenu">
                             <ul>
                                 <li>
-                                    <a href="backUserInit">ファイル一覧</a>
+                                    <a href="#">ファイル一覧</a>
                                 </li>
                                 <li>
-                                    <a href="backUserInit">新着情報一覧</a>
+                                    <a href="backInformationInit">新着情報一覧</a>
                                 </li>
                             </ul>
                         </div>

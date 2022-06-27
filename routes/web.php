@@ -189,3 +189,16 @@ Route::post('csvImport', 'Common\Csv\CsvController@csvImport')->middleware("cost
 
 // message出力
 Route::get('csvMessageExport', 'Common\Csv\CsvController@csvMessageExport')->middleware("cost_auth");
+
+/**
+ * 新着情報
+ */
+// 表示
+Route::any('backInformationInit', 'Back\Information\BackInformationController@backInformationInit')->middleware("cost_auth");
+
+// 登録（分岐）
+Route::post('backInformationEditEntry', 'Back\Information\BackInformationController@backInformationEditEntry')->middleware("cost_auth");
+
+// 編集表示
+Route::post('backInformationEditInit', 'Back\Information\BackInformationController@backInformationEditInit')->middleware("cost_auth");
+

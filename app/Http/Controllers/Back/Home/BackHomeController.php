@@ -78,6 +78,9 @@ class BackHomeController extends Controller
             $profit_quetion_info = $this->getProfitQuestionContents($request);
             $profit_quetion_list = $profit_quetion_info[0];
 
+            // 新着情報
+
+
         // 例外処理
         } catch (\Exception $e) {
 

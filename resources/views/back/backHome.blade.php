@@ -237,7 +237,7 @@
                                             <th></th>
                                             <th scope="col">タイトル</th>
                                             <th scope="col">内容</th>
-                                            <th scope="col">登録日</th>
+                                            <th scope="col">登録・更新日</th>
                                         </tr>
                                     </thead>
 
