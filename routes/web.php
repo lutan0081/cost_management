@@ -204,3 +204,8 @@ Route::post('backInformationEditInit', 'Back\Information\BackInformationControll
 
 // 削除
 Route::post('backInformationDeleteEntry', 'Back\Information\BackInformationController@backInformationDeleteEntry')->middleware("cost_auth");
+
+/**
+ * ファイル管理
+ */
+Route::any('backFileInit', 'Back\File\BackFileController@backFileInit')->middleware("cost_auth");
