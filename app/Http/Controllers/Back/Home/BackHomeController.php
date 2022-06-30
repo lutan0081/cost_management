@@ -79,8 +79,12 @@ class BackHomeController extends Controller
             $profit_quetion_list = $profit_quetion_info[0];
 
             // 新着情報
+            $information_info = $this->getInformations($request);
+            $information_list = $information_info;
 
-
+            // ★リクエストパラメータをページネーション用の連想配列に格納★
+            $paginate_params = [];
+            
         // 例外処理
         } catch (\Exception $e) {
 
@@ -92,7 +96,7 @@ class BackHomeController extends Controller
 
         Log::debug('end:' .__FUNCTION__);
 
-        return view('back.backHome', compact('thisMonthProfit_list', 'thisYearProfit_list', 'thisMonthCost_list', 'thisYearCost_list', 'profitApproval_list', 'costApproval_list', 'cost_quetion_list', 'profit_quetion_list'));
+        return view('back.backHome', $information_list, compact('paginate_params', 'thisMonthProfit_list', 'thisYearProfit_list', 'thisMonthCost_list', 'thisYearCost_list', 'profitApproval_list', 'costApproval_list', 'cost_quetion_list', 'profit_quetion_list'));
     }
 
     /**
@@ -454,6 +458,56 @@ class BackHomeController extends Controller
         $ret = DB::select($str);
 
         Log::debug('log_end:'.__FUNCTION__);
+        return $ret;
+    }
+
+    /**
+     * 新着情報一覧取得
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function getInformations(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            $str = "select "
+            ."informations.information_id "
+            .",informations.information_name "
+            .",informations.information_type_id "
+            .",information_types.information_type_name "
+            .",informations.information_contents "
+            .",informations.entry_user_id "
+            .",informations.entry_date "
+            .",informations.update_user_id "
+            .",informations.update_date "
+            ."from "
+            ."informations "
+            ."left join information_types on "
+            ."information_types.information_type_id = informations.information_type_id ";
+            Log::debug('$str:' .$str);
+
+            // 実行
+            $alias = DB::raw("({$str}) as alias");
+
+            // columnの設定、表示件数
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("information_id desc")->paginate(5)->onEachSide(1);
+
+            // resの中に値が代入されている
+            $ret = [];
+            $ret['res'] = $res;
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
         return $ret;
     }
 

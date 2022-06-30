@@ -12,12 +12,10 @@
 		<link rel="stylesheet" href="{{ asset('back/css/back_home.css') }}">  
 		
         <style>
-
             /* ボタンデフォルト値 */
             .btn-default{
                 width: 5rem;
             }
-
 		</style>
         
 	</head>
@@ -45,7 +43,7 @@
 			<div class="container">
 
                 <div class="info_title mt-3">
-                    <i class="fas fa-clock icon_blue me-2"></i>Dashboard
+                    <i class="bi bi-hourglass-split icon_blue me-2"></i>Dashboard
                 </div>
             
                 <div class="row">
@@ -225,7 +223,7 @@
                             <div class="table-responsive">
                                 
                                 <span class="info_title">
-                                    <i class="fas fa-bell icon_blue me-2"></i>Information
+                                    <i class="bi bi-bell-fill icon_blue me-2"></i>Information
                                 </span>
                                 <hr class="info_hr">
 
@@ -234,7 +232,7 @@
                                     <thead>
                                         <tr>
                                             <th scope="col" style="display:none">id</th>
-                                            <th></th>
+                                            <th><i class="bi bi-check2-square"></i></th>
                                             <th scope="col">タイトル</th>
                                             <th scope="col">内容</th>
                                             <th scope="col">登録・更新日</th>
@@ -242,42 +240,15 @@
                                     </thead>
 
                                     <tbody>
-                                        
+                                        @foreach($res as $information_list)
                                             <tr>
-                                                <td td id="id_" class="click_class" style="display:none"></td>
-                                                <td td id="cb_" class="click_class"><input id="check_box" class="form-check-input btn_radio" type="radio" name="flexRadioDisabled"></td>
-                                                <td td id="title_" class="click_class"></td>
-                                                <td td id="contents_" class="click_class"></td>
-                                                <td td id="date_" class="click_class"></td>
+                                                <td td id="id_{{ $information_list->information_id }}" class="click_class" style="display:none"></td>
+                                                <td td id="cb_{{ $information_list->information_id }}" class="click_class"><input id="{{ $information_list->information_id }}" class="form-check-input btn_radio" type="radio" name="flexRadioDisabled"></td>
+                                                <td td id="title_{{ $information_list->information_id }}" class="click_class">{{ $information_list->information_name }}</td>
+                                                <td td id="contents_{{ $information_list->information_id }}" class="click_class">{{ $information_list->information_type_name }}</td>
+                                                <td td id="date_{{ $information_list->information_id }}" class="click_class">{{ $information_list->information_contents }}</td>
                                             </tr>
-                                            <tr>
-                                                <td td id="id_" class="click_class" style="display:none"></td>
-                                                <td td id="cb_" class="click_class"><input id="check_box" class="form-check-input btn_radio" type="radio" name="flexRadioDisabled"></td>
-                                                <td td id="title_" class="click_class"></td>
-                                                <td td id="contents_" class="click_class"></td>
-                                                <td td id="date_" class="click_class"></td>
-                                            </tr>
-                                            <tr>
-                                                <td td id="id_" class="click_class" style="display:none"></td>
-                                                <td td id="cb_" class="click_class"><input id="check_box" class="form-check-input btn_radio" type="radio" name="flexRadioDisabled"></td>
-                                                <td td id="title_" class="click_class"></td>
-                                                <td td id="contents_" class="click_class"></td>
-                                                <td td id="date_" class="click_class"></td>
-                                            </tr>
-                                            <tr>
-                                                <td td id="id_" class="click_class" style="display:none"></td>
-                                                <td td id="cb_" class="click_class"><input id="check_box" class="form-check-input btn_radio" type="radio" name="flexRadioDisabled"></td>
-                                                <td td id="title_" class="click_class"></td>
-                                                <td td id="contents_" class="click_class"></td>
-                                                <td td id="date_" class="click_class"></td>
-                                            </tr>
-                                            <tr>
-                                                <td td id="id_" class="click_class" style="display:none"></td>
-                                                <td td id="cb_" class="click_class"><input id="check_box" class="form-check-input btn_radio" type="radio" name="flexRadioDisabled"></td>
-                                                <td td id="title_" class="click_class"></td>
-                                                <td td id="contents_" class="click_class"></td>
-                                                <td td id="date_" class="click_class"></td>
-                                            </tr>
+                                        @endforeach
                                     </tbody>
 
                                 </table>
@@ -286,8 +257,8 @@
                     </div>
 
                     <!-- ぺージネーション -->   
-                    <div id="links" style="display:none;" class="mt-3">
- 
+                    <div id="links" style="display:none;" class="mt-2">
+                        {{ $res->appends($paginate_params)->links() }}
                     </div>
 
                 </div>
@@ -304,7 +275,7 @@
         @endcomponent
 
 		<!-- 自作js -->
-		<!-- <script src="{{ asset('back/js/back_home.js') }}"></script> -->
+		<script src="{{ asset('back/js/back_home.js') }}"></script>
 	</body>
 	
 </html>

@@ -258,7 +258,7 @@ class Common
     /**
      * 有無リスト作成
      *
-     * @return $ret(健康保険リスト)
+     * @return $ret
      */
     public function getNeeds() {
         Log::debug('log_start:'.__FUNCTION__);
@@ -274,7 +274,7 @@ class Common
     /**
      * 銀行formatタイプ
      *
-     * @return $ret(健康保険リスト)
+     * @return $ret
      */
     public function getBankFormatTypes() {
         Log::debug('log_start:'.__FUNCTION__);
