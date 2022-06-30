@@ -636,7 +636,7 @@ class BackUserController extends Controller
             .",update_user_id = $session_id "
             .",update_date = '$date'"
             ."where "
-            ."create_user_id = $session_id ";            
+            ."create_user_id = $create_user_id ";            
             
             Log::debug('sql:'.$str);
 

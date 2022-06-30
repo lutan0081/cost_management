@@ -355,17 +355,20 @@
                             <div class="col-12 col-md-6 col-lg-12">
                                 <div class="row">
 
-                                    <!-- 照会口座 -->
+                                    <!-- 対象講座 -->
                                     <div class="col-12 col-md-12 col-lg-12 mt-1">
-                                        <label class="" for="textBox"></label>照会口座
+                                        <label class="" for="textBox"></label>対象口座
                                         
-                                        <select class="form-select" name="modal_bank_id" id="modal_bank_id">
+                                        <select class="form-select" name="modal_bank_id" id="modal_bank_id" required>
                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                             <option></option>
                                             @foreach($bank_list as $bank)
                                                 <option value="{{ $bank->bank_id }}">{{ $bank->bank_name. '_'. $bank->bank_number }}</option>
                                             @endforeach
                                         </select>
+                                        <div class="invalid-feedback" id ="modal_bank_id_error">
+                                            対象口座は必須です。
+                                        </div>
                                     </div>
                                     <!-- 照会口座 -->
 
@@ -373,22 +376,27 @@
                                     <div class="col-12 col-md-12 col-lg-6 mt-1">
                                         <label class="" for="textBox"></label>CSV形式
                                         
-                                        <select class="form-select" name="modal_bank_format_type_id" id="modal_bank_format_type_id">
+                                        <select class="form-select" name="modal_bank_format_type_id" id="modal_bank_format_type_id" required>
                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                             <option></option>
                                             @foreach($bank_format_type_list as $bank_format_type)
                                                 <option value="{{ $bank_format_type->bank_format_type_id }}">{{ $bank_format_type->bank_format_type_name }}</option>
                                             @endforeach
                                         </select>
+                                        <div class="invalid-feedback" id ="modal_bank_format_type_id_error">
+                                            CSV形式は必須です。
+                                        </div>
                                     </div>
                                     <!-- CSV形式 -->
 
                                     <!-- ファイル -->
                                     <div class="col-12 col-md-12 col-lg-12 mt-1 mb-3">
                                         <label class="mb-2">アップロード</label>
-                                        <input class="form-control" type="file" id="modal_img_file">
+                                        <input class="form-control" type="file" id="modal_img_file" required>
                                         <!-- エラーメッセージ -->
-                                        <div class="invalid-feedback" id ="modal_img_file_error"></div>
+                                        <div class="invalid-feedback" id ="modal_img_file_error">
+                                            ファイルは必須です。
+                                        </div>
                                     </div>
                                     <!-- ファイル -->
 

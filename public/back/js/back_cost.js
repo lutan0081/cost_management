@@ -108,83 +108,10 @@ $(function(){
         // ローディング画面
         $("#overlay").fadeIn(300);
 
-        // バリデーション
-        // formの値数を取得
-        // let forms = $('.needs-validation');
-        // console.log('forms.length:' + forms[0].length);
-
-        // // validationフラグ初期値
-        // let v_check = true;
-
-        // // formの項目数ループ処理
-        // for (let i = 0; i < forms[0].length; i++) {
-
-        //     // タグ名、Id名取得
-        //     let form = forms[0][i];
-        //     console.log('from:'+ form);
-
-        //     // タグ名を取得 input or button
-        //     let tag = $(form).prop("tagName");
-        //     console.log('tag:'+ tag);
-
-        //     // 各項目のid取得
-        //     let f_id = $(form).prop("id");
-        //     console.log('id:'+ f_id);
-            
-        //     // form内のbuttonは通過
-        //     if (tag == 'BUTTON') {
-        //         continue;
-        //     }
-
-        //     // 必須ではない場合、以降を処理せず次のレコードに行く
-        //     let required = $(form).attr("required");
-
-        //     console.log('required:' + required);
-
-        //     if (required !== 'required') {
-
-        //         continue;
-        //     }
-
-        //     // 必須で値が空白の場合の処理
-        //     let val = $(form).val();
-
-        //     console.log('value:'+ val);
-
-        //     if (val === '') {
-
-        //         // エラーメッセージのidを作成
-        //         let f_id_error = f_id + '_error';
-
-        //         let error_message_id = $('#' + f_id_error).attr('class');
-                
-        //         // タブを赤色に変更する(引数:エラーメッセージのid)
-        //         tabError(error_message_id);
-
-        //         // blade側のformタグにwas-validatedを追加
-        //         $(forms).addClass("was-validated");
-        //         v_check = false;
-
-        //     }
-
-        // }
-
-        // // チェック=falseの場合プログラム終了
-        // console.log(v_check);
-        // if (v_check === false) {
-
-        //     // ローディング画面停止
-        //     setTimeout(function(){
-        //         $("#overlay").fadeOut(300);
-        //     },500);
-
-        //     return false;
-        // }
-
         /**
          * CSV読込
          */
-        // 銀行formatid
+        // 銀行id
         let modal_bank_id = $("#modal_bank_id").val();
         console.log('modal_bank_id:' + modal_bank_id);
 
@@ -195,6 +122,46 @@ $(function(){
         // 画像ファイル取得
         let modal_img_file = $('#modal_img_file').prop('files')[0];
         console.log("modal_img_file:" + modal_img_file);
+
+        /**
+         * バリデーション
+         */
+        // validationフラグ初期値
+        let v_check = true;
+
+        /**
+         * v_checkフラグがfalseの場合、下段のバリデーションに引っ掛かり
+         * modalFormにwas-validatedを付与、エラー文字の表示
+         */
+        if(modal_bank_id == ''){
+
+            v_check = false;
+        }
+
+        if(modal_bank_format_type_id == ''){
+
+            v_check = false;
+        }
+
+        if(modal_img_file == ''){
+
+            v_check = false;
+        }
+
+        // チェック=falseの場合プログラム終了
+        console.log(v_check);
+
+        if (v_check === false) {
+
+            // ローディング画面停止
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            $('#modalForm').addClass("was-validated");;
+
+            return false;
+        }
 
         // 送信データインスタンス化
         var sendData = new FormData();
