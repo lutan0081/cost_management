@@ -61,6 +61,9 @@ class BackCostController extends Controller
             // 銀行一覧
             $bank_list = $common->getBanks();
 
+            // 銀行format一覧
+            $bank_format_type_list = $common->getBankFormatTypes();
+            
             // 勘定科目id
             $cost_account_list = $common->getCostAccounts();
 
@@ -122,7 +125,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list', 'income_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date' ,'cost_flag_id', 'approval_id', 'question_contents', 'cost_fee_sum_list'));
+        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list', 'income_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date' ,'cost_flag_id', 'approval_id', 'question_contents', 'cost_fee_sum_list', 'bank_format_type_list'));
     }
 
     /**

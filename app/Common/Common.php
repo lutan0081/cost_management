@@ -272,6 +272,22 @@ class Common
     }
 
     /**
+     * 銀行formatタイプ
+     *
+     * @return $ret(健康保険リスト)
+     */
+    public function getBankFormatTypes() {
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from bank_format_types "
+        ."order by sort_id asc ";
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
+    /**
      * 日付fフォーマット(年月日)
      * {{ Common::format_date($update->create_date,'Y年m月d日') }}
      * @return return date('Y/m/d', strtotime($date));

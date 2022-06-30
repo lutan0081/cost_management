@@ -807,8 +807,8 @@ $(function(){
                         $("#overlay").fadeOut(300);
                     },500);
 
-                    location.reload();
-                    // location.href = 'backCostInit';
+                    // location.reload();
+                    location.href = 'backProfitInit';
 
                 // ajax接続失敗の時の処理
                 }).fail(function(jqXHR, textStatus, errorThrown) {

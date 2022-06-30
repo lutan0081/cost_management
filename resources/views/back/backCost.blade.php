@@ -342,7 +342,7 @@
                     <!-- ヘッダー -->
                     <div class="modal-header">
                         <div class="modal-title info_title" id="exampleModalLabel">
-                            <i class="fas fa-file-csv icon_blue me-2"></i>CSV読込
+                            <i class="fas fa-file-csv icon_blue me-2"></i>CSV取込
                         </div>
 
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -363,14 +363,28 @@
                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                             <option></option>
                                             @foreach($bank_list as $bank)
-                                                <option value="{{ $bank->bank_id }}" @if( $bank_id == $bank->bank_id) selected @endif>{{ $bank->bank_name. '_'. $bank->bank_number }}</option>
+                                                <option value="{{ $bank->bank_id }}">{{ $bank->bank_name. '_'. $bank->bank_number }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <!-- 照会口座 -->
 
+                                    <!-- CSV形式 -->
+                                    <div class="col-12 col-md-12 col-lg-6 mt-1">
+                                        <label class="" for="textBox"></label>CSV形式
+                                        
+                                        <select class="form-select" name="modal_bank_format_type_id" id="modal_bank_format_type_id">
+                                            <!-- タグ内に値を追加、値追加後同一の場合選択する -->
+                                            <option></option>
+                                            @foreach($bank_format_type_list as $bank_format_type)
+                                                <option value="{{ $bank_format_type->bank_format_type_id }}">{{ $bank_format_type->bank_format_type_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <!-- CSV形式 -->
+
                                     <!-- ファイル -->
-                                    <div class="col-12 col-md-12 col-lg-12 mt-3 mb-3">
+                                    <div class="col-12 col-md-12 col-lg-12 mt-1 mb-3">
                                         <label class="mb-2">アップロード</label>
                                         <input class="form-control" type="file" id="modal_img_file">
                                         <!-- エラーメッセージ -->
@@ -393,8 +407,8 @@
                             <!-- 戻る -->
                             <button type="button" id="btn_modal_csv_back" class="btn btn-outline-primary btn-default" data-bs-dismiss="modal">戻る</button>
 
-                            <!-- 送信 -->
-                            <button type="button" id="btn_modal_csv_import" class="btn btn-outline-primary btn-default float-end">Import</button>
+                            <!-- 取込 -->
+                            <button type="button" id="btn_modal_csv_import" class="btn btn-outline-primary btn-default float-end">CSV取込</button>
                             
                         </div>
 

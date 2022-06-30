@@ -666,13 +666,13 @@ class CsvController extends Controller
              * 値取得
              */
             // 照会口座id
-            $modal_bank_id = $request->input('modal_bank_id');
-            Log::debug('modal_bank_id:' .$modal_bank_id);
+            $modal_bank_format_type_id = $request->input('modal_bank_format_type_id');
+            Log::debug('modal_bank_format_type_id:' .$modal_bank_format_type_id);
 
             /**
              * 分岐
              */
-            switch($modal_bank_id){
+            switch($modal_bank_format_type_id){
 
                 case 1:
                     Log::debug('池田泉州銀行の処理');
@@ -1315,8 +1315,6 @@ class CsvController extends Controller
                 if($financial_summary == null){
                     $message[] = $count. '摘要が空白です';
                 }
-                
-
                 // 行数のカウントを加算する
                 $count++;
             }

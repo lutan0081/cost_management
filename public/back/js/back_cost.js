@@ -4,6 +4,7 @@ $(function(){
     $('#csvModal').on('show.bs.modal', function (e) {
         console.log('show');//showメソッドが実行されたら実行される。
         $('#modal_bank_id').val('');
+        $('#modal_bank_format_type_id').val('');
         $('#modal_img_file').val('');
     });
 
@@ -183,9 +184,13 @@ $(function(){
         /**
          * CSV読込
          */
-        // 銀行id
+        // 銀行formatid
         let modal_bank_id = $("#modal_bank_id").val();
         console.log('modal_bank_id:' + modal_bank_id);
+
+        // 銀行formatid
+        let modal_bank_format_type_id = $("#modal_bank_format_type_id").val();
+        console.log('modal_bank_format_type_id:' + modal_bank_format_type_id);
 
         // 画像ファイル取得
         let modal_img_file = $('#modal_img_file').prop('files')[0];
@@ -194,10 +199,9 @@ $(function(){
         // 送信データインスタンス化
         var sendData = new FormData();
 
-        /**
-         * 画像
-         */
+        // 送信データ
         sendData.append('modal_bank_id', modal_bank_id);
+        sendData.append('modal_bank_format_type_id', modal_bank_format_type_id);
         sendData.append('modal_img_file', modal_img_file);
 
         // ajaxヘッダー
@@ -236,7 +240,6 @@ $(function(){
                 var options = {
                     title: "CSVのインポートが完了しました。",
                     icon: "success",
-                    text: "結果を出力しました。",
                     buttons: {
                         OK: true
                     }
@@ -258,7 +261,7 @@ $(function(){
                         }
 
                         // 一覧に画面遷移
-                        // location.href = 'backCostInit';
+                        location.href = 'backCostInit';
                     };
                 });
             };
@@ -312,7 +315,7 @@ $(function(){
     });
 
     /**
-     * csv出力
+     * csvエクスポート
      */
     $("#btn_csv_output").on('click', function(e) {
 
