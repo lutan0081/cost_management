@@ -1,4 +1,26 @@
 $(function(){
+
+    /**
+     * 承認ボタンを押した場合、操作不可
+     */
+    let approval_id = $('[name="approval_id"]').prop('checked')
+    console.log('approval_id:' + approval_id);
+
+    // 承認ボタンがtrue = 承諾ボタンを操作・入力項目を操作可能
+    if(approval_id == true){
+
+        console.log('trueの処理');
+        $(".disabled_class").prop('disabled', true);
+        $("#approval_id").prop('disabled', true);
+
+    // 承認ボタンがfalse = 承諾ボタンを操作・入力項目を操作不可能
+    }else{
+
+        console.log('falseの処理');
+        $(".disabled_class").prop('disabled', false);
+        $("#approval_id").prop('disabled', false);
+    }
+
     /**
      * 権限IDで判断し、一般ユーザは操作不可にする
      */
@@ -9,27 +31,6 @@ $(function(){
     if(permission_type_id != 1){
         $(".disabled_class").prop('disabled', true);
     }
-
-    // /**
-    //  * 承認ボタンを押した場合、操作不可
-    //  */
-    // let approval_id = $('[name="approval_id"]').prop('checked')
-    // console.log('approval_id:' + approval_id);
-
-    // // 承認ボタンがtrue = 承諾ボタンを操作・入力項目を操作可能
-    // if(approval_id == true){
-
-    //     console.log('trueの処理');
-    //     $(".disabled_class").prop('disabled', true);
-    //     $("#approval_id").prop('disabled', true);
-
-    // // 承認ボタンがfalse = 承諾ボタンを操作・入力項目を操作不可能
-    // }else{
-
-    //     console.log('falseの処理');
-    //     $(".disabled_class").prop('disabled', false);
-    //     $("#approval_id").prop('disabled', false);
-    // }
 
     /**
      * 登録

@@ -415,7 +415,7 @@
                                     <input type="hidden" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
                                     
                                     <!-- 権限id sessionから取得 -->
-                                    <input type="text" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
+                                    <input type="hidden" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
 
                                 </div>
                                 <!-- カード -->
