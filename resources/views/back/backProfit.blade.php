@@ -247,14 +247,14 @@
 
                                 <div class="col-12 col-md-6 col-lg-6">
                                     <div class="btn-group" role="group">
-                                        <button type="button" id="btn_csv" class="btn btn-outline-primary float-start btn-default">CSV</button>
+                                        <button type="button" id="btn_csv" class="btn btn-outline-primary float-start btn-default">CSV出力</button>
                                     </div>
                                 </div>
                                 
                                 <!-- 新規、編集 -->
                                 <div class="col-12 col-md-6 col-lg-6">
                                     <div class="btn-group float-xl-end" role="group">
-                                        <button type="button" onclick="location.href='backProfitNewInit'" id="btn_csv" class="btn btn-outline-primary float-end btn-default">新規登録</button>
+                                        <button type="button" onclick="location.href='backProfitNewInit'" id="btn_new" class="btn btn-outline-primary float-end btn-default">新規登録</button>
                                         <button type="button" id="btn_edit" class="btn btn-outline-primary float-end btn-default">編集</button>
                                     </div>
                                 </div>

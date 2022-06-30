@@ -406,7 +406,7 @@
                                             <div class="btn-group float-xl-end" role="group">
 
                                                 <!-- 登録 -->
-                                                <button id="btn_edit" class="btn btn-outline-primary btn-default">登録</button>
+                                                <button id="btn_edit" class="btn btn-outline-primary btn-default disabled_class">登録</button>
 
                                             </div>
                                         </div>

@@ -402,7 +402,7 @@
                                             <div class="btn-group float-xl-end" role="group">
 
                                                 <!-- 登録 -->
-                                                <button id="btn_edit" class="btn btn-outline-primary btn-default">登録</button>
+                                                <button id="btn_edit" class="btn btn-outline-primary btn-default disabled_class">登録</button>
 
                                             </div>
                                         </div>
@@ -415,7 +415,7 @@
                                     <input type="hidden" name="profit_id" id="profit_id" value="{{ $profit_list->profit_id }}">
                                     
                                     <!-- 権限id sessionから取得 -->
-                                    <input type="hidden" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
+                                    <input type="text" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
 
                                 </div>
                                 <!-- カード -->
