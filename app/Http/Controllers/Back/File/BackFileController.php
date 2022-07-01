@@ -34,10 +34,7 @@ class BackFileController extends Controller
         try {
 
             // 一覧取得
-            $information_list = $this->getInformationList($request);
-
-            // 新着情報種別
-            $information_type_list = $this->getInformationTypeList($request);
+            $file_list = $this->getFileList($request);
 
             /**
              * フォームに値を保持させるためにそのまま返す
@@ -62,7 +59,7 @@ class BackFileController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backInformation', $information_list, compact('paginate_params', 'free_word', 'information_type_list'));
+        return view('back.backFile', $file_list, compact('paginate_params', 'free_word'));
 
     }
 
@@ -71,7 +68,7 @@ class BackFileController extends Controller
      *
      * @return $ret(部屋一覧)
      */
-    private function getInformationList(Request $request){
+    private function getFileList(Request $request){
 
         Log::debug('log_start:'.__FUNCTION__);
 
@@ -86,29 +83,30 @@ class BackFileController extends Controller
             Log::debug('$session_id:' .$session_id);
 
             $str = "select "
-            ."informations.information_id "
-            .",informations.information_name "
-            .",informations.information_type_id "
-            .",information_types.information_type_name "
-            .",informations.information_contents "
-            .",informations.entry_user_id "
-            .",informations.entry_date "
-            .",informations.update_user_id "
-            .",informations.update_date "
+            ."files.file_id "
+            .",files.file_name "
+            .",files.file_type_id "
+            .",file_types.file_type_name "
+            .",files.file_path "
+            .",files.file_memo "
+            .",files.entry_user_id "
+            .",files.entry_date "
+            .",files.update_user_id "
+            .",files.update_date "
             ."from "
-            ."informations "
-            ."left join information_types on "
-            ."information_types.information_type_id = informations.information_type_id "
+            ."files "
+            ."left join file_types on "
+            ."file_types.file_type_id = files.file_type_id "
             ."where "
-            ."1=1 ";
+            ."1 = 1 ";
 
             // where句
             $where = "";
 
             // フリーワード
             if($free_word !== null){
-                $where = $where ."and ifnull(information_name,'') like '%$free_word%'";
-                $where = $where ."or ifnull(information_contents,'') like '%$free_word%'";
+                $where = $where ."and ifnull(file_name,'') like '%$free_word%'";
+                $where = $where ."or ifnull(file_memo,'') like '%$free_word%'";
             };
 
             $str = $str .$where;
@@ -118,7 +116,7 @@ class BackFileController extends Controller
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->orderByRaw("information_id desc")->paginate(30)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("file_id desc")->paginate(30)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];
