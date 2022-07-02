@@ -36,6 +36,8 @@ class BackFileController extends Controller
             // 一覧取得
             $file_list = $this->getFileList($request);
 
+            // ファイルタイプ取得
+
             /**
              * フォームに値を保持させるためにそのまま返す
              */

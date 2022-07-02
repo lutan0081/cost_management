@@ -28,7 +28,7 @@ $(function(){
         clearProc();
 
         // モーダルを開く処理
-        $('#informaitonModal').modal('show');
+        $('#fileEditModal').modal('show');
 
     });
 

@@ -60,9 +60,6 @@ class BackCostController extends Controller
 
             // 銀行一覧
             $bank_list = $common->getBanks();
-
-            // 銀行format一覧
-            $bank_format_type_list = $common->getBankFormatTypes();
             
             // 勘定科目id
             $cost_account_list = $common->getCostAccounts();
@@ -125,7 +122,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list', 'income_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date' ,'cost_flag_id', 'approval_id', 'question_contents', 'cost_fee_sum_list', 'bank_format_type_list'));
+        return view('back.backCost', $cost_list, compact('paginate_params' ,'outgo_fee_sum_list', 'income_fee_sum_list' ,'bank_list' ,'cost_account_list' ,'private_or_bank_list', 'free_word', 'bank_id', 'cost_account_id', 'private_or_bank_id', 'start_date', 'end_date' ,'cost_flag_id', 'approval_id', 'question_contents', 'cost_fee_sum_list'));
     }
 
     /**
@@ -2316,5 +2313,95 @@ class BackCostController extends Controller
 
         Log::debug('log_end:' .__FUNCTION__);
         return $ret;
+    }
+
+    /**
+     * 対象口座（モーダル）のコンボボックスを変更した場合のcsv形式取得
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function backCostModalBankChange(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+        
+        // return初期値
+        $response = [];
+
+        /**
+         * status:OK=1 NG=0
+         */
+        $bank_format_type_list = $this->getBankFormatType($request);
+
+        /**
+         * returnのステータス
+         */
+        $response['bank_format_type_list'] = $bank_format_type_list['bank_format_type_list'];
+
+        // js側での判定のステータス(true:OK/false:NG)
+        $response["status"] = $bank_format_type_list['status'];
+
+        // 配列デバック
+        $arrString = print_r($response , true);
+        Log::debug('messages:'.$arrString);
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * csv形式sql
+     *
+     * @param Request $request(edit.blade.phpの各項目)
+     * @return ret(true:登録OK/false:登録NG、maxId(contract_id)、session_id(create_user_id))
+     */
+    private function getBankFormatType(Request $request){
+        
+        Log::debug('log_start:' .__FUNCTION__);
+
+        try {
+
+            // retrun初期値
+            $ret = [];
+
+            /**
+             * 不動産id
+             */
+            $modal_bank_id = $request->input('modal_bank_id');
+
+            // sql
+            $str = "select * from bank_format_types "
+            ."where bank_format_types.bank_id = $modal_bank_id ";
+            Log::debug('str:' . $str);
+
+            // 値格納
+            $ret['bank_format_type_list'] = DB::select($str);
+
+            // 戻り値
+            $ret['status'] = 1;
+            
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            $ret['status'] = 0;
+
+        // status:OK=1/NG=0
+        } finally {
+
+            if($ret['status'] == 1){
+
+                Log::debug('status:trueの処理');
+                $ret['status'] = true;
+
+            }else{
+
+                Log::debug('status:falseの処理');
+                $ret['status'] = false;
+            }
+
+            Log::debug('log_end:'.__FUNCTION__);
+            return $ret;
+        }
     }
 } 

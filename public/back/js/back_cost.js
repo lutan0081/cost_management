@@ -328,5 +328,105 @@ $(function(){
         location.href = "csvCostDownload?free_word=" + free_word + "&bank_id=" + bank_id + "&cost_account_id=" + cost_account_id+ "&private_or_bank_id=" + private_or_bank_id + "&cost_flag_id=" + cost_flag_id + "&approval_id=" + approval_id + "&question_contents=" + question_contents + "&start_date=" + start_date + "&end_date=" + end_date;
 
     });
+
+    /**
+     * 対象口座変更の際、csv形式取得の処理
+     */
+    $("#modal_bank_id").change(function(e) {
+
+        console.log('対象口座の変更の処理');
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);
+
+        // バリデーション
+        // formの値数を取得
+        let forms = $('.needs-validation');
+        console.log('forms.length:' + forms[0].length);
+
+        // 銀行id
+        let modal_bank_id = $("#modal_bank_id").val();
+
+        // 送信データインスタンス化
+        var sendData = new FormData();
+        
+        sendData.append('modal_bank_id', modal_bank_id);
+        
+        // ajaxヘッダー
+        $.ajaxSetup({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+        });
+
+        $.ajax({
+            type: 'post',
+            url: 'backCostModalBankChange',
+            dataType: 'json',
+            data: sendData,
+            cache:false,
+            processData : false,
+            contentType : false,
+
+        // 接続が出来た場合の処理
+        }).done(function(data) {
+
+            // trueの処理->申込一覧に遷移
+            if(data.status == true){
+
+                console.log("status:" + data.status);
+                console.log("bank_format_type_list:" + data.bank_format_type_list);
+
+                // 値を空にする
+                $('#modal_bank_format_type_id').empty();
+
+                // 1列目に空のボックスを作る
+                $('#modal_bank_format_type_id').append("<option value=''></option>");
+
+                // roomリストの数だけループする
+                for (let i = 0; i < data.bank_format_type_list.length; i++) {
+                    
+                    let bank_format_type_id = data.bank_format_type_list[i]['bank_format_type_id'];
+
+                    let bank_format_type_name = data.bank_format_type_list[i]['bank_format_type_name'];
+
+                    // roomリストの分だけコンボボックスに値を入れる
+                    $('#modal_bank_format_type_id').append("<option value='" + bank_format_type_id + "'>" + bank_format_type_name + "</option>");
+                }
+
+                // ローディング画面終了の処理
+                setTimeout(function(){
+                    $("#overlay").fadeOut(300);
+                },500);
+                
+                return false;
+            };
+
+                // falseの処理->アラートでエラーメッセージを表示
+            if(data.status == false){
+
+                console.log("status:" + data.status);
+                console.log("messages:" + data.messages);
+                console.log("errorkeys:" + data.errkeys);
+
+                // ローディング画面停止
+                setTimeout(function(){
+                    $("#overlay").fadeOut(300);
+                },500);
+            }
+            
+        // ajax接続が出来なかった場合の処理
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+            
+        });
+        
+    });
     
 });

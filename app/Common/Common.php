@@ -155,6 +155,7 @@ class Common
         Log::debug('log_start:'.__FUNCTION__);
 
         $str = "select * from banks "
+        ."where active_flag = 0 "
         ."order by bank_id asc ";
 
         $ret = DB::select($str);
@@ -264,22 +265,6 @@ class Common
         Log::debug('log_start:'.__FUNCTION__);
 
         $str = "select * from needs "
-        ."order by sort_id asc ";
-        $ret = DB::select($str);
-
-        Log::debug('log_end:'.__FUNCTION__);
-        return $ret; 
-    }
-
-    /**
-     * 銀行formatタイプ
-     *
-     * @return $ret
-     */
-    public function getBankFormatTypes() {
-        Log::debug('log_start:'.__FUNCTION__);
-
-        $str = "select * from bank_format_types "
         ."order by sort_id asc ";
         $ret = DB::select($str);
 

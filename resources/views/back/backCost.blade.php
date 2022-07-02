@@ -355,7 +355,7 @@
                             <div class="col-12 col-md-6 col-lg-12">
                                 <div class="row">
 
-                                    <!-- 対象講座 -->
+                                    <!-- 対象口座 -->
                                     <div class="col-12 col-md-12 col-lg-12 mt-1">
                                         <label class="" for="textBox"></label>対象口座
                                         
@@ -379,9 +379,7 @@
                                         <select class="form-select" name="modal_bank_format_type_id" id="modal_bank_format_type_id" required>
                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                             <option></option>
-                                            @foreach($bank_format_type_list as $bank_format_type)
-                                                <option value="{{ $bank_format_type->bank_format_type_id }}">{{ $bank_format_type->bank_format_type_name }}</option>
-                                            @endforeach
+                                        
                                         </select>
                                         <div class="invalid-feedback" id ="modal_bank_format_type_id_error">
                                             CSV形式は必須です。

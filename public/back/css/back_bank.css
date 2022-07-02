@@ -61,3 +61,31 @@ label.label_any:after {
 .icon_blue{
     color: #98a4c7;
 }
+
+/*==================================
+色分けのボックス
+===================================*/
+.color_info_box{
+    font-weight: bold;
+}
+
+
+/*==================================
+マーカー風
+===================================*/
+.pink_line {
+    background:linear-gradient(transparent 60%, #ffdfef 0%) ;
+}
+
+.markerBlue{
+    background:linear-gradient(transparent 50%, #99ccff 0%);
+}
+
+.markerYellow{
+    background:linear-gradient(transparent 50%, #ffffcc 0%);
+}
+
+.markerGreen{
+    background:linear-gradient(transparent 50%, #ccffcc 0%);
+}
+

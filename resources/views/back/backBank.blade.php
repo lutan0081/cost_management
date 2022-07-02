@@ -63,7 +63,7 @@
                                 </div>
                             </div>
                             <!-- タイトル -->
-                            
+
                             <div class="row">
                                 <form action="backBankInit" method="post">
                                     {{ csrf_field() }}
@@ -77,9 +77,15 @@
                                                     <input type="text" class="form-control" name="free_word" id="free_word" value="{{ $free_word }}">
                                                 </div>
 
+                                                <div class="w-100"></div>
+
+                                                <!-- 色分けの説明 -->
+                                                <div class="col-6 col-md-6 col-lg-6 color_info_box">
+                                                    <label class="pink_line" for=""><i class="bi bi-person-x me-1 icon_blue"></i>赤：有効期限切れ</label>
+                                                </div>
 
                                                 <!-- 検索ボタン -->
-                                                <div class="col-5 col-md-4 col-lg-8">
+                                                <div class="col-5 col-md-4 col-lg-6 mt-2">
                                                     <input type="submit" class="btn btn-default btn-outline-primary float-end" value="検索">
                                                 </div>
                                                 <!-- 検索ボタン -->
@@ -111,7 +117,7 @@
                                     <!-- スクロール -->
                                     <div class="overflow-auto" style="height:35rem;">
                                         <div class="table-responsive">
-                                            <table class="table table-hover table-condensed table-striped">
+                                            <table class="table table-hover table-condensed">
                                                 <!-- テーブルヘッド -->
                                                 <thead>
                                                     <tr>
@@ -128,7 +134,7 @@
                                                 <!-- テーブルボディ -->
                                                 <tbody>
                                                     @foreach($res as $bank_list)
-                                                        <tr>
+                                                        <tr @if($bank_list->active_flag == 1) class="table table-danger " @endif>
                                                             <td id="{{ $bank_list->bank_id }}" class="click_class" style="display:none"></td>
                                                             <td id="{{ $bank_list->bank_id }}" class="click_class"><input id="{{ $bank_list->bank_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
                                                             <td id="{{ $bank_list->bank_id }}" class="click_class">{{ $bank_list->bank_name }}</td>

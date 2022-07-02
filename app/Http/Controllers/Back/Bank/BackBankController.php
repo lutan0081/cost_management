@@ -93,6 +93,7 @@ class BackBankController extends Controller
             ."bank_types.bank_type_name as bank_type_name, "
             ."bank_number as bank_number, "
             ."bank_account_name as bank_account_name, "
+            ."active_flag as active_flag, "
             ."banks.entry_user_id as entry_user_id, "
             ."banks.entry_date as entry_date, "
             ."banks.update_user_id as update_user_id, "
@@ -547,6 +548,7 @@ class BackBankController extends Controller
             ."bank_type_id, "
             ."bank_number, "
             ."bank_account_name, "
+            ."active_flag, "
             ."entry_user_id, "
             ."entry_date, "
             ."update_user_id, "
@@ -557,6 +559,7 @@ class BackBankController extends Controller
             ."$bank_type_id, "
             ."'$bank_number', "
             ."'$bank_account_name', "
+            ."0, "
             ."$session_id, "
             ."'$date', "
             ."$session_id, "
@@ -653,9 +656,6 @@ class BackBankController extends Controller
             $bank_number = $request->input('bank_number');
             $bank_account_name = $request->input('bank_account_name');
 
-            // 現在の日付取得
-            $date = now() .'.000';
-    
             // 現在の日付取得
             $date = now() .'.000';
     
@@ -788,11 +788,18 @@ class BackBankController extends Controller
             // 値取得
             $bank_id = $request->input('bank_id');
 
-            $str = "delete "
-            ."from "
-            ."banks "
+            $session_id = $request->session()->get('create_user_id');
+
+            $date = now() .'.000';
+
+            $str = "update banks "
+            ."set "
+            ."active_flag = 1 "
+            .",update_user_id = $session_id "
+            .",updated = '$date' "
             ."where "
             ."bank_id = $bank_id; ";
+            Log::debug('str:'.$str);
 
             // OK=1/NG=0
             $ret['status'] = DB::delete($str);

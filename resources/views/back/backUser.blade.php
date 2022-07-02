@@ -79,7 +79,7 @@
 
                                                 <!-- 色分けの説明 -->
                                                 <div class="col-6 col-md-6 col-lg-6 color_info_box">
-                                                    <label class="pink_line" for=""><i class="bi bi-cloud-slash me-1 icon_blue"></i>赤：ログイン不可</label>
+                                                    <label class="pink_line" for=""><i class="bi bi-person-x me-1 icon_blue"></i>赤：有効期限切れ</label>
                                                 </div>
 
                                                 <!-- 検索ボタン -->

@@ -145,6 +145,9 @@ Route::post('backDeleteEntryImgDetail', 'Back\Cost\BackCostController@backDelete
 // 承認の処理
 Route::post('backCostApprovalEntry', 'Back\Cost\BackCostController@backCostApprovalEntry')->middleware("cost_auth");
 
+// 対象口座変更の処理（モーダル）
+Route::post('backCostModalBankChange', 'Back\Cost\BackCostController@backCostModalBankChange')->middleware("cost_auth");
+
 /**
  * ユーザ一覧
  */

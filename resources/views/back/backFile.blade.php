@@ -114,8 +114,8 @@
                                                     <tr>
                                                         <th scope="col" id="create_user_id" style="display:none">id</th>
                                                         <th><i class="bi bi-check2-square"></i></th>
-                                                        <th scope="col" id="legal_place_address">拡張子</th>
-                                                        <th scope="col" id="legal_place_post_number">ファイル区分</th>
+                                                        <th scope="col" id="legal_place_address">種別</th>
+                                                        <th scope="col" id="legal_place_post_number">区分</th>
                                                         <th scope="col" id="legal_place_name">ファイル名</th>
                                                         <th scope="col" id="legal_place_address">備考</th>
                                                         <th scope="col" id="legal_place_address">登録・更新日</th>
@@ -176,8 +176,8 @@
                 </div>
                 <!-- 一覧 --> 
 
-                <!-- 新着情報編集画面 -->
-                <div class="modal fade" id="informaitonModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <!-- ファイル詳細 -->
+                <div class="modal fade" id="fileEditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-centered">
                         <div class="modal-content">
 
@@ -185,7 +185,7 @@
                             <div class="modal-header">
 
                                 <div class="modal-title info_title" id="exampleModalLabel">
-                                    <i class="far fa-gem icon_blue me-2"></i>新着情報詳細
+                                    <i class="far fa-gem icon_blue me-2"></i>ファイル詳細
                                 </div>
 
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -200,16 +200,16 @@
                                         <div class="row">
 
                                             <div class="col-12 col-md-6 col-lg-12">
-                                                <label class="col-form-label">タイトル</label>
+                                                <label class="col-form-label">ファイル名</label>
                                                 <input type="text" class="form-control was-validated" id="information_title" required>
                                                 <div class="invalid-feedback" id ="information_title_error">
-                                                    タイトルは必須です。
+                                                    ファイル名は必須です。
                                                 </div>
                                             </div>
                                             
                                             <!-- 種別 -->
-                                            <div class="col-12 col-md-12 col-lg-4 mt-3">
-                                                <label class="mb-2">種別</label>
+                                            <div class="col-12 col-md-12 col-lg-4 mt-2">
+                                                <label class="mb-2">区分</label>
                                                 <select class="form-select" name="information_type" id="information_type" required>
                                                     <option selected></option>
                                                    
@@ -217,14 +217,25 @@
                                                    
                                                 </select>
                                                 <div class="invalid-feedback" id ="information_type_error">
-                                                    種別は必須です。
+                                                    区分は必須です。
                                                 </div>
                                             </div>
 
+                                            <!-- ファイル -->
+                                            <div class="col-12 col-md-12 col-lg-12 mt-2">
+                                                <label class="mb-2">アップロード</label>
+                                                <input class="form-control" type="file" id="modal_img_file" required>
+                                                <!-- エラーメッセージ -->
+                                                <div class="invalid-feedback" id ="modal_img_file_error">
+                                                    ファイルは必須です。
+                                                </div>
+                                            </div>
+                                            <!-- ファイル -->
+
                                             <!-- 内容 -->
-                                            <div class="col-12 col-md-12 col-lg-12 mt-3">
+                                            <div class="col-12 col-md-12 col-lg-12 mt-2 mb-3">
                                                 <label for="">内容</label>
-                                                <textarea class="form-control" name="information_contents" id="information_contents" rows="10" placeholder="例：自由に入力" required></textarea>
+                                                <textarea class="form-control" name="information_contents" id="information_contents" rows="3" placeholder="例：自由に入力" required></textarea>
                                                 <div class="invalid-feedback" id ="information_contents_error">
                                                     内容は必須です。
                                                 </div>
