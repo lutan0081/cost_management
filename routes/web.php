@@ -211,4 +211,11 @@ Route::post('backInformationDeleteEntry', 'Back\Information\BackInformationContr
 /**
  * ファイル管理
  */
+// 表示・検索
 Route::any('backFileInit', 'Back\File\BackFileController@backFileInit')->middleware("cost_auth");
+
+// 登録・編集
+Route::any('backFileEditEntry', 'Back\File\BackFileController@backFileEditEntry')->middleware("cost_auth");
+
+// 編集表示
+Route::any('backFileEditInit', 'Back\File\BackFileController@backFileEditInit')->middleware("cost_auth");

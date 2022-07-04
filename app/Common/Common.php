@@ -20,6 +20,19 @@ class Common
         return $ret; 
     }
 
+    // ファイル種別
+    public function getFileTypeList(){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        $str = "select * from file_types "
+        ."order by sort_id asc ";
+
+        $ret = DB::select($str);
+
+        Log::debug('log_end:'.__FUNCTION__);
+        return $ret; 
+    }
+
     /**
      * 家主一覧
      *

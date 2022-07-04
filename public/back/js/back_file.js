@@ -12,11 +12,11 @@ $(function(){
     function clearProc(){
         console.log('モーダル初期化の処理')
 
-        $("#information_title").val("");
+        $("#file_title").val("");
     
-        $("#information_type").val("");
+        $("#file_type").val("");
     
-        $("#information_contents").val("");
+        $("#file_upload").val("");
     };
 
     /**
@@ -47,60 +47,82 @@ $(function(){
         // tdのidを配列に分解
         var id = $(this).attr("id");
 
-        var information_id = id.split('_')[1];
-        console.log(information_id);
+        var file_id = id.split('_')[1];
+        console.log(file_id);
 
         // 送信データ
         let sendData = {
-
-			"information_id": information_id,
-
+			"file_id": file_id,
         };
 
         $.ajaxSetup({
-
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
-
         });
 
         $.ajax({
-
             type: 'post',
-            url: 'backInformationEditInit',
+            url: 'backFileEditInit',
             dataType: 'json',
             data: sendData,
         
         // 接続処理
         }).done(function(data) {
 
+            console.log("file_list:" + data.file_list);
+
             /**
              * 値取得
              */
-            information_name = data.information_list[0]['information_name'];
+            // id
+            file_id = data.file_list[0]['file_id'];
+            console.log(file_id);
 
-            information_type_id = data.information_list[0]['information_type_id'];
+            // ファイル名
+            file_name = data.file_list[0]['file_name'];
+            console.log(file_name);
 
-            information_contents = data.information_list[0]['information_contents'];
+            // 種別
+            file_type_id = data.file_list[0]['file_type_id'];
+            console.log(file_type_id);
 
-            information_id = data.information_list[0]['information_id'];
+            // 備考
+            file_memo = data.file_list[0]['file_memo'];
+            console.log(file_memo);
+
+            // パス名
+            file_path = data.file_list[0]['file_path'];
+            console.log(file_path);
+
+            // 拡張子
+            file_extension = data.file_list[0]['file_extension'];
+            console.log(file_extension);
+
+            // ファイルのパスの生成（ファイルパス+ファイル名+拡張子)
+            flle_path = file_path + '/' + file_name + '.' + file_extension;
+            console.log(flle_path);
 
             /**
              * 値代入
              */
             // id
-            $("#information_id").val(information_id);
+            $("#file_id").val(file_id);
 
             // タイトル名
-            $("#information_title").val(information_name);
+            $("#file_name").val(file_name);
 
             // 種別
-            $("#information_type").val(information_type_id);
+            $("#file_type_id").val(file_type_id);
 
             // 内容
-            $("#information_contents").val(information_contents);
+            $("#file_memo").val(file_memo);
 
-            // モーダル開く
-            $('#informaitonModal').modal('show');
+            // 画像タグを作成
+            $('#file_box').append("<a href='#' target='_blank'>" + "<img src='./back/img/pdf_icon.jpeg' class='pdf_icon_size'></img>" + "</a>");
+
+            // <a href="#" target="_blank"><img src="./back/img/pdf_icon.jpeg" class="pdf_icon_size"></a>
+
+            // モーダルを開く
+            $('#fileEditModal').modal('show');
 
             // ローディング画面停止
 			setTimeout(function(){
@@ -135,20 +157,24 @@ $(function(){
          * 値取得
          */
         // id
-        let information_id = $("#information_id").val();
-        console.log('information_id:' + information_id);
+        let file_id = $("#file_id").val();
+        console.log('file_id:' + file_id);
 
         // タイトル
-        let information_title = $("#information_title").val();
-        console.log('information_title:' + information_title);
+        let file_name = $("#file_name").val();
+        console.log('file_name:' + file_name);
 
         // 種別
-        let information_type = $("#information_type").val();
-        console.log('information_type:' + information_type);
+        let file_type_id = $("#file_type_id").val();
+        console.log('file_type_id:' + file_type_id);
 
         // 内容
-        let information_contents = $("#information_contents").val();
-        console.log('information_contents:' + information_contents);
+        let file_memo = $("#file_memo").val();
+        console.log('file_memo:' + file_memo);
+
+        // 画像ファイル取得
+        let file_upload = $('#file_upload').prop('files')[0];
+        console.log("file_upload:" + file_upload);
 
         // validationフラグ初期値
         let v_check = true;
@@ -157,17 +183,17 @@ $(function(){
          * v_checkフラグがfalseの場合、下段のバリデーションに引っ掛かり
          * modalFormにwas-validatedを付与、エラー文字の表示
          */
-        if(information_title == ''){
+        if(file_name == ''){
 
             v_check = false;
         }
 
-        if(information_type == ''){
+        if(file_type_id == ''){
 
             v_check = false;
         }
 
-        if(information_contents == ''){
+        if(file_upload == ''){
 
             v_check = false;
         }
@@ -182,7 +208,7 @@ $(function(){
                 $("#overlay").fadeOut(300);
             },500);
 
-            $('#informaitonModal').addClass("was-validated");
+            $('#modalForm').addClass("was-validated");
 
             return false;
         }
@@ -193,11 +219,12 @@ $(function(){
         // 送信データインスタンス化
         var sendData = new FormData();
 
-        sendData.append('information_id', information_id);
-        sendData.append('information_title', information_title);
-        sendData.append('information_type', information_type);
-        sendData.append('information_contents', information_contents);
-
+        sendData.append('file_id', file_id);
+        sendData.append('file_name', file_name);
+        sendData.append('file_type_id', file_type_id);
+        sendData.append('file_memo', file_memo);
+        sendData.append('file_upload', file_upload);
+        
         // ajaxヘッダー
         $.ajaxSetup({
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
@@ -206,7 +233,7 @@ $(function(){
         $.ajax({
 
             type: 'post',
-            url: 'backInformationEditEntry',
+            url: 'backFileEditEntry',
             dataType: 'json',
             data: sendData,
             /**

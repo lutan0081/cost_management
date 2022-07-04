@@ -96,11 +96,30 @@ label.label_any:after {
 /*==================================
 一覧のアイコン大きさ変更
 ===================================*/
-.icon_green{
+.file_icon_green{
     color: #1cc509;
 }
 
-.icon_red{
+.file_icon_red{
     color: #ce1341;
 }
+
+.file_icon_blue{
+    color: #2243d6;
+}
+
+/*==================================
+PDFの画像の調整
+===================================*/
+.pdf_icon_box{
+    width: 100% !important;
+    text-align: center !important;
+}
+
+.pdf_icon_size{
+    width: 15% !important;
+    margin-top: 2.5rem !important;
+    text-align: center !important;
+}
+
 

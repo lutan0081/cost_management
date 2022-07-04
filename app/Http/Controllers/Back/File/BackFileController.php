@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Log;
 
 use Storage;
 
+// データ縮小
+use InterventionImage;
+
 // config内のapp.phpに定義
 use Common;
 
@@ -37,6 +40,10 @@ class BackFileController extends Controller
             $file_list = $this->getFileList($request);
 
             // ファイルタイプ取得
+            $common = new Common();
+
+            // ファイル種別
+            $file_type_list = $common->getFileTypeList();
 
             /**
              * フォームに値を保持させるためにそのまま返す
@@ -61,7 +68,7 @@ class BackFileController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backFile', $file_list, compact('paginate_params', 'free_word'));
+        return view('back.backFile', $file_list, compact('paginate_params', 'free_word', 'file_type_list'));
 
     }
 
@@ -87,6 +94,7 @@ class BackFileController extends Controller
             $str = "select "
             ."files.file_id "
             .",files.file_name "
+            .",files.file_extension "
             .",files.file_type_id "
             .",file_types.file_type_name "
             .",files.file_path "
@@ -138,66 +146,31 @@ class BackFileController extends Controller
     }
 
     /**
-     * 新着情報種別リスト
-     *
-     * @param Request $request
-     * @return void
-     */
-    private function getInformationTypeList(Request $request){
-        Log::debug('start:' .__FUNCTION__);
-
-        try{
-            // 値設定
-            $create_user_id = $request->input('create_user_id');
-
-            // sql
-            $str = "select "
-            ."* "
-            ."from "
-            ."information_types ";
-
-            Log::debug('sql:' .$str);
-            
-            $ret = DB::select($str);
-
-        // 例外処理
-        } catch (\Exception $e) {
-
-            throw $e;
-
-        } finally {
-        }
-        
-        Log::debug('start:' .__FUNCTION__);
-        return $ret;
-    }
-
-    /**
      * 登録分岐(新規/編集)
      *
      * @param $request(edit.blade.phpの各項目)
      * @return $response(status:true=OK/false=NG)
      */
-    public function backInformationEditEntry(Request $request){
+    public function backFileEditEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
         
         // return初期値
         $response = [];
 
-        // バリデーション:OK=true NG=false
-        $response = $this->editValidation($request);
+        // // バリデーション:OK=true NG=false
+        // $response = $this->editValidation($request);
 
-        if($response["status"] == false){
-            Log::debug('validator_status:falseのif文通過');
-            return response()->json($response);
-        }
+        // if($response["status"] == false){
+        //     Log::debug('validator_status:falseのif文通過');
+        //     return response()->json($response);
+        // }
 
         /**
          * id=無:insert
          * id=有:update
          */
         // 新規登録
-        if($request->input('information_id') == ""){
+        if($request->input('file_id') == ""){
 
             Log::debug('新規の処理');
 
@@ -305,23 +278,34 @@ class BackFileController extends Controller
 
         try {
 
+            // トランザクション
+            DB::beginTransaction();
+
             // 戻値の配列作成
             $ret = [];
             // 戻値の初期値
             $ret['status'] = true;
 
             /**
+             * ファイルテーブルにinsert
              * status:OK=1 NG=0
              */
-            $information_info = $this->insertInformation($request);
+            $file_info = $this->insertFile($request);
 
             // returnのステータスにtrueを設定
-            $ret['status'] = $information_info['status'];
+            $ret['status'] = $file_info['status'];
+
+
+            // コミット
+            DB::commit();
 
         // 例外処理
         } catch (\Throwable $e) {
 
             Log::debug(__FUNCTION__ .':' .$e);
+
+            // ロールバック
+            DB::rollback();
 
             $ret['status'] = 0;
 
@@ -345,12 +329,12 @@ class BackFileController extends Controller
     }
 
     /**
-     * 新規登録
+     * 新規登録(sql)
      * 
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function insertInformation(Request $request){
+    private function insertFile(Request $request){
         
         Log::debug('log_start:' .__FUNCTION__);
 
@@ -358,45 +342,99 @@ class BackFileController extends Controller
             // returnの初期値
             $ret=[];
 
-            // 値取得
+            /**
+             * 値取得
+             */
+            // id取得
             $session_id = $request->session()->get('create_user_id');
-            $information_title = $request->input('information_title');
-            $information_type = $request->input('information_type');
-            $information_contents = $request->input('information_contents');
-            $information_id = $request->input('information_id');
-
+            // ファイル名取得
+            $file_name = $request->input('file_name');
+            // ファイル種別取得
+            $file_type_id = $request->input('file_type_id');
+            // 備考取得
+            $file_memo = $request->input('file_memo');
+            // ファイル取得
+            $file_upload = $request->file('file_upload');
+            // ファイル拡張子取得
+            $file_extension = $file_upload->getClientOriginalExtension();
+            Log::debug('file_upload:' .$file_upload);
             // 現在の日付取得
             $date = now() .'.000';
-    
+
+            // idごとのフォルダ作成のためのパス生成
+            $dir ='img/file';
+
+            // フォルダ作成
+            // ※appを入れるとエラーになる
+            Storage::makeDirectory('/public/' .$dir);
+
+            // ファイル名の設定
+            $server_file_name = $file_name .'.' .$file_extension;
+            Log::debug('server_file_name:'.$server_file_name);
+
+            /**
+             * ファイルパス+ファイル名
+             */
+            $tmp_file_path = $dir .'/' .$server_file_name;
+            Log::debug('tmp_file_path :'.$tmp_file_path);
+
+            /**
+             * pdfの場合は通常保存
+             * それ以外、リサイズして保存
+             */
+            if($file_extension == 'pdf'){
+
+                // 第一引数=dir,第二引数=ファイル名
+                Log::debug('PDFの処理');
+                $file_upload->storeAs('/public/'. $dir, $server_file_name);
+
+            }else{
+
+                // pdf以外は、リサイズし、保存する
+                Log::debug('jpg,pngの処理');
+                InterventionImage::make($file_upload)->resize(380, null,
+                function ($constraint) {
+                    $constraint->aspectRatio();
+                })->save(storage_path('app/public/' .$tmp_file_path));
+
+            }
+
+            /**
+             * DBに登録
+             */
             // タイトル
-            if($information_title == null){
-                $information_title ='';
+            if($file_name == null){
+                $file_name ='';
             }
 
             // 種別
-            if($information_type == null){
-                $information_type =0;
+            if($file_type_id == null){
+                $file_type_id =0;
             }
 
             // 内容
-            if($information_contents == null){
-                $information_contents ='';
+            if($file_memo == null){
+                $file_memo ='';
             }
 
             // 登録
             $str = "insert "
-            ."into informations( "
-            ."information_name "
-            .",information_type_id "
-            .",information_contents "
+            ."into files( "
+            ."file_name "
+            .",file_extension "
+            .",file_type_id "
+            .",file_path "
+            .",file_memo "
             .",entry_user_id "
             .",entry_date "
             .",update_user_id "
             .",update_date "
-            .") values ( "
-            ."'$information_title' "
-            .",$information_type "
-            .",'$information_contents' "
+            .")values( "
+            ."'$file_name' "
+            .",'$file_extension' "
+            .",$file_type_id "
+            .",'$dir' "
+            .",'$file_memo' "
             .",$session_id "
             .",'$date' "
             .",$session_id "
@@ -472,7 +510,7 @@ class BackFileController extends Controller
     }
 
     /**
-     * 編集
+     * 編集(sql)
      * 
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
@@ -544,33 +582,34 @@ class BackFileController extends Controller
      * @param Request $request(フォームデータ)
      * @return
      */
-    public function backInformationEditInit(Request $request){
+    public function backFileEditInit(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
-        $information_id = $request->input('information_id');
+        $file_id = $request->input('file_id');
         
         // return初期値
         $response = [];
-
+        
         $str = "select "
-        ."informations.information_id "
-        .",informations.information_name "
-        .",informations.information_type_id "
-        .",information_types.information_type_name "
-        .",information_contents "
-        .",informations.entry_user_id "
-        .",informations.entry_date "
-        .",informations.update_user_id "
-        .",informations.update_date "
+        ."files.file_id "
+        .",files.file_name "
+        .",files.file_extension "
+        .",files.file_type_id "
+        .",file_types.file_type_name "
+        .",files.file_path "
+        .",files.file_memo "
+        .",files.entry_user_id "
+        .",files.entry_date "
+        .",files.update_user_id "
+        .",files.update_date "
         ."from "
-        ."informations "
-        ."left join information_types on "
-        ."information_types.information_type_id = informations.information_type_id "
+        ."files "
+        ."left join file_types on "
+        ."file_types.file_type_id = files.file_type_id "
         ."where "
-        ."information_id = $information_id ";
+        ."file_id = $file_id ";
         Log::debug('str:' .$str);
-
-        $response['information_list'] = DB::select($str);
+        $response['file_list'] = DB::select($str);
 
         Log::debug('log_end:' .__FUNCTION__);
         return response()->json($response);
