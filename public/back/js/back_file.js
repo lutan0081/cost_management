@@ -129,11 +129,36 @@ $(function(){
              * 画像指定
              * パス指定・removeクラス（前回のhtmlを削除)
              */
-            $('#file_box').append("<a href='../storage/app/public/" + flle_path + "' target='_blank'>" + "<img src='./back/img/pdf_icon.jpeg' class='pdf_icon_size remove_class'></img>" + "</a>");
+            // var img_link =  $("<img src='./back/img/pdf_icon.jpeg' class='pdf_icon_size remove_class' />");
+            // var a_link = $("<a href='../storage/app/public/" + flle_path + "' target='_blank'></a>");
 
+            let file_icon = "";
 
-            // <a href="storage/{{ $imgs->cost_img_path }}" target="_blank"><img src="./back/img/pdf_icon.jpeg" class="pdf_icon_size"></a>
-            // <a href="#" target="_blank"><img src="./back/img/pdf_icon.jpeg" class="pdf_icon_size"></a>
+            if(file_type_id == 'pdf'){
+                file_icon = "./back/img/pdf_icon.jpeg"
+            }
+
+            if(){
+
+            }
+
+            // imgタグの生成
+            let img_link = $('<img>', {
+                src:file_icon,
+                class:"pdf_icon_size remove_class",
+            });
+
+            // aタグの生成
+            let a_link = $('<a>', {
+                href:"../storage/app/public/" + flle_path,
+                target:"_blank",
+            });
+            
+            // aタグにimgタグを追加
+            a_link.append(img_link);
+
+            // file_boxにaタグ（img）を追加
+            $('#file_box').append(a_link);
 
             // モーダルを開く
             $('#fileEditModal').modal('show');
