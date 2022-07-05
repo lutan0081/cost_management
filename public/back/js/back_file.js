@@ -12,11 +12,18 @@ $(function(){
     function clearProc(){
         console.log('モーダル初期化の処理')
 
-        $("#file_title").val("");
+        $("#file_name").val("");
     
-        $("#file_type").val("");
+        $("#file_type_id").val("");
+
+        $("#file_memo").val("");
     
         $("#file_upload").val("");
+
+        $("#file_id").val("");
+
+        $(".remove_class").remove();
+
     };
 
     /**
@@ -70,6 +77,8 @@ $(function(){
 
             console.log("file_list:" + data.file_list);
 
+            $('.remove_class').remove();
+            
             /**
              * 値取得
              */
@@ -116,9 +125,14 @@ $(function(){
             // 内容
             $("#file_memo").val(file_memo);
 
-            // 画像タグを作成
-            $('#file_box').append("<a href='#' target='_blank'>" + "<img src='./back/img/pdf_icon.jpeg' class='pdf_icon_size'></img>" + "</a>");
+            /**
+             * 画像指定
+             * パス指定・removeクラス（前回のhtmlを削除)
+             */
+            $('#file_box').append("<a href='../storage/app/public/" + flle_path + "' target='_blank'>" + "<img src='./back/img/pdf_icon.jpeg' class='pdf_icon_size remove_class'></img>" + "</a>");
 
+
+            // <a href="storage/{{ $imgs->cost_img_path }}" target="_blank"><img src="./back/img/pdf_icon.jpeg" class="pdf_icon_size"></a>
             // <a href="#" target="_blank"><img src="./back/img/pdf_icon.jpeg" class="pdf_icon_size"></a>
 
             // モーダルを開く

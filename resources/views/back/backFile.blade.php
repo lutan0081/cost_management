@@ -258,7 +258,7 @@
                                             <!-- 画像 -->
                                             <div class="col-12 col-md-12 col-lg-12 mt-2 mb-3">
                                                 <div id="file_box" class="pdf_icon_box">
-                                            
+
                                                 </div>
                                             </div>
 
