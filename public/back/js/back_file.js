@@ -134,12 +134,8 @@ $(function(){
 
             let file_icon = "";
 
-            if(file_type_id == 'pdf'){
+            if(file_extension == 'pdf'){
                 file_icon = "./back/img/pdf_icon.jpeg"
-            }
-
-            if(){
-
             }
 
             // imgタグの生成

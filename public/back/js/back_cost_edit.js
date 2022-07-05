@@ -17,7 +17,7 @@ $(function() {
     }else{
 
         console.log('falseの処理');
-        $(".disabled_class").prop('disabled', false);
+        $(".disabled_class").prop('ssdisabled', false);
         $("#approval_id").prop('disabled', false);
     }
     
