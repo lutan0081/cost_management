@@ -150,6 +150,7 @@ $(function(){
                 target:"_blank",
             });
             
+            
             // aタグにimgタグを追加
             a_link.append(img_link);
 
