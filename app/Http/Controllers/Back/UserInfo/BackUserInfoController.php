@@ -336,7 +336,6 @@ class BackUserInfoController extends Controller
             .",create_user_mail = '$create_user_mail' "
             .",create_user_password = '$create_user_password' "
             .",permission_type_id = $permission_type_id "
-            .",active_flag = 0 "
             .",update_user_id = $session_id "
             .",update_date = '$date'"
             ."where "

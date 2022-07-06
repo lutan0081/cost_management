@@ -3,7 +3,7 @@ $(function(){
     /**
      * 権限IDで判断し、一般ユーザは操作不可にする
      */
-    let permission_type_id = $("#permission_type_id").val();
+    let permission_type_id = $("#permission_type").val();
     console.log('permission_type_id:' + permission_type_id);
 
     // OK=質問欄入力・承諾・CSV出力/NG = 編集(質問欄除く)
@@ -28,7 +28,7 @@ $(function(){
      */
     $("#btn_edit").on('click', function(e) {
 
-        console.log("btn_editクリックされています");
+        console.log("ユーザ情報登録の処理");
 
         e.preventDefault();
 
@@ -160,7 +160,7 @@ $(function(){
                     .then(function(val) {
                     if (val) {
 
-                        location.href = 'backUserInit';
+                        location.reload();
                     };
                 });
 

@@ -7,7 +7,7 @@ $(function(){
     $("#links").show();
     
     /**
-     * 新着情報の投稿フォームの初期化
+     * 投稿フォームの初期化
      */
     function clearProc(){
         console.log('モーダル初期化の処理')

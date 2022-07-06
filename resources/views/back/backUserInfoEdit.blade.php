@@ -83,8 +83,8 @@
                                     <!-- id -->
                                     <input type="hidden" name="create_user_id" id="create_user_id" value="{{ $create_user_list->create_user_id }}">
                                     
-                                    <!-- 権限id sessionから取得 -->
-                                    <input type="hidden" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
+                                    <!-- 権限id sessionから取得 idが重複するため、変数名の末尾にidを省略-->
+                                    <input type="hidden" name="permission_type" id="permission_type" value="{{ Session::get('permission_type_id') }}">
 
                                 </div>
                                 <!-- カード -->

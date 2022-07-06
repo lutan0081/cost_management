@@ -178,6 +178,9 @@ Route::get('backUserInfoInit', 'Back\UserInfo\BackUserInfoController@backUserInf
 // ユーザ申請
 Route::post('backUserInfoMailEntry', 'Back\UserInfo\BackUserInfoController@backUserInfoMailEntry')->middleware("cost_auth");
 
+// 登録・編集分岐
+Route::post('backUserInfoEditEntry', 'Back\UserInfo\BackUserInfoController@backUserInfoEditEntry')->middleware("cost_auth");
+
 /**
  * CSV
  */
