@@ -132,16 +132,37 @@ $(function(){
             // var img_link =  $("<img src='./back/img/pdf_icon.jpeg' class='pdf_icon_size remove_class' />");
             // var a_link = $("<a href='../storage/app/public/" + flle_path + "' target='_blank'></a>");
 
+            // iconサイズの変数
             let file_icon = "";
 
+            // imgタグのアイコンのサイズ
+            let file_class=""
+
+            /**
+             * パスの生成
+             * pdfの場合
+             */
             if(file_extension == 'pdf'){
                 file_icon = "./back/img/pdf_icon.jpeg"
+                file_class = "pdf_icon_size remove_class"
+            }
+
+            // pngの場合
+            if(file_extension == 'png'){
+                file_icon = "../storage/app/public/" + flle_path
+                file_class = "img_icon_size remove_class"
+            }
+
+            // jpegの場合
+            if(file_extension == 'jpeg'){
+                file_icon = "../storage/app/public/" + flle_path
+                file_class = "img_icon_size remove_class"
             }
 
             // imgタグの生成
             let img_link = $('<img>', {
                 src:file_icon,
-                class:"pdf_icon_size remove_class",
+                class:file_class,
             });
 
             // aタグの生成
@@ -149,7 +170,6 @@ $(function(){
                 href:"../storage/app/public/" + flle_path,
                 target:"_blank",
             });
-            
             
             // aタグにimgタグを追加
             a_link.append(img_link);
@@ -405,7 +425,7 @@ $(function(){
      */
     $("#btn_modal_delete").on('click', function(e) {
 
-        console.log('削除の処理');
+        console.log('file_deleteの処理');
 
         e.preventDefault();
 
@@ -421,8 +441,8 @@ $(function(){
         };
 
         // 値取得
-        let information_id = $("#information_id").val();
-        console.log(information_id);
+        let file_id = $("#file_id").val();
+        console.log(file_id);
         
         // then() OKを押した時の処理
         swal(options)
@@ -442,7 +462,7 @@ $(function(){
                 // 送信用データ
                 let sendData = {
 
-                    "information_id": information_id,
+                    "file_id": file_id,
                 };
 
                 console.log(sendData);
@@ -454,7 +474,7 @@ $(function(){
                 $.ajax({
 
                     type: 'post',
-                    url: 'backInformationDeleteEntry',
+                    url: 'backFileDeleteEntry',
                     dataType: 'json',
                     data: sendData,
                 

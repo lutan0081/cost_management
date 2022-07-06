@@ -33,6 +33,54 @@ $(function() {
     }
 
     /**
+     * エラー時のタブ背景色の設定
+     */
+    function tabError(error_message_id){
+
+        // error_message_idがある場合の処理
+        if(error_message_id !== undefined){
+
+            // error_message_id内にあるclassのtab名を取得
+            let tab_class = error_message_id.split(' ')[0];
+            console.log('tab_class:' + tab_class);
+            
+            // 経費概要
+            if(tab_class == 'cost-tab'){
+                                
+                console.log('経費概要');
+
+                $('#nav-cost-tab').addClass('bg_tab_error');
+                
+            } 
+
+            // 付属書類
+            if(tab_class == 'file-tab'){
+                                
+                console.log('付属書類');
+
+                $('#nav-file-tab').addClass('bg_tab_error');
+                
+            }
+
+            // 質問
+            if(tab_class == 'other-tab'){
+                                
+                console.log('質問');
+
+                $('#nav-other-tab').addClass('bg_tab_error');
+                
+            }
+
+        }
+    }
+
+    /**
+     * ページネーションセンター
+     */
+    $(".pagination").addClass("justify-content-center");
+    $("#links").show();
+
+    /**
      * 登録
      */
     $("#btn_edit").on('click', function(e) {
@@ -359,54 +407,6 @@ $(function() {
             
         });
     });
-
-    /**
-     * エラー時のタブ背景色の設定
-     */
-    function tabError(error_message_id){
-
-        // error_message_idがある場合の処理
-        if(error_message_id !== undefined){
-
-            // error_message_id内にあるclassのtab名を取得
-            let tab_class = error_message_id.split(' ')[0];
-            console.log('tab_class:' + tab_class);
-            
-            // 経費概要
-            if(tab_class == 'cost-tab'){
-                                
-                console.log('経費概要');
-
-                $('#nav-cost-tab').addClass('bg_tab_error');
-                
-            } 
-
-            // 付属書類
-            if(tab_class == 'file-tab'){
-                                
-                console.log('付属書類');
-
-                $('#nav-file-tab').addClass('bg_tab_error');
-                
-            }
-
-            // 質問
-            if(tab_class == 'other-tab'){
-                                
-                console.log('質問');
-
-                $('#nav-other-tab').addClass('bg_tab_error');
-                
-            }
-
-        }
-    }
-
-    /**
-     * ページネーションセンター
-     */
-    $(".pagination").addClass("justify-content-center");
-    $("#links").show();
 
     /**
      * 削除(画像)

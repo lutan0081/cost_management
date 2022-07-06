@@ -218,4 +218,7 @@ Route::any('backFileInit', 'Back\File\BackFileController@backFileInit')->middlew
 Route::any('backFileEditEntry', 'Back\File\BackFileController@backFileEditEntry')->middleware("cost_auth");
 
 // 編集表示
-Route::any('backFileEditInit', 'Back\File\BackFileController@backFileEditInit')->middleware("cost_auth");
+Route::post('backFileEditInit', 'Back\File\BackFileController@backFileEditInit')->middleware("cost_auth");
+
+// 削除
+Route::post('backFileDeleteEntry', 'Back\File\BackFileController@backFileDeleteEntry')->middleware("cost_auth");

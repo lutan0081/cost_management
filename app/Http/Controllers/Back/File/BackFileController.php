@@ -621,7 +621,7 @@ class BackFileController extends Controller
      * @param Request $request
      * @return void
      */
-    public function backInformationDeleteEntry(Request $request){
+    public function backFileDeleteEntry(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -629,10 +629,10 @@ class BackFileController extends Controller
             // return初期値
             $response = [];
 
-            $user_info = $this->deleteInformation($request);
+            $file_info = $this->deleteFile($request);
 
             // js側での判定のステータス(true:OK/false:NG)
-            $response['status'] = $user_info['status'];
+            $response['status'] = $file_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -667,7 +667,7 @@ class BackFileController extends Controller
      * @param Request $request
      * @return void
      */
-    private function deleteInformation(Request $request){
+    private function deleteFile(Request $request){
         Log::debug('log_start:'.__FUNCTION__);
 
         try{
@@ -675,13 +675,13 @@ class BackFileController extends Controller
             $ret = [];
 
             // 値取得
-            $information_id = $request->input('information_id');
+            $file_id = $request->input('file_id');
 
             $str = "delete "
             ."from "
-            ."cost_management.informations "
+            ."files "
             ."where "
-            ."information_id = $information_id ";
+            ."file_id = $file_id ";
             Log::debug('str:'.$str);
 
             // OK=1/NG=0
