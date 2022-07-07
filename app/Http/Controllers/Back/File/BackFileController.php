@@ -478,10 +478,10 @@ class BackFileController extends Controller
             /**
              * status:OK=1 NG=0
              */
-            $room_info = $this->updateUser($request);
+            $file_info = $this->updateFile($request);
 
             // returnのステータスにtrueを設定
-            $ret['status'] = $room_info['status'];
+            $ret['status'] = $file_info['status'];
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -515,36 +515,48 @@ class BackFileController extends Controller
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
      */
-    private function updateUser(Request $request){
+    private function updateFile(Request $request){
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
             // returnの初期値
             $ret=[];
 
-            // 値取得
+            /**
+             * 値取得
+             */
+            // id取得
             $session_id = $request->session()->get('create_user_id');
-            $information_id = $request->input('information_id');
-            $information_title = $request->input('information_title');
-            $information_type = $request->input('information_type');
-            $information_contents = $request->input('information_contents');
-
+            // ファイル名取得
+            $file_name = $request->input('file_name');
+            // ファイル種別取得
+            $file_type_id = $request->input('file_type_id');
+            // 備考取得
+            $file_memo = $request->input('file_memo');
+            // ファイル取得
+            $file_upload = $request->file('file_upload');
+            // ファイル拡張子取得
+            $file_extension = $file_upload->getClientOriginalExtension();
+            Log::debug('file_upload:' .$file_upload);
             // 現在の日付取得
             $date = now() .'.000';
     
+            /**
+             * DBに登録
+             */
             // タイトル
-            if($information_title == null){
-                $information_title ='';
+            if($file_name == null){
+                $file_name ='';
             }
 
             // 種別
-            if($information_type == null){
-                $information_type =0;
+            if($file_type_id == null){
+                $file_type_id =0;
             }
 
             // 内容
-            if($information_contents == null){
-                $information_contents ='';
+            if($file_memo == null){
+                $file_memo ='';
             }
 
             $str = "update informations "

@@ -149,16 +149,19 @@ $(function(){
 
             // pngの場合
             if(file_extension == 'png'){
-                file_icon = "../storage/app/public/" + flle_path
+                file_icon = "../storage/" + flle_path
                 file_class = "img_icon_size remove_class"
             }
 
             // jpegの場合
             if(file_extension == 'jpeg'){
-                file_icon = "../storage/app/public/" + flle_path
+                file_icon = "../storage/" + flle_path
                 file_class = "img_icon_size remove_class"
             }
 
+            /**
+             * タグの生成
+             */
             // imgタグの生成
             let img_link = $('<img>', {
                 src:file_icon,
