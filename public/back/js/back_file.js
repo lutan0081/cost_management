@@ -170,7 +170,7 @@ $(function(){
 
             // aタグの生成
             let a_link = $('<a>', {
-                href:"../storage/app/public/" + flle_path,
+                href:"./storage/" + flle_path,
                 target:"_blank",
             });
             
