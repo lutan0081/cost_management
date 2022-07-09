@@ -519,14 +519,13 @@ class BackFileController extends Controller
         Log::debug('log_start:' .__FUNCTION__);
 
         try {
-            // returnの初期値
-            $ret=[];
-
             /**
              * 値取得
              */
             // id取得
             $session_id = $request->session()->get('create_user_id');
+            // ファイルid
+            $file_id = $request->input('file_id');
             // ファイル名取得
             $file_name = $request->input('file_name');
             // ファイル種別取得
@@ -536,11 +535,66 @@ class BackFileController extends Controller
             // ファイル取得
             $file_upload = $request->file('file_upload');
             // ファイル拡張子取得
-            $file_extension = $file_upload->getClientOriginalExtension();
-            Log::debug('file_upload:' .$file_upload);
+            // $file_extension = $file_upload->getClientOriginalExtension();
+            // Log::debug('file_upload:' .$file_upload);
             // 現在の日付取得
             $date = now() .'.000';
-    
+
+            // returnの初期値
+            $ret=[];
+
+            // sql実行・リスト取得
+            $str = "select "
+            ."files.file_id "
+            .",files.file_name "
+            .",files.file_extension "
+            .",files.file_type_id "
+            .",file_types.file_type_name "
+            .",files.file_path "
+            .",files.file_memo "
+            .",files.entry_user_id "
+            .",files.entry_date "
+            .",files.update_user_id "
+            .",files.update_date "
+            ."from "
+            ."files "
+            ."left join file_types on "
+            ."file_types.file_type_id = files.file_type_id "
+            ."where "
+            ."file_id = $file_id ";
+            Log::debug('str:' .$str);
+            $file_list = DB::select($str)[0];
+
+            // 配列デバック
+            $arrString = print_r($file_list , true);
+            Log::debug('arrString:'.$arrString);
+
+            // ストレージのパスを確認
+            Log::debug(Storage::allFiles(''));
+
+            /**
+             * 過去のファイルのパス取得
+             */
+            // idごとのフォルダ作成のためのパス生成
+            $dir = 'public/img/file';
+
+            // 編集前のファイル名取得
+            $past_file_name = $dir. '/'. $file_list->file_name. '.'. $file_list->file_extension;
+            Log::debug('past_file_name:' .$past_file_name);
+
+            /**
+             * 現在のファイルのパス取得
+             */
+            // 拡張子取得
+            $file_extension = $file_list->file_extension;
+
+            // 新しいファイル名作成（例：lutan.csv）
+            $new_file_name = $dir. '/'. $file_name .'.' .$file_extension;
+            Log::debug('new_file_name:'.$new_file_name);
+
+            Storage::move($past_file_name, $new_file_name);
+            // Storage::move('public/img/file/あいうえお.pdf', 'public/img/file/あいうえお3.pdf');
+            
             /**
              * DBに登録
              */
@@ -559,15 +613,18 @@ class BackFileController extends Controller
                 $file_memo ='';
             }
 
-            $str = "update informations "
+            $db_path = 'img/file';
+
+            $str = "update files "
             ."set "
-            ."information_name = '$information_title' "
-            .",information_type_id = $information_type "
-            .",information_contents = '$information_contents' "
-            .",update_user_id = $session_id "
-            .",update_date = '$date' "
+            ."file_name='$file_name' "
+            .",file_type_id=$file_type_id "
+            .",file_path='$db_path' "
+            .",file_memo='$file_memo' "
+            .",update_user_id=$session_id "
+            .",update_date='$date' "
             ."where "
-            ."information_id = $information_id ";
+            ."file_id=$file_id ";
             
             Log::debug('sql:'.$str);
 
@@ -686,8 +743,42 @@ class BackFileController extends Controller
             // return初期値
             $ret = [];
 
+            // ストレージのパスを確認
+            Log::debug(Storage::allFiles(''));
+
             // 値取得
             $file_id = $request->input('file_id');
+
+            /**
+             * サーバのファイル削除
+             */
+            $str = "select * from files "
+            ."where file_id = '$file_id' ";
+            Log::debug('str:'.$str);
+            $file_list = DB::select($str)[0];
+
+            // デバック
+            $arrString = print_r($file_list , true);
+            Log::debug('log_Imgs:'.$arrString);
+
+            // ファイル名
+            $file_name = $file_list->file_name;
+
+            // 拡張子取得
+            $file_extension = $file_list->file_extension;
+
+            /**
+             * ファイルのパス取得
+             */
+            // idごとのフォルダ作成のためのパス生成
+            $dir = 'public/img/file';
+
+            // 新しいファイル名作成（例：lutan.csv）
+            $server_file_name = $dir. '/'. $file_name .'.' .$file_extension;
+            Log::debug('server_file_name:'.$server_file_name);
+
+            // ファイル削除(例:Storage::delete('public/img/214/1637578613.jpg');
+            Storage::delete($server_file_name);
 
             $str = "delete "
             ."from "
