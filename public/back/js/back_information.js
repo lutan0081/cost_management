@@ -17,6 +17,8 @@ $(function(){
         $("#information_type").val("");
     
         $("#information_contents").val("");
+
+        $("#information_id").val("");
     };
 
     /**
