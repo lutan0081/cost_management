@@ -1,6 +1,17 @@
 $(function(){
 
     /**
+     * 一般ユーザは操作不可にする
+     */
+    let permission_type_id = $("#permission_type_id").val();
+    console.log('permission_type_id:' + permission_type_id);
+
+    // OK=質問欄入力・承諾・CSV出力/NG = 編集(質問欄除く)
+    if(permission_type_id != 1){
+        $(".disabled_class").prop('disabled', true);
+    }
+        
+    /**
      * ページネーションセンター
      */
     $(".pagination").addClass("justify-content-center");

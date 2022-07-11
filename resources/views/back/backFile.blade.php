@@ -173,6 +173,7 @@
                             <div class="card border border-0">
                                 <!-- row -->
                                 <div class="row">
+                                    
                                     <!-- 新規、編集 -->
                                     <div class="col-12">
                                         <div class="btn-group float-end" role="group">
@@ -180,6 +181,10 @@
                                             <button type="button" id="btn_edit" class="btn btn-outline-primary float-end btn-default">編集</button>
                                         </div>
                                     </div>
+
+                                    <!-- 権限id -->
+                                    <input type="hidden" name="permission_type_id" id="permission_type_id" value="{{ Session::get('permission_type_id') }}">
+                                
                                 </div>
                                 <!-- row -->
                             </div>
@@ -281,11 +286,11 @@
 
                                     <div class="btn-group" role="group">
                                         <button type="button" id="btn_modal_back" class="btn btn-outline-primary btn-default" data-bs-dismiss="modal">戻る</button>
-                                        <button type="button" id="btn_modal_delete" class="btn btn-outline-danger btn-default">削除</button>
+                                        <button type="button" id="btn_modal_delete" class="btn btn-outline-danger btn-default disabled_class">削除</button>
                                     </div>
 
                                     <!-- 登録 -->
-                                    <button type="button" id="btn_modal_edit" class="btn btn-outline-primary btn-default float-end">登録</button>
+                                    <button type="button" id="btn_modal_edit" class="btn btn-outline-primary btn-default float-end disabled_class">登録</button>                                
                                 </div>
 
                             </div>
