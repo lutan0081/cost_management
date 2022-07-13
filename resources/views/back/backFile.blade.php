@@ -70,13 +70,25 @@
                                             <div class="row align-items-end">
 
                                                 <!-- フリーワード -->
-                                                <div class="col-7 col-md-8 col-lg-4">
+                                                <div class="col-12 col-md-8 col-lg-4">
                                                     <label for="">フリーワード</label>
                                                     <input type="text" class="form-control" name="free_word" id="free_word" value="{{ $free_word }}">
                                                 </div>
+
+                                                <!-- 区分 -->
+                                                <div class="col-12 col-md-12 col-lg-3 mt-2">
+                                                    <label class="mb-2">区分</label>
+                                                    <select class="form-select" name="file_type" id="file_type">
+                                                        <option selected></option>
+                                                        @foreach($file_type_list as $file_types)
+                                                            <option value="{{ $file_types->file_type_id }}" @if( $file_type == $file_types->file_type_id) selected @endif>{{ $file_types->file_type_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <!-- 区分 -->
                                                 
                                                 <!-- 検索ボタン -->
-                                                <div class="col-12 col-md-12 col-lg-8 mt-2">
+                                                <div class="col-12 col-md-12 col-lg-5 mt-2">
                                                     <input type="submit" class="btn btn-default btn-outline-primary float-end" value="検索">
                                                 </div>
                                                 <!-- 検索ボタン -->
@@ -299,7 +311,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- 新着情報編集画面 -->
+                <!-- ファイル詳細 -->
 
             </main>
             <!-- page-content" -->

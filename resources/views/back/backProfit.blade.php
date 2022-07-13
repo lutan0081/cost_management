@@ -132,6 +132,20 @@
                                                 </div>
                                                 <!-- 勘定項目 -->
 
+                                                <!-- 個別検索 -->
+                                                <div class="col-12 col-md-8 col-lg-5 mt-2">
+                                                    <input class="form-check-input" type="checkbox" name="approval_id" id="approval_id" @if($approval_id == 'on') checked @endif>
+                                                    <label class="form-check-label markerYellow me-4" for="approval_id">
+                                                        承諾前のみ表示
+                                                    </label>
+
+                                                    <input class="form-check-input" type="checkbox" name="question_contents" id="question_contents" @if($question_contents == 'on') checked @endif>
+                                                    <label class="form-check-label markerGreen me-4" for="question_contents">
+                                                        Q&Aのみ表示
+                                                    </label>
+                                                </div>
+                                                <!-- 個別検索 -->
+
                                                 <!-- 色分けの説明 -->
                                                 <div class="col-6 col-md-6 col-lg-6 color_info_box">
                                                     <label class="markerBlue" for=""><i class="bi bi-question-circle me-1"></i>青：Q&A</label>

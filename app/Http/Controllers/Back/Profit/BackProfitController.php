@@ -74,6 +74,13 @@ class BackProfitController extends Controller
 
             // 終期
             $end_date = $request->input('end_date');
+
+            // 承認前
+            $approval_id = $request->input('approval_id');
+
+            // Q&A
+            $question_contents = $request->input('question_contents');
+
             
             // ページネーションにキーワード
             $paginate_params = [
@@ -84,7 +91,9 @@ class BackProfitController extends Controller
                 'real_estate_id' => $real_estate_id,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
-
+                'approval_id' => $approval_id,
+                'question_contents' => $question_contents,
+                
             ];
             
         // 例外処理
@@ -97,7 +106,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfit', $profit_list, compact('paginate_params' ,'real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list', 'free_word', 'profit_account_id', 'create_user_id', 'real_estate_id', 'start_date', 'end_date'));
+        return view('back.backProfit', $profit_list, compact('paginate_params' ,'real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list', 'free_word', 'profit_account_id', 'create_user_id', 'real_estate_id', 'start_date', 'end_date', 'question_contents', 'approval_id'));
     }
 
     /**
@@ -138,6 +147,14 @@ class BackProfitController extends Controller
             // 終期
             $end_date = $request->input('end_date');
             Log::debug('$end_date:' .$end_date);
+
+            // 承認前id
+            $approval_id = $request->input('approval_id');
+            Log::debug('$approval_id:' .$approval_id);
+
+            // 質問
+            $question_contents = $request->input('question_contents');
+            Log::debug('$question_contents:' .$question_contents);
             
             $str = "select "
             ."profits.profit_id, "
@@ -240,17 +257,29 @@ class BackProfitController extends Controller
 
             };
 
+            // 承諾前のみ表示
+            if($approval_id == 'on'){
+                Log::debug('承認前にチェックされてる場合の処理');
+                $where = $where ."and profits.profit_approval_id = 0 ";
+            }
+
+            // Q&Aの表示
+            if($question_contents == 'on'){
+                Log::debug('Q&Aにチェックされてる場合の処理');
+                $where = $where ."and profits.profit_question_contents != '' ";
+            }
+
             // order by句
             $order_by = "order by profit_id desc";
 
-            $str = $str .$where .$order_by;
+            $str = $str .$where;
             Log::debug('$str:' .$str);
 
             // query
             $alias = DB::raw("({$str}) as alias");
 
             // columnの設定、表示件数
-            $res = DB::table($alias)->selectRaw("*")->paginate(20)->onEachSide(1);
+            $res = DB::table($alias)->selectRaw("*")->orderByRaw("profit_id desc")->paginate(30)->onEachSide(1);
 
             // resの中に値が代入されている
             $ret = [];

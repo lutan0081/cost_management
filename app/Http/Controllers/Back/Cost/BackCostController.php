@@ -168,7 +168,7 @@ class BackCostController extends Controller
             $cost_flag_id = $request->input('cost_flag_id');
             Log::debug('$cost_flag_id:' .$cost_flag_id);
 
-            // 承認前is
+            // 承認前id
             $approval_id = $request->input('approval_id');
             Log::debug('$approval_id:' .$approval_id);
 

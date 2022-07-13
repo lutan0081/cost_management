@@ -51,11 +51,16 @@ class BackFileController extends Controller
             // フリーワード
             $free_word = $request->input('free_word');
 
+            $file_type = $request->input('file_type');
+            // dd($file_type);
+
             // ★リクエストパラメータをページネーション用の連想配列に格納★
             $paginate_params = [
 
                 'free_word' => $free_word,
 
+                'file_type' => $file_type,
+                
             ];
             
         // 例外処理
@@ -68,7 +73,7 @@ class BackFileController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backFile', $file_list, compact('paginate_params', 'free_word', 'file_type_list'));
+        return view('back.backFile', $file_list, compact('paginate_params', 'free_word', 'file_type_list', 'file_type'));
 
     }
 
@@ -91,6 +96,9 @@ class BackFileController extends Controller
             $session_id = $request->session()->get('create_user_id');
             Log::debug('$session_id:' .$session_id);
 
+            $file_type = $request->input('file_type');
+            Log::debug('$file_type:' .$file_type);
+            
             $str = "select "
             ."files.file_id "
             .",files.file_name "
@@ -118,6 +126,12 @@ class BackFileController extends Controller
                 $where = $where ."and ifnull(file_name,'') like '%$free_word%'";
                 $where = $where ."or ifnull(file_memo,'') like '%$free_word%'";
             };
+
+            // 区分
+            if($file_type !== null){
+                $where = $where ."and files.file_type_id = '$file_type' ";
+            };
+
 
             $str = $str .$where;
             Log::debug('$sql:' .$str);

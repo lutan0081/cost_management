@@ -30,11 +30,11 @@
                     <div style="display:none" class="msg"></div>
 
                     <!-- Id -->
-                    <label for="">User Id<br></label>
+                    <label for="">ユーザID<br></label>
                     <input type="text" id="mail_request" class="fadeIn second" name="login" required>
                     
                     <!-- パスワード -->
-                    <label for="">Password<br></label>
+                    <label for="">パスワード<br></label>
                     <input type="password" id="password_request" class="fadeIn third form-control" name="login" placeholder="" required>
                 
                     <!-- 登録ボタン -->
