@@ -27,12 +27,39 @@ class CustomValidator extends Validator {
         $str = "select * from create_users "
         ."where create_user_mail = "
         ."'$value'";
-        Log::debug('sql_common:' .$str);
+        Log::debug('sql:' .$str);
         $data = DB::select($str);
 
         // 該当データが存在する場合row=1:false
         if(count($data) > 0){
             Log::debug('E-mail重複確認');
+            return false;
+        }
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return true;
+    }
+
+    /**
+     * ユーザIDが存在しない場合、falseを返す
+     *
+     * @param [type] $attribute
+     * @param [type] $value
+     * @param [type] $parameters
+     * @return void
+     */
+    public function validateNoneuser($attribute, $value, $parameters) {
+        Log::debug('log_start:' .__FUNCTION__);
+
+        $str = "select * from create_users "
+        ."where create_user_mail = "
+        ."'$value'";
+        Log::debug('sql:' .$str);
+        $data = DB::select($str);
+
+        // 該当データが存在する場合row=1:false
+        if(count($data) <= 0){
+            Log::debug('IDが存在しない場合の処理');
             return false;
         }
 

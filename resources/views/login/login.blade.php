@@ -47,13 +47,14 @@
                     </div>
 
                 </form>
+                <!-- Login Form -->
 
                 <!-- パスワードを忘れた -->
                 <div id="formFooter">
                     <div class="container">
                         <div class="row">
                             <div class="col-12 col-md-12 col-lg-12">
-                                <a class="underlineHover float-lg-end" href="createUserInit">パスワードを忘れた</a>
+                                <a class="underlineHover float-lg-end" href="backReissuePasswordInit">パスワードを忘れた場合</a>
                             </div>
                         </div>
                     </div>

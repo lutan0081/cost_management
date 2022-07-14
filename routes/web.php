@@ -225,3 +225,12 @@ Route::post('backFileEditInit', 'Back\File\BackFileController@backFileEditInit')
 
 // 削除
 Route::post('backFileDeleteEntry', 'Back\File\BackFileController@backFileDeleteEntry')->middleware("cost_auth");
+
+/**
+ * パスワード再発行
+ */
+Route::get('backReissuePasswordInit', 'Back\ReissuePassword\BackReissuePasswordController@backReissuePasswordInit');
+
+Route::post('backReissuePasswordEntry', 'Back\ReissuePassword\BackReissuePasswordController@backReissuePasswordEntry');
+
+

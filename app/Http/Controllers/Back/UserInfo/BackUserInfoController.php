@@ -12,19 +12,19 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Log;
 
-use Storage;
-
-// データ縮小
-use InterventionImage;
-
 // 暗号化
 use Illuminate\Support\Facades\Crypt;
+
+// メール
+use Illuminate\Support\Facades\Mail;
 
 // config内のapp.phpに定義
 use Common;
 
-// メール
-use Illuminate\Support\Facades\Mail;
+// データ縮小
+use InterventionImage;
+
+use Storage;
 
 /**
  * 表示・編集
