@@ -50,7 +50,7 @@
 
                             <!-- テーブルcard -->
                             <div class="main_container">
-                                <div class="box_container">
+                                <div class="box_container px-5">
 
                                     <div class="row">
 
@@ -58,7 +58,7 @@
                                             <i class="bi bi-key"></i>パスワード再発行
                                         </div>
 
-                                        <div class="col-12 col-md-12 col-lg-12 mt-3 px-5">
+                                        <div class="col-12 col-md-12 col-lg-12 mt-3">
                                             パスワードの再発行をご希望の場合は、以下にユーザIDを入力のうえ「再発行ボタン」をクリックしてください。<br>
                                             Eメールにて、新たなパスワードのお送りします。<br>
                                             なお、パスワードを再発行しますと現在ご使用のパスワードではログインができなくなりますのでご注意ください。
@@ -66,7 +66,7 @@
 
                                         <form id="passwordForm" class="needs-validation" novalidate>
 
-                                            <div class="col-12 col-md-12 col-lg-8 mt-3 px-5">
+                                            <div class="col-12 col-md-12 col-lg-8 mt-3">
                                                 <label class="label_required mb-2" for="textBox"></label>ユーザID
                                                 <input type="text" class="form-control" name="create_user_id" id="create_user_id" placeholder="例：osaka0001" value="" required>
                                                 <!-- エラーメッセージ -->
@@ -75,7 +75,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12 col-md-12 col-lg-8 mt-3 px-5">
+                                            <div class="col-12 col-md-12 col-lg-8 mt-3">
                                                 <label class="label_required mb-2" for="textBox"></label>E-mail
                                                 <input type="text" class="form-control" name="create_user_mail" id="create_user_mail" placeholder="例：lutan0081.h@gmail.com" value="" required>
                                                 <!-- エラーメッセージ -->
@@ -84,7 +84,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-12 col-md-12 col-lg-12 mt-3 px-5">
+                                            <div class="col-12 col-md-12 col-lg-12 mt-3">
                                                 <button id="btn_edit" class="btn btn-outline-primary float-end btn-default">再発行</button>
                                             </div>
 
