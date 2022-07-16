@@ -180,8 +180,8 @@ class BackUserInfoController extends Controller
          */
         $rules = [];
         $rules['create_user_name'] = "required|max:50";
-        $rules['create_user_mail'] = "required|max:50";
-        $rules['create_user_password'] = "required|max:10";
+        $rules['create_user_mail'] = "required|max:50|min:8";
+        $rules['create_user_password'] = "required|max:10|min:8";
 
         /**
          * messages
@@ -191,8 +191,10 @@ class BackUserInfoController extends Controller
         $messages['create_user_name.max'] = "ユーザ名の文字数が超過しています。";
         $messages['create_user_mail.required'] = "ユーザIDが必須です。";
         $messages['create_user_mail.max'] = "ユーザIDの文字数が超過しています。";
+        $messages['create_user_mail.min'] = "ユーザIDの8文字以上で入力してください。";
         $messages['create_user_password.required'] = "パスワードは必須です。";
         $messages['create_user_password.max'] = "パスワードは10文字以内で設定してください。";
+        $messages['create_user_password.min'] = "パスワードは8文字以上で設定してください。";
     
         // validation判定
         $validator = Validator::make($request->all(), $rules, $messages);

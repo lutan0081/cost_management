@@ -684,6 +684,11 @@ class CsvController extends Controller
                     $response = $this->importKagawaCsv($request);
                     break;
 
+                case 3:
+                    Log::debug('Amexの処理');
+                    $response = $this->importAmexCsv($request);
+                    break;
+
                 default:
                 Log::debug('その他の処理');
             }
@@ -1506,6 +1511,296 @@ class CsvController extends Controller
                 ."0, "
                 ."'', "
                 ."'', "
+                ."$session_id, "
+                ."'$date', "
+                ."$session_id, "
+                ."'$date' "
+                ."); ";
+
+                Log::debug('sql_insert:'. $str);
+                $ret['status'] = DB::insert($str);
+
+                $count++;
+            }
+
+            $ret['message'] = $message;
+
+            DB::commit();
+
+            // スキップの件数、登録件数をmessageで表示する->messageで返す
+            
+        } catch (\Throwable  $e) {
+
+            // ロールバック
+            DB::rollback();
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            throw $e;
+
+        } finally {
+
+            Log::debug('log_end:' .__FUNCTION__);
+    
+            return $ret;
+        }
+    }
+
+    /**
+     * Amex
+     * csv読取->dbにinsert
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function importAmexCsv(Request $request){
+        try {
+            // トランザクション
+            DB::beginTransaction();
+
+            // returnの初期値
+            $ret = [];
+
+            // returnの初期値
+            $ret['status'] = 1;
+            
+            // 照会口座id
+            $modal_bank_id = $request->input('modal_bank_id');
+            Log::debug('modal_bank_id:' .$modal_bank_id);
+
+            // csvファイル取得
+            $file_path  = $request->file('modal_img_file');
+            Log::debug('file_path :' .$file_path );
+
+            /**
+             * csv読取
+             */
+            $file = new \SplFileObject($file_path);
+
+            $file->setFlags(
+                // CSVとして行を読み込み
+                \SplFileObject::READ_CSV |
+                // 先読み／巻き戻しで読み込み
+                \SplFileObject::READ_AHEAD |
+                // 空行を読み飛ばす
+                \SplFileObject::SKIP_EMPTY |
+                // 行末の改行を読み飛ばす
+                \SplFileObject::DROP_NEW_LINE            
+            );
+
+            // messageの配列作成
+            $message = [];
+
+            // カウント初期値
+            $count = 0;
+
+            // csvの配列の件数を取得
+            $file->seek(PHP_INT_MAX);
+            // 最終行が改行されている為、-1すると最終行をスキップする
+            $count_file = $file->key() - 1;
+            Log::debug('count_file:'. $count_file);
+
+            // エラーチェックのforeach
+            foreach($file as $line){
+            
+                // 一行目はcontinue
+                // if ($count == 0) {
+                //     Log::debug('一行目continueの処理');
+                //     $count++;
+                //     continue;
+                // }
+
+                // // 最終行はstop
+                // if ($count == $count_file) {
+                //     Log::debug('最終行はstopの処理');
+                //     break;
+                // }
+                
+                // 勘定日
+                $account_date = Common::format_csv_date($line[0]);
+                Log::debug('account_date:' .$account_date);
+
+                // 金額
+                $outgo_fee = Common::format_csv_colmun($line[1]);
+                Log::debug('outgo_fee:' .$outgo_fee);
+                
+                // 備考
+                $cost_memo = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
+                Log::debug('cost_memo:' .$cost_memo);
+
+                /**
+                 * 日付チェック
+                 */
+                // 空白の場合
+                if($account_date == null){
+                    $message[] = $count. '行目の日付が空白です';
+                }
+
+                // 日付の形式でない場合
+                if(!preg_match('/^[1-9]{1}[0-9]{0,3}\/[0-9]{1,2}\/[0-9]{1,2}$/', $account_date)){
+                    $message[] = $count. '行目の日付の値が不正です';
+                }
+
+                /**
+                 * 出金額
+                 */
+                // 空白でなく、数値に変換できない場合
+                if($outgo_fee !== ''){
+                    Log::debug('出金額が空白でない場合の処理');
+
+                    if(is_numeric($outgo_fee) == false){
+                        Log::debug('出金額が数値に変換できない場合の処理');
+                        $message[] = $count. '行目の出金額の値が不正です';
+                    }
+                }
+
+                /**
+                 * 摘要が空白の場合
+                 */
+                // 空白の場合
+                if($cost_memo == null){
+                    $message[] = $count. '摘要が空白です';
+                }
+                // 行数のカウントを加算する
+                $count++;
+            }
+
+            /**
+             * エラーがあった場合の処理
+             */
+            // エラーメッセージのカウント
+            $message_count = count($message);
+            Log::debug('message_count:'. $message_count);
+
+            // エラーが1個でもある場合、return。
+            if($message_count >= 1 ){
+
+                Log::debug('CSVエラーが1個以上ある場合の処理');
+
+                $ret['status'] = 0;
+
+                $ret['message'] = $message;
+
+                return $ret;
+            }
+
+            // カウント初期化
+            $count = 0;
+
+            // insertのforeach
+            foreach($file as $line){
+
+                // // 一行目はcontinue
+                // if ($count == 0) {
+                //     Log::debug('一行目continueの処理');
+                //     $count++;
+                //     continue;
+                // }
+
+                // 最終行はstop
+                // if ($count == $count_file) {
+                //     Log::debug('最終行はstopの処理');
+                //     break;
+                // }
+
+                /**
+                 * csv値取得
+                 */
+                // session_id取得
+                $session_id = $request->session()->get('create_user_id');
+
+                // 勘定日
+                $account_date = Common::format_csv_date($line[0]);
+                Log::debug('account_date:' .$account_date);
+
+                // 金額
+                $outgo_fee = Common::format_csv_colmun($line[1]);
+                Log::debug('outgo_fee:' .$outgo_fee);
+                
+                // 備考
+                $cost_memo = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
+                Log::debug('cost_memo:' .$cost_memo);
+
+                // 日付
+                $date = now() .'.000';
+
+                // 勘定日
+                if($account_date == ''){
+                    $account_date ='';
+                }
+
+                // 出金額
+                if($outgo_fee == ''){
+                    $outgo_fee = 0;
+                }
+
+                // 備考
+                if($cost_memo == ''){
+                    $cost_memo ='';
+                }
+
+                /**
+                 * DBと重複チェック
+                 */
+                // $str = "select * from costs "
+                // ."where "
+                // ."(account_date = '$account_date') "
+                // ."and "
+                // ."(income_fee = $income_fee) "
+                // ."and "
+                // ."(outgo_fee = $outgo_fee) "
+                // ."and "
+                // ."(balance_fee = $balance_fee) "
+                // ."and "
+                // ."(financial_name = '$financial_name') "
+                // ."and "
+                // ."(financial_branch = '$financial_branch') "
+                // ."and "
+                // ."(financial_summary = '$financial_summary') ";
+                
+                // Log::debug('$str:' .$str);
+                // $cost_list = DB::select($str);
+
+                // // 重複がある場合は、カウントが1以上になる
+                // $cost_list_count = count($cost_list);
+                // Log::debug('cost_list_count:'. $cost_list_count);
+
+                // // 重複がある場合は、次に行く
+                // if($cost_list_count >= 1){
+                //     Log::debug('DBに登録で重複がある場合の処理');
+                //     $message[] = $count. '行目が重複しています。';
+                //     $count++;
+                //     continue;
+                // }
+
+                /**
+                 * insert
+                 */
+                $str = "insert "
+                ."into "
+                ."costs "
+                ."( "
+                ."private_or_bank_id, "
+                ."bank_id, "
+                ."account_date, "
+                ."income_fee, "
+                ."outgo_fee, "
+                ."cost_account_id, "
+                ."cost_memo, "
+                ."approval_id, "
+                ."entry_user_id, "
+                ."entry_date, "
+                ."update_user_id, "
+                ."update_date "
+                .")values( "
+                ."2, "
+                ."$modal_bank_id, "
+                ."'$account_date', "
+                ."0, "
+                ."$outgo_fee, "
+                ."12, "
+                ."'$cost_memo', "
+                ."0, "
                 ."$session_id, "
                 ."'$date', "
                 ."$session_id, "
