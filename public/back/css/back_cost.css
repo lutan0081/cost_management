@@ -29,6 +29,13 @@
 
 }
 
+/* テーブル上のhrのmargin_bottom */
+.info_title{
+    font-size: 1.1rem;
+    color: #6c757d;
+    /* letter-spacing: 0.1rem; */
+}
+
 /*==================================
 ラベル(必須、任意)
 ===================================*/
@@ -49,13 +56,6 @@ label.label_any:after {
     color: white;
     background-color: #5e5e5e;
     content: "任意";
-}
-
-/* テーブル上のhrのmargin_bottom */
-.info_title{
-    font-size: 1.1rem;
-    color: #6c757d;
-    /* letter-spacing: 0.1rem; */
 }
 
 .icon_blue{

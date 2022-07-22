@@ -98,6 +98,7 @@
                                                     <a class="nav-link active" id="nav-cost-tab" data-bs-toggle="tab" href="#nav-cost" role="tab" aria-controls="nav-cost" aria-selected="true">経費概要</a>
                                                     <a class="nav-link" id="nav-file-tab" data-bs-toggle="tab" href="#nav-file" role="tab" aria-controls="nav-file" aria-selected="false">付属書類</a>
                                                     <a class="nav-link" id="nav-other-tab" data-bs-toggle="tab" href="#nav-other" role="tab" aria-controls="nav-other" aria-selected="false">連絡事項</a>
+                                                    <a class="nav-link" id="nav-list-tab" data-bs-toggle="tab" href="#nav-list" role="tab" aria-controls="nav-list" aria-selected="false">一覧</a>
                                                 </div>
                                             </nav>
                                             <!-- ナビゲーションの設定 -->
@@ -378,7 +379,77 @@
 
                                                 </div>
                                             </div>
-                                            <!-- 質問 -->   
+                                            <!-- 質問 --> 
+
+                                            <!-- 一覧 -->
+                                            <div class="tab-pane fade" id="nav-list" role="tabpanel" aria-labelledby="nav-list-tab">
+                                                <div class="row row-cols-2">
+                                                    
+                                                    <!-- テーブルcard -->
+                                                    <div class="col-12 col-md-12 col-lg-12 mt-3">
+
+                                                        <div class="card">
+
+                                                            <!-- カードボディ -->
+                                                            <div class="card-body">
+                                                                <!-- スクロール -->
+                                                                <div class="overflow-auto" style="height:27rem;">
+                                                                    <div class="table-responsive">
+                                                                        <table class="table table-hover table-condensed">
+
+                                                                            <!-- テーブルヘッド -->
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th scope="col" id="create_user_id" style="display:none">id</th>
+                                                                                    <th><i class="bi bi-check2-square"></i></th>
+                                                                                    <th scope="col" id="approval_id">承諾</th>
+                                                                                    <th scope="col" id="credit_card_date">カード名</th>
+                                                                                    <th scope="col" id="credit_card_date">勘定日</th>
+                                                                                    <th scope="col" id="cost_account_id">勘定科目</th>
+                                                                                    <th scope="col" id="credit_card_fee">金額</th>
+                                                                                    <th scope="col" id="credit_card_summary">摘要</th>
+                                                                                    <th scope="col" id="credit_card_memo">備考</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <!-- テーブルヘッド -->
+
+                                                                            <!-- テーブルボディ -->
+                                                                            <tbody>
+                                                                                @foreach($credit_card_list as $credit_card_list)
+                                                                                    <tr>
+                                                                                        <td id="id_{{ $credit_card_list->credit_card_id }}" class="click_class" style="display:none"></td>
+                                                                                        <td id="select_{{ $credit_card_list->credit_card_id }}" class="click_class"><input id="{{ $credit_card_list->cost_id }}" type="radio" class="align-middle" name="flexRadioDisabled"></td>
+                                                                                        <td id="approvalId_{{ $credit_card_list->credit_card_id }}" class="click_class">@if($credit_card_list->approval_id !== 0) <i class="bi bi-check-lg"></i> @endif</td>
+                                                                                        <td id="creditcardTypeId_{{ $credit_card_list->credit_card_id }}" class="click_class">{{ $credit_card_list->credit_card_type_name }}</td>
+                                                                                        <td id="creditcardDate_{{ $credit_card_list->credit_card_id }}" class="click_class">{{ $credit_card_list->credit_card_date }}</td>
+                                                                                        <td id="creditcardAccount_{{ $credit_card_list->credit_card_id }}" class="click_class">{{ $credit_card_list->cost_account_name }}</td>
+                                                                                        <td id="creditcardFee_{{ $credit_card_list->credit_card_id }}" class="click_class">{{ $credit_card_list->credit_card_fee }}</td>
+                                                                                        <td id="creditcardSummary_{{ $credit_card_list->credit_card_id }}" class="click_class">{{ $credit_card_list->credit_card_summary }}</td>
+                                                                                        <td id="creditcardMemo_{{ $credit_card_list->credit_card_id }}" class="click_class">{{ $credit_card_list->credit_card_memo }}</td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </tbody>
+                                                                            <!-- テーブルボディ -->
+
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                                <!-- スクロール -->
+                                                            <!-- カードボディ -->
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="col-12 col-md-12 col-lg-12 mt-3">
+                                                            <button type="button" id="btn_csv_capture" class="btn btn-outline-primary float-end btn-default" data-bs-toggle="modal" data-bs-target="#csvModal">CSV取込</button>
+                                                        </div>
+
+                                                    </div>
+                                                    <!-- テーブルcard -->
+
+                                                </div>
+                                            </div>
+                                            <!-- 一覧 --> 
 
                                         </div>
                                         <!-- 内容 -->
@@ -434,6 +505,162 @@
             
 		</div>
 		<!-- page-wrapper -->
+
+        <!-- csvインポートのモーダル -->
+        <div class="modal fade" id="csvModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+
+                    <!-- ヘッダー -->
+                    <div class="modal-header">
+                        <div class="modal-title info_title" id="exampleModalLabel">
+                            <i class="fas fa-file-csv icon_blue me-2"></i>CSV取込
+                        </div>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- ボディ -->
+                    <div class="modal-body px-4">
+                        <form id="modalForm" class="needs-validation" novalidate>
+
+                            <div class="col-12 col-md-6 col-lg-12">
+                                <div class="row">
+
+                                    <!-- クレジットカードタイプ -->
+                                    <div class="col-12 col-md-12 col-lg-12 mt-1">
+                                        <label class="" for="textBox"></label>CSV形式
+                                        
+                                        <select class="form-select" name="modal_credit_card_format_type_id" id="modal_credit_card_format_type_id" required>
+                                            <!-- タグ内に値を追加、値追加後同一の場合選択する -->
+                                            <option></option>
+                                            @foreach($credit_card_format_type_list as $credit_card_format_types)
+                                                <option value="{{ $credit_card_format_types->credit_card_format_type_id }}">{{ $credit_card_format_types->credit_card_format_type_name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="invalid-feedback" id ="modal_credit_card_format_type_id_error">
+                                            CSV形式は必須です。
+                                        </div>
+                                    </div>
+                                    <!-- 照会口座 -->
+
+                                    <!-- ファイル -->
+                                    <div class="col-12 col-md-12 col-lg-12 mt-1 mb-3">
+                                        <label class="mb-2">アップロード</label>
+                                        <input class="form-control" type="file" id="modal_credit_card_file" required>
+                                        <!-- エラーメッセージ -->
+                                        <div class="invalid-feedback" id ="modal_credit_card_file_error">
+                                            ファイルは必須です。
+                                        </div>
+                                    </div>
+                                    <!-- ファイル -->
+
+                                </div>  
+                            </div>
+
+                        </form>
+                    </div>
+                    <!-- ボディ -->
+
+                    <!-- フッター -->
+                    <div class="modal-footer">
+
+                        <div class="col my-3">
+
+                            <!-- 戻る -->
+                            <button type="button" id="btn_modal_csv_back" class="btn btn-outline-primary btn-default" data-bs-dismiss="modal">戻る</button>
+
+                            <!-- 取込 -->
+                            <button type="button" id="btn_modal_csv_import" class="btn btn-outline-primary btn-default float-end">CSV取込</button>
+                            
+                        </div>
+
+                    </div>
+                    <!-- フッター -->
+                    
+                </div>
+            </div>
+        </div>
+        <!-- csvインポートのモーダル -->
+
+        <!-- クレジット詳細編集画面 -->
+        <div class="modal fade" id="csvModalDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+
+                    <!-- ヘッダー -->
+                    <div class="modal-header">
+                        <div class="modal-title info_title" id="exampleModalLabel">
+                            <i class="fas fa-file-csv icon_blue me-2"></i>CSV取込
+                        </div>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- ボディ -->
+                    <div class="modal-body px-4">
+                        <form id="modalForm" class="needs-validation" novalidate>
+
+                            <div class="col-12 col-md-6 col-lg-12">
+                                <div class="row">
+
+                                    <!-- クレジットカードタイプ -->
+                                    <div class="col-12 col-md-12 col-lg-12 mt-1">
+                                        <label class="" for="textBox"></label>CSV形式
+                                        
+                                        <select class="form-select" name="modal_credit_card_format_type_id" id="modal_credit_card_format_type_id" required>
+                                            <!-- タグ内に値を追加、値追加後同一の場合選択する -->
+                                            <option></option>
+                                            @foreach($credit_card_format_type_list as $credit_card_format_types)
+                                                <option value="{{ $credit_card_format_types->credit_card_format_type_id }}">{{ $credit_card_format_types->credit_card_format_type_name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="invalid-feedback" id ="modal_credit_card_format_type_id_error">
+                                            CSV形式は必須です。
+                                        </div>
+                                    </div>
+                                    <!-- 照会口座 -->
+
+                                    <!-- ファイル -->
+                                    <div class="col-12 col-md-12 col-lg-12 mt-1 mb-3">
+                                        <label class="mb-2">アップロード</label>
+                                        <input class="form-control" type="file" id="modal_credit_card_file" required>
+                                        <!-- エラーメッセージ -->
+                                        <div class="invalid-feedback" id ="modal_credit_card_file_error">
+                                            ファイルは必須です。
+                                        </div>
+                                    </div>
+                                    <!-- ファイル -->
+
+                                </div>  
+                            </div>
+
+                        </form>
+                    </div>
+                    <!-- ボディ -->
+
+                    <!-- フッター -->
+                    <div class="modal-footer">
+
+                        <div class="col my-3">
+
+                            <!-- 戻る -->
+                            <button type="button" id="btn_modal_csv_back" class="btn btn-outline-primary btn-default" data-bs-dismiss="modal">戻る</button>
+
+                            <!-- 取込 -->
+                            <button type="button" id="btn_modal_csv_import" class="btn btn-outline-primary btn-default float-end">CSV取込</button>
+                            
+                        </div>
+
+                    </div>
+                    <!-- フッター -->
+                    
+                </div>
+            </div>
+        </div>
+        <!-- クレジット詳細編集画面 -->
 
 		@component('component.backJs')
 		@endcomponent

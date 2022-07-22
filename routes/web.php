@@ -148,6 +148,9 @@ Route::post('backCostApprovalEntry', 'Back\Cost\BackCostController@backCostAppro
 // 対象口座変更の処理（モーダル）
 Route::post('backCostModalBankChange', 'Back\Cost\BackCostController@backCostModalBankChange')->middleware("cost_auth");
 
+// クレジットカード詳細表示
+Route::post('backCostCreditCardDetailInit', 'Back\Cost\BackCostController@backCostCreditCardDetailInit')->middleware("cost_auth");
+
 /**
  * ユーザ一覧
  */
@@ -195,6 +198,9 @@ Route::post('csvImport', 'Common\Csv\CsvController@csvImport')->middleware("cost
 
 // message出力
 Route::get('csvMessageExport', 'Common\Csv\CsvController@csvMessageExport')->middleware("cost_auth");
+
+// クレジットカードImport
+Route::post('csvCreditCardImport', 'Common\Csv\CsvController@csvCreditCardImport')->middleware("cost_auth");
 
 /**
  * 新着情報

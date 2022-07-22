@@ -75,6 +75,22 @@ $(function() {
     }
 
     /**
+     * cvsインポート時のエラーメッセージエクスポート
+     */
+    function message_export (data) {
+
+        window.open('csvMessageExport?message=' + data.message, '_self');
+    }
+
+    // スリープ処理
+    function sleep(waitMsec) {
+        var startMsec = new Date();
+        
+        // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
+        while (new Date() - startMsec < waitMsec);
+    }
+
+    /**
      * ページネーションセンター
      */
     $(".pagination").addClass("justify-content-center");
@@ -948,4 +964,294 @@ $(function() {
         });
         
     }
+
+    /**
+     * CSVインポート
+     */
+    $("#btn_modal_csv_import").on('click', function(e) {
+
+        console.log("csv読込ボタンの処理");
+
+        e.preventDefault();
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);
+
+        /**
+         * CSV読込
+         */
+        // 経費id
+        let cost_id = $("#cost_id").val();
+        console.log('cost_id:' + cost_id);
+
+        // CSVformatid
+        let modal_credit_card_format_type_id = $("#modal_credit_card_format_type_id").val();
+        console.log('modal_credit_card_format_type_id:' + modal_credit_card_format_type_id);
+
+        // ファイル取得
+        let modal_credit_card_file = $('#modal_credit_card_file').prop('files')[0];
+        console.log("modal_credit_card_file:" + modal_credit_card_file);
+
+        /**
+         * バリデーション
+         */
+        // validationフラグ初期値
+        let v_check = true;
+
+        /**
+         * v_checkフラグがfalseの場合、下段のバリデーションに引っ掛かり
+         * modalFormにwas-validatedを付与、エラー文字の表示
+         */
+        if(modal_credit_card_format_type_id == ''){
+
+            v_check = false;
+        }
+
+        if(modal_credit_card_file == ''){
+
+            v_check = false;
+        }
+
+        // チェック=falseの場合プログラム終了
+        console.log(v_check);
+
+        if (v_check === false) {
+
+            // ローディング画面停止
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            $('#modalForm').addClass("was-validated");;
+
+            return false;
+        }
+
+        // 送信データインスタンス化
+        var sendData = new FormData();
+
+        // 送信データ
+        
+        sendData.append('cost_id', cost_id);
+        sendData.append('modal_credit_card_format_type_id', modal_credit_card_format_type_id);
+        sendData.append('modal_credit_card_file', modal_credit_card_file);
+
+        // ajaxヘッダー
+        $.ajaxSetup({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+        });
+
+        $.ajax({
+
+            type: 'post',
+            url: 'csvCreditCardImport',
+            dataType: 'json',
+            data: sendData,
+            
+            // 画像送信設定
+            //ajaxのキャッシュの削除
+            cache:false,
+            /**
+             * dataに指定したオブジェクトをクエリ文字列に変換するかどうかを設定します。
+             * 初期値はtrue、自動的に "application/x-www-form-urlencoded" 形式に変換します。
+             */
+            processData : false,
+            contentType : false,
+
+        // 接続が出来た場合の処理
+        }).done(function(data) {
+            
+            console.log("status:" + data.status);
+            console.log("message:" + data.message);
+            console.log("typeof:" + typeof(data.message));
+
+            // trueの処理->申込一覧に遷移
+            if(data.status == true){
+
+                // alertの設定
+                var options = {
+                    title: "CSVのインポートが完了しました。",
+                    icon: "success",
+                    buttons: {
+                        OK: true
+                    }
+                };
+                
+                // then() OKを押した時の処理
+                swal(options)
+                    .then(function(val) {
+                    if (val == 'OK' || val == null) {
+
+                        if (data.message != ''){
+
+                            console.log('messegeがある場合の処理');
+
+                            // エラーメッセージが有る場合Excelに出力
+                            message_export(data); 
+                            
+                            sleep(1000);
+                        }
+
+                        // 一覧に画面遷移
+                        // location.href = 'backCostInit';
+
+                        location.reload();
+                    };
+                });
+            };
+
+             // falseの処理->アラートでエラーメッセージを表示
+            if(data.status == false){
+
+                // アラートボタン設定
+                var options = {
+                    title: '入力箇所をご確認ください。',
+                    text: "メッセージ:" + data.message,
+                    icon: 'error',
+                    buttons: {
+                        OK: 'OK'
+                    }
+                };
+                
+                // then() OKを押した時の処理
+                swal(options)
+                    .then(function(val) {
+                    /**
+                     * ダイアログ外をクリックされた場合、nullを返す為
+                     * ok,nullの場合の処理を記載
+                     */
+                    if (val == 'OK' || val == null) {
+
+                        // エラーメッセージをExcelに出力
+                        message_export(data);
+                    };
+                });
+            }
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+        // ajax接続が出来なかった場合の処理
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+            
+        });
+    });
+
+    /**
+     * CSV詳細画面
+     */
+    $(".click_class").on('dblclick', function(e) {
+        
+        console.log("クレジット詳細画面の処理");
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);
+
+        // tdのidを配列に分解
+        var id_info = $(this).attr("id");
+        cost_id = id_info.split('_')[1];
+        console.log(cost_id);
+
+        // 送信データインスタンス化
+        var sendData = new FormData();
+
+        // 送信データ
+        sendData.append('cost_id', cost_id);
+
+        // ajaxヘッダー
+        $.ajaxSetup({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+        });
+
+        $.ajax({
+
+            type: 'post',
+            url: 'backCostCreditCardDetailInit',
+            dataType: 'json',
+            data: sendData,
+            
+            // 画像送信設定
+            //ajaxのキャッシュの削除
+            cache:false,
+            /**
+             * dataに指定したオブジェクトをクエリ文字列に変換するかどうかを設定します。
+             * 初期値はtrue、自動的に "application/x-www-form-urlencoded" 形式に変換します。
+             */
+            processData : false,
+            contentType : false,
+
+        // 接続が出来た場合の処理
+        }).done(function(data) {
+            
+            console.log("status:" + data.status);
+            console.log("message:" + data.message);
+            console.log("typeof:" + typeof(data.message));
+
+            // trueの処理->申込一覧に遷移
+            if(data.status == true){
+
+
+
+            };
+
+             // falseの処理->アラートでエラーメッセージを表示
+            if(data.status == false){
+
+                // アラートボタン設定
+                var options = {
+                    title: 'データ取得に失敗しました。',
+                    text: "メッセージ:" + data.message,
+                    icon: 'error',
+                    buttons: {
+                        OK: 'OK'
+                    }
+                };
+                
+                // then() OKを押した時の処理
+                swal(options)
+                    .then(function(val) {
+                    /**
+                     * ダイアログ外をクリックされた場合、nullを返す為
+                     * ok,nullの場合の処理を記載
+                     */
+                    if (val == 'OK' || val == null) {
+
+                        // エラーメッセージをExcelに出力
+                        message_export(data);
+                    };
+                });
+            }
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+        // ajax接続が出来なかった場合の処理
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+            
+        });
+
+    });
+
 });

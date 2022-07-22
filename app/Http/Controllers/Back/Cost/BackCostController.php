@@ -968,6 +968,12 @@ class BackCostController extends Controller
             // 画像パス取得
             $cost_img_list = $this->getImgList($request);
 
+            // クレジットカード詳細リスト
+            $credit_card_list = $this->getCreditCardList($request);
+
+            // クレジットカードフォーマットタイプリスト
+            $credit_card_format_type_list = $this->getCreditCardFormatTypeList($request);
+        
             // 共通クラスインスタンス化
             $common = new Common();
 
@@ -993,7 +999,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCostEdit' ,compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list', 'cost_img_type_list', 'cost_img_list'));
+        return view('back.backCostEdit', compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list', 'cost_img_type_list', 'cost_img_list', 'credit_card_format_type_list', 'credit_card_list'));
     }
 
     /**
@@ -1096,6 +1102,109 @@ class BackCostController extends Controller
             ."left join cost_img_types on "
             ."cost_img_types.cost_img_type_id = cost_imgs.cost_img_type_id "
             ."where cost_imgs.cost_id = $cost_id ";
+            
+            $ret = DB::select($str);
+
+        } catch (\Throwable $e) {
+
+            throw $e;
+
+        } finally {
+
+        }
+
+        Log::debug('end:' .__FUNCTION__);
+        return $ret;
+    }
+
+    /**
+     * クレジットカード詳細一覧(表示：sql)
+     *
+     * @return $ret(部屋一覧)
+     */
+    private function getCreditCardList(Request $request){
+
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            // フリーワード
+            $free_word = $request->input('free_word');
+            Log::debug('$free_word:' .$free_word);
+
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('$session_id:' .$session_id);
+            
+            // 経費id
+            $cost_id = $request->input('cost_id');
+            Log::debug('$cost_id:' .$cost_id);
+
+            /**
+             * sql
+             */
+            $str = "select "
+            ."credit_cards.credit_card_id "
+            .",credit_cards.cost_id "
+            .",credit_cards.credit_card_type_id "
+            .",credit_card_types.credit_card_type_name "
+            .",credit_cards.credit_card_date "
+            .",credit_cards.cost_account_id "
+            .",cost_accounts.cost_account_name "
+            .",credit_cards.credit_card_fee "
+            .",credit_cards.credit_card_summary "
+            .",credit_cards.credit_card_memo "
+            .",credit_cards.approval_id "
+            .",credit_cards.entry_user_id "
+            .",credit_cards.entry_date "
+            .",credit_cards.update_user_id "
+            .",credit_cards.updated "
+            ."from "
+            ."credit_cards "
+            ."left join credit_card_types on "
+            ."credit_card_types.credit_card_type_id = credit_cards.credit_card_type_id "
+            ."left join cost_accounts on "
+            ."cost_accounts.cost_account_id = credit_cards.cost_account_id "          
+            ."where "
+            ."cost_id=$cost_id "
+            ."order by cost_id asc ";
+
+
+            $str = $str;
+            Log::debug('$str:' .$str);
+
+            $ret = DB::select($str);
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
+
+    /**
+     * クレジットカードフォーマットタイプリスト
+     *
+     * @param Request $request(edit.blade.phpの各項目)
+     * @return ret(true:登録OK/false:登録NG、maxId(contract_id)、session_id(create_user_id))
+     */
+    private function getCreditCardFormatTypeList(Request $request){
+        
+        Log::debug('start:' .__FUNCTION__);
+
+        try{
+
+            $str = "select "
+            ."* "
+            ."from "
+            ."credit_card_format_types ";
+            Log::debug('str:' .$str);
             
             $ret = DB::select($str);
 
@@ -2403,5 +2512,36 @@ class BackCostController extends Controller
             Log::debug('log_end:'.__FUNCTION__);
             return $ret;
         }
+    }
+
+    /**
+     *  クレジットカード詳細(表示)
+     *
+     * @param Request $request(フォームデータ)
+     * @return
+     */
+    public function backCostCreditCardDetailInit(Request $request){   
+        Log::debug('start:' .__FUNCTION__);
+
+        try {
+
+            // 一覧取得
+            $cost_info = $this->getEditList($request);
+            $cost_list = $cost_info[0];
+
+            // 勘定科目一覧取得
+            $cost_img_list = $this->getImgList($request);
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug('error:'.$e);
+
+        } finally {
+
+        }
+
+        Log::debug('end:' .__FUNCTION__);
+        return view('back.backCostEdit', compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list', 'cost_img_type_list', 'cost_img_list', 'credit_card_format_type_list', 'credit_card_list'));
     }
 } 

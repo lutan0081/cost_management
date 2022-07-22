@@ -1547,13 +1547,132 @@ class CsvController extends Controller
     }
 
     /**
+     * エラーメッセージエクスポート
+     *
+     * @return void
+     */
+    public function csvMessageExport(Request $request){
+
+        Log::debug('log_start:' .__FUNCTION__);
+
+        // import時のエラーメッセージ
+        $messages = $request->input('message');
+
+        // ','で分割->配列で格納
+        $message_list = explode(",", $messages);
+
+        /**
+         * ファイル生成、書込み
+         */
+        // 保存先のパス生成
+        $file_path = storage_path('backup/import_backup.txt');
+
+        // メッセージ格納
+        foreach ($message_list as $message => $value) {
+
+            Log::debug('value:'.$value);
+
+            // ファイルがなければ作成、あれば上書きする
+            \File::append($file_path, $value. "\n");
+            
+        }
+        
+        // ファイルの種類宣言
+        $headers = ['Content-Type' => 'text/plain'];
+
+        // ファイル名
+        $filename = 'import_backup.txt';
+
+        Log::debug('log_end:' .__FUNCTION__);
+
+        // ダウンロード
+        return response()->download($file_path, $filename, $headers)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * csvインポート
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function csvCreditCardImport(Request $request){
+
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try {
+
+            // return初期値
+            $response = [];
+
+            // バリデーション:OK=true NG=false
+            $response = $this->editValidation($request);
+
+            if($response["status"] == false){
+
+                Log::debug('validator_status:falseのif文通過');
+                return response()->json($response);
+
+            }
+
+            /**
+             * 値取得
+             */
+            // 照会口座id
+            $modal_credit_card_format_type_id = $request->input('modal_credit_card_format_type_id');
+            Log::debug('modal_credit_card_format_type_id:' .$modal_credit_card_format_type_id);
+
+            /**
+             * 分岐
+             */
+            switch($modal_credit_card_format_type_id){
+
+                case 1:
+                    Log::debug('アメックスの処理');
+                    $response = $this->importCreditCardAmexCsv($request);
+                    break;
+
+                default:
+                Log::debug('その他の処理');
+            }
+
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            $response['status'] = 0;
+
+        } finally {
+
+            if($response['status'] == 1){
+
+                Log::debug('status:trueの処理');
+
+                $response['status'] = true;
+
+
+            }else{
+
+                Log::debug('status:falseの処理');
+
+                $response['status'] = false;
+
+            }
+
+            Log::debug('log_end:' .__FUNCTION__);
+            return response()->json($response);
+        }
+    }
+
+    /**
      * Amex
      * csv読取->dbにinsert
      *
      * @param Request $request
      * @return void
      */
-    private function importAmexCsv(Request $request){
+    private function importCreditCardAmexCsv(Request $request){
+        Log::debug('log_start:' .__FUNCTION__);
+
         try {
             // トランザクション
             DB::beginTransaction();
@@ -1563,14 +1682,18 @@ class CsvController extends Controller
 
             // returnの初期値
             $ret['status'] = 1;
-            
-            // 照会口座id
-            $modal_bank_id = $request->input('modal_bank_id');
-            Log::debug('modal_bank_id:' .$modal_bank_id);
 
             // csvファイル取得
-            $file_path  = $request->file('modal_img_file');
+            $file_path = $request->file('modal_credit_card_file');
             Log::debug('file_path :' .$file_path );
+
+            // CreditCardType
+            $modal_credit_card_format_type_id = $request->input('modal_credit_card_format_type_id');
+            Log::debug('modal_credit_card_format_type_id :' .$modal_credit_card_format_type_id );
+
+            // 経費id
+            $cost_id = $request->input('cost_id');
+            Log::debug('cost_id :' .$cost_id );
 
             /**
              * csv読取
@@ -1617,27 +1740,27 @@ class CsvController extends Controller
                 // }
                 
                 // 勘定日
-                $account_date = Common::format_csv_date($line[0]);
-                Log::debug('account_date:' .$account_date);
+                $credit_card_date = Common::format_csv_date($line[0]);
+                Log::debug('credit_card_date:' .$credit_card_date);
 
                 // 金額
-                $outgo_fee = Common::format_csv_colmun($line[1]);
-                Log::debug('outgo_fee:' .$outgo_fee);
+                $credit_card_fee = Common::format_csv_colmun($line[1]);
+                Log::debug('credit_card_fee:' .$credit_card_fee);
                 
                 // 備考
-                $cost_memo = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
-                Log::debug('cost_memo:' .$cost_memo);
+                $credit_card_summary = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
+                Log::debug('credit_card_summary:' .$credit_card_summary);
 
                 /**
                  * 日付チェック
                  */
                 // 空白の場合
-                if($account_date == null){
+                if($credit_card_date == null){
                     $message[] = $count. '行目の日付が空白です';
                 }
 
                 // 日付の形式でない場合
-                if(!preg_match('/^[1-9]{1}[0-9]{0,3}\/[0-9]{1,2}\/[0-9]{1,2}$/', $account_date)){
+                if(!preg_match('/^[1-9]{1}[0-9]{0,3}\/[0-9]{1,2}\/[0-9]{1,2}$/', $credit_card_date)){
                     $message[] = $count. '行目の日付の値が不正です';
                 }
 
@@ -1645,10 +1768,10 @@ class CsvController extends Controller
                  * 出金額
                  */
                 // 空白でなく、数値に変換できない場合
-                if($outgo_fee !== ''){
+                if($credit_card_fee !== ''){
                     Log::debug('出金額が空白でない場合の処理');
 
-                    if(is_numeric($outgo_fee) == false){
+                    if(is_numeric($credit_card_fee) == false){
                         Log::debug('出金額が数値に変換できない場合の処理');
                         $message[] = $count. '行目の出金額の値が不正です';
                     }
@@ -1658,7 +1781,7 @@ class CsvController extends Controller
                  * 摘要が空白の場合
                  */
                 // 空白の場合
-                if($cost_memo == null){
+                if($credit_card_summary == null){
                     $message[] = $count. '摘要が空白です';
                 }
                 // 行数のカウントを加算する
@@ -1710,102 +1833,93 @@ class CsvController extends Controller
                 $session_id = $request->session()->get('create_user_id');
 
                 // 勘定日
-                $account_date = Common::format_csv_date($line[0]);
-                Log::debug('account_date:' .$account_date);
+                $credit_card_date = Common::format_csv_date($line[0]);
+                Log::debug('credit_card_date:' .$credit_card_date);
 
                 // 金額
-                $outgo_fee = Common::format_csv_colmun($line[1]);
-                Log::debug('outgo_fee:' .$outgo_fee);
+                $credit_card_fee = Common::format_csv_colmun($line[1]);
+                Log::debug('credit_card_fee:' .$credit_card_fee);
                 
                 // 備考
-                $cost_memo = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
-                Log::debug('cost_memo:' .$cost_memo);
+                $credit_card_summary = trim(mb_convert_encoding($line[2], 'UTF-8', 'SJIS'));
+                Log::debug('credit_card_summary:' .$credit_card_summary);
 
                 // 日付
                 $date = now() .'.000';
 
                 // 勘定日
-                if($account_date == ''){
-                    $account_date ='';
+                if($credit_card_date == ''){
+                    $credit_card_date ='';
                 }
 
-                // 出金額
-                if($outgo_fee == ''){
-                    $outgo_fee = 0;
+                // 金額
+                if($credit_card_fee == ''){
+                    $credit_card_fee = 0;
                 }
 
-                // 備考
-                if($cost_memo == ''){
-                    $cost_memo ='';
+                // 摘要
+                if($credit_card_summary == ''){
+                    $credit_card_summary ='';
                 }
 
                 /**
                  * DBと重複チェック
                  */
-                // $str = "select * from costs "
-                // ."where "
-                // ."(account_date = '$account_date') "
-                // ."and "
-                // ."(income_fee = $income_fee) "
-                // ."and "
-                // ."(outgo_fee = $outgo_fee) "
-                // ."and "
-                // ."(balance_fee = $balance_fee) "
-                // ."and "
-                // ."(financial_name = '$financial_name') "
-                // ."and "
-                // ."(financial_branch = '$financial_branch') "
-                // ."and "
-                // ."(financial_summary = '$financial_summary') ";
+                $str = "select * from credit_cards "
+                ."where "
+                ."(credit_card_date = '$credit_card_date') "
+                ."and "
+                ."(credit_card_fee = $credit_card_fee) "
+                ."and "
+                ."(credit_card_summary = '$credit_card_summary') ";
                 
-                // Log::debug('$str:' .$str);
-                // $cost_list = DB::select($str);
+                Log::debug('$select_str:' .$str);
+                $credit_card_list = DB::select($str);
 
-                // // 重複がある場合は、カウントが1以上になる
-                // $cost_list_count = count($cost_list);
-                // Log::debug('cost_list_count:'. $cost_list_count);
+                // 重複がある場合は、カウントが1以上になる
+                $credit_card_list_count = count($credit_card_list);
+                Log::debug('credit_card_list_count:'. $credit_card_list_count);
 
-                // // 重複がある場合は、次に行く
-                // if($cost_list_count >= 1){
-                //     Log::debug('DBに登録で重複がある場合の処理');
-                //     $message[] = $count. '行目が重複しています。';
-                //     $count++;
-                //     continue;
-                // }
+                // 重複がある場合は、次に行く
+                if($credit_card_list_count >= 1){
+                    Log::debug('DBに登録で重複がある場合の処理');
+                    $message[] = $count. '行目が重複しています。';
+                    $count++;
+                    continue;
+                }
 
                 /**
                  * insert
                  */
                 $str = "insert "
-                ."into "
-                ."costs "
-                ."( "
-                ."private_or_bank_id, "
-                ."bank_id, "
-                ."account_date, "
-                ."income_fee, "
-                ."outgo_fee, "
-                ."cost_account_id, "
-                ."cost_memo, "
-                ."approval_id, "
-                ."entry_user_id, "
-                ."entry_date, "
-                ."update_user_id, "
-                ."update_date "
-                .")values( "
-                ."2, "
-                ."$modal_bank_id, "
-                ."'$account_date', "
-                ."0, "
-                ."$outgo_fee, "
-                ."12, "
-                ."'$cost_memo', "
-                ."0, "
-                ."$session_id, "
-                ."'$date', "
-                ."$session_id, "
-                ."'$date' "
-                ."); ";
+                ."into credit_cards( "
+                ."cost_id "
+                .",credit_card_type_id "
+                .",credit_card_date "
+                .",cost_account_id "
+                .",credit_card_fee "
+                .",credit_card_summary "
+                .",credit_card_memo "
+                .",approval_id "
+                .",entry_user_id "
+                .",entry_date "
+                .",update_user_id "
+                .",updated "
+                .") "
+                ."values ( "
+                ."$cost_id "
+                .",$modal_credit_card_format_type_id "
+                .",'$credit_card_date' "
+                .",0 "
+                .",$credit_card_fee "
+                .",'$credit_card_summary' "
+                .",'' "
+                .",0 "
+                .",$session_id "
+                .",'$date' "
+                .",$session_id "
+                .",'$date' "
+                .") ";
 
                 Log::debug('sql_insert:'. $str);
                 $ret['status'] = DB::insert($str);
@@ -1834,48 +1948,5 @@ class CsvController extends Controller
     
             return $ret;
         }
-    }
-
-    /**
-     * エラーメッセージエクスポート
-     *
-     * @return void
-     */
-    public function csvMessageExport(Request $request){
-
-        Log::debug('log_start:' .__FUNCTION__);
-
-        // import時のエラーメッセージ
-        $messages = $request->input('message');
-
-        // ','で分割->配列で格納
-        $message_list = explode(",", $messages);
-
-        /**
-         * ファイル生成、書込み
-         */
-        // 保存先のパス生成
-        $file_path = storage_path('backup/import_backup.txt');
-
-        // メッセージ格納
-        foreach ($message_list as $message => $value) {
-
-            Log::debug('value:'.$value);
-
-            // ファイルがなければ作成、あれば上書きする
-            \File::append($file_path, $value. "\n");
-            
-        }
-        
-        // ファイルの種類宣言
-        $headers = ['Content-Type' => 'text/plain'];
-
-        // ファイル名
-        $filename = 'import_backup.txt';
-
-        Log::debug('log_end:' .__FUNCTION__);
-
-        // ダウンロード
-        return response()->download($file_path, $filename, $headers)->deleteFileAfterSend(true);
     }
 } 

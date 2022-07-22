@@ -85,6 +85,12 @@ label.label_any:after {
 
 }
 
+/* テーブル上のhrのmargin_bottom */
+.info_title{
+    font-size: 1.1rem;
+    color: #6c757d;
+    /* letter-spacing: 0.1rem; */
+}
 
 /*==================================
 入居者一覧のタイトル設定
