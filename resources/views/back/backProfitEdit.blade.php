@@ -259,7 +259,7 @@
                                                 </div>
 
                                             </div>
-                                            <!-- 業者 -->
+                                            <!-- 概要 -->
 
                                             <!-- 画像 -->
                                             <div class="tab-pane fade" id="nav-file" role="tabpanel" aria-labelledby="nav-file-tab">

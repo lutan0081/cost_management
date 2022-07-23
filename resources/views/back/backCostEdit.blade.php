@@ -586,14 +586,13 @@
 
         <!-- クレジット詳細編集画面 -->
         <div class="modal fade" id="csvModalDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
 
                 <div class="modal-content">
-
                     <!-- ヘッダー -->
                     <div class="modal-header">
                         <div class="modal-title info_title" id="exampleModalLabel">
-                            <i class="fas fa-file-csv icon_blue me-2"></i>CSV取込
+                            <i class="bi bi-credit-card icon_blue me-2"></i>クレジットカード詳細
                         </div>
 
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -601,46 +600,92 @@
 
                     <!-- ボディ -->
                     <div class="modal-body px-4">
-                        <form id="modalForm" class="needs-validation" novalidate>
+                        <form id="creditCardModalForm" class="needs-validation" novalidate>
 
-                            <div class="col-12 col-md-6 col-lg-12">
-                                <div class="row">
+                            <div class="col-12 col-md-12 col-lg-12">
+                                <div class="row g-3">
 
-                                    <!-- クレジットカードタイプ -->
-                                    <div class="col-12 col-md-12 col-lg-12 mt-1">
-                                        <label class="" for="textBox"></label>CSV形式
-                                        
-                                        <select class="form-select" name="modal_credit_card_format_type_id" id="modal_credit_card_format_type_id" required>
+                                    <!-- 承諾する -->
+                                    <div class="col-12 col-md-12 col-lg-12">
+                                        <div class="form-check form-switch float-end">
+                                            <input class="form-check-input" type="checkbox" name="modal_credit_card_approval_id" id="modal_credit_card_approval_id" @if($cost_list->approval_id != 0)checked @endif>
+                                            <label class="form-check-label markerBlue" for="flexCheckDefault">
+                                                承諾する
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- クレジットカード名 -->
+                                    <div class="col-12 col-md-12 col-lg-12 mt-3">
+                                        <label class="label_required mb-2" for="textBox"></label>クレジットカード名
+                                        <select class="form-select disabled_class" name="modal_credit_card_name" id="modal_credit_card_name" required>
                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                             <option></option>
-                                            @foreach($credit_card_format_type_list as $credit_card_format_types)
-                                                <option value="{{ $credit_card_format_types->credit_card_format_type_id }}">{{ $credit_card_format_types->credit_card_format_type_name }}</option>
+                                            @foreach($credit_card_format_type_list as $credit_card_format_type)
+                                                <option value="{{ $credit_card_format_type->credit_card_format_type_id }}">{{ $credit_card_format_types->credit_card_format_type_name }}</option>
                                             @endforeach
                                         </select>
-                                        <div class="invalid-feedback" id ="modal_credit_card_format_type_id_error">
-                                            CSV形式は必須です。
+                                        <div class="profit-tab invalid-feedback" id =credit_card_name_error">
+                                            クレジットカード名は必須です。
                                         </div>
                                     </div>
-                                    <!-- 照会口座 -->
+                                    <!-- クレジットカード名 -->
 
-                                    <!-- ファイル -->
-                                    <div class="col-12 col-md-12 col-lg-12 mt-1 mb-3">
-                                        <label class="mb-2">アップロード</label>
-                                        <input class="form-control" type="file" id="modal_credit_card_file" required>
-                                        <!-- エラーメッセージ -->
-                                        <div class="invalid-feedback" id ="modal_credit_card_file_error">
-                                            ファイルは必須です。
+                                    <!-- 勘定日 -->
+                                    <div class="col-6 col-md-6 col-lg-6 mt-3">
+                                        <label class="label_required mb-2" for=""></label>勘定日
+                                        <input type="text" class="form-control disabled_class" id="modal_credit_card_date" name="modal_credit_card_date" autocomplete="off" value="" required>
+                                        <div class="cost-tab invalid-feedback" id ="credit_card_date_error">
+                                            勘定日は必須です。
                                         </div>
                                     </div>
-                                    <!-- ファイル -->
+                                
 
+                                    <!-- 勘定科目 -->
+                                    <div class="col-12 col-md-12 col-lg-6 mt-3">
+                                        <label class="label_required mb-2" for="textBox"></label>勘定科目
+                                        <select class="form-select disabled_class" name="modal_credit_card_account_id" id="modal_credit_card_account_id" required>
+                                            <!-- タグ内に値を追加、値追加後同一の場合選択する -->
+                                            <option></option>
+                                            @foreach($cost_account_list as $cost_account)
+                                                <option value="{{ $cost_account->cost_account_id }}">{{ $cost_account->cost_account_name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="profit-tab invalid-feedback" id = credit_card_account_id_error">
+                                            照会口座名は必須です。
+                                        </div>
+                                    </div>
+                                    <!-- 勘定科目 -->
+
+                                    <!-- 金額 -->
+                                    <div class="col-6 col-md-6 col-lg-6 mt-3">
+                                        <label class="label_required mb-2" for=""></label>金額
+                                        <input type="text" class="form-control disabled_class" id="modal_credit_card_fee" name="modal_credit_card_fee" autocomplete="off" value="" style="text-align:right" required>
+                                        <div class="cost-tab invalid-feedback" id ="modal_credit_card_fee_error">
+                                            金額は必須です。
+                                        </div>
+                                    </div>
+
+                                    <!-- 摘要 -->
+                                    <div class="col-12 col-md-12 col-lg-12 mt-3">
+                                        <label class="label_required mb-2" for=""></label>摘要
+                                        <textarea class="form-control disabled_class" name="modal_credit_card_summary" id="modal_credit_card_summary" rows="4" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
+                                        <div class="other-tab invalid-feedback" id ="modal_credit_card_summary_error"></div>
+                                    </div>
+
+                                    <!-- 備考 -->
+                                    <div class="col-12 col-md-12 col-lg-12 mt-3 mb-3">
+                                        <label class="label_any mb-2" for=""></label>備考
+                                        <textarea class="form-control disabled_class" name="modal_credit_card_memo" id="modal_credit_card_memo" rows="4" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
+                                        <div class="other-tab invalid-feedback" id ="modal_credit_card_memo_error"></div>
+                                    </div>
+                                    
                                 </div>  
                             </div>
 
                         </form>
                     </div>
                     <!-- ボディ -->
-
                     <!-- フッター -->
                     <div class="modal-footer">
 
@@ -650,17 +695,21 @@
                             <button type="button" id="btn_modal_csv_back" class="btn btn-outline-primary btn-default" data-bs-dismiss="modal">戻る</button>
 
                             <!-- 取込 -->
-                            <button type="button" id="btn_modal_csv_import" class="btn btn-outline-primary btn-default float-end">CSV取込</button>
+                            <button type="button" id="btn_modal_credit_card_edit" class="btn btn-outline-primary btn-default float-end">登録</button>
                             
+                            <!-- id -->
+                            <input type="hidden" class="form-control" id="modal_credit_card_id" name="modal_credit_card_id">
+
                         </div>
 
                     </div>
                     <!-- フッター -->
-                    
                 </div>
             </div>
         </div>
         <!-- クレジット詳細編集画面 -->
+
+
 
 		@component('component.backJs')
 		@endcomponent
@@ -675,6 +724,10 @@
                 language:'ja'
             });
 
+            // 勘定日(モーダル)
+            $('#modal_credit_card_date').datepicker({
+                language:'ja'
+            });
 
         </script>
 

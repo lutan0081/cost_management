@@ -1,6 +1,36 @@
 $(function() {
 
     /**
+     * クレジットカード詳細画面初期化
+     */
+    function clearProc(){
+
+        console.log('モーダル初期化の処理')
+
+        // クレジットカード種別名
+        $("#modal_credit_card_name").val("");
+
+        // 勘定日
+        $("#modal_credit_card_date").val("");
+
+        // 勘定科目id
+        $("#modal_credit_card_account_id").val("");
+
+        // 金額
+        $("#modal_credit_card_fee").val("");
+
+        // 摘要
+        $("#modal_credit_card_summary").val("");
+
+        // 備考
+        $("#modal_credit_card_memo").val("");
+
+        // id
+        $("#modal_credit_card_id").val("");
+    };
+
+        
+    /**
      * 承認ボタンを押した場合、操作不可
      */
     let approval_id = $('[name="approval_id"]').prop('checked')
@@ -1149,25 +1179,27 @@ $(function() {
     });
 
     /**
-     * CSV詳細画面
+     * クレジットカード詳細表示
      */
     $(".click_class").on('dblclick', function(e) {
         
         console.log("クレジット詳細画面の処理");
+
+        // 初期化
+        clearProc();
 
         // ローディング画面
         $("#overlay").fadeIn(300);
 
         // tdのidを配列に分解
         var id_info = $(this).attr("id");
-        cost_id = id_info.split('_')[1];
-        console.log(cost_id);
+        credit_card_id = id_info.split('_')[1];
+        console.log(credit_card_id);
 
         // 送信データインスタンス化
         var sendData = new FormData();
 
-        // 送信データ
-        sendData.append('cost_id', cost_id);
+        sendData.append('credit_card_id', credit_card_id);
 
         // ajaxヘッダー
         $.ajaxSetup({
@@ -1180,8 +1212,215 @@ $(function() {
             url: 'backCostCreditCardDetailInit',
             dataType: 'json',
             data: sendData,
+            /**
+             * 画像送信設定
+             */
+            //ajaxのキャッシュの削除
+            cache:false,
+            /**
+             * dataに指定したオブジェクトをクエリ文字列に変換するかどうかを設定します。
+             * 初期値はtrue、自動的に "application/x-www-form-urlencoded" 形式に変換します。
+             */
+            processData : false,
+            contentType : false,
+
+        // trueの場合の処理
+        }).done(function(data) {
+
+            // クレジットカードid
+            credit_card_id = data.credit_card_list[0]['credit_card_id'];
+            console.log(credit_card_id);   
+
+            // クレジットカード種別id
+            credit_card_type_id = data.credit_card_list[0]['credit_card_type_id'];
+            console.log(credit_card_type_id);   
+
+            // クレジットカード種別名
+            credit_card_type_name = data.credit_card_list[0]['credit_card_type_name'];
+            console.log(credit_card_type_name);
+
+            // 勘定日
+            credit_card_date = data.credit_card_list[0]['credit_card_date'];
+            console.log(credit_card_date);
+
+            // 勘定科目id
+            credit_card_account_id = data.credit_card_list[0]['cost_account_id'];
+            console.log(credit_card_account_id);
+
+            // 金額
+            credit_card_fee = data.credit_card_list[0]['credit_card_fee'];
+            console.log(credit_card_fee);
+        
+            // 摘要
+            credit_card_summary = data.credit_card_list[0]['credit_card_summary'];
+            console.log(credit_card_summary);
+
+            // 備考
+            credit_card_memo = data.credit_card_list[0]['credit_card_memo'];
+            console.log(credit_card_memo);
+
+            // id
+            credit_card_id = data.credit_card_list[0]['credit_card_id'];
+            console.log(credit_card_id);
+
+            /**
+             * 値挿入
+             */
+            // クレジットカード種別名
+            $("#modal_credit_card_name").val(credit_card_type_id);
+
+            // 勘定日
+            $("#modal_credit_card_date").val(credit_card_date);
+
+            // 勘定科目id
+            $("#modal_credit_card_account_id").val(credit_card_account_id);
+
+            // 金額
+            $("#modal_credit_card_fee").val(credit_card_fee);
+
+            // 摘要
+            $("#modal_credit_card_summary").val(credit_card_summary);
+
+            // 備考
+            $("#modal_credit_card_memo").val(credit_card_memo);
+
+            // id
+            $("#modal_credit_card_id").val(credit_card_id);
+        
+            // モーダル表示
+            $('#csvModalDetail').modal('show');
+
+            // ローディング画面停止
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+        // falseの場合の処理
+        }).fail(function(jqXHR, textStatus, errorThrown) {
             
-            // 画像送信設定
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+
+            // ローディング画面終了の処理
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+            
+        });
+
+    });
+
+    /**
+     * 登録
+     */
+    $("#btn_modal_credit_card_edit").on('click', function(e) {
+
+        console.log('btn_modal_credit_card_editの処理');
+
+        e.preventDefault();
+
+        // ローディング画面
+        $("#overlay").fadeIn(300);        
+
+        /**
+         * 値取得
+         */
+        // クレジットカード種別名
+        let credit_card_name = $("#modal_credit_card_name").val();
+        console.log('credit_card_name:' + credit_card_name);
+
+        // 勘定日
+        let credit_card_date = $("#modal_credit_card_date").val("");
+        console.log('credit_card_date:' + credit_card_date);
+
+        // 勘定科目id
+        let credit_card_account_id = $("#modal_credit_card_account_id").val("");
+        console.log('credit_card_account_id:' + credit_card_account_id);
+
+        // 金額
+        let credit_card_fee = $("#modal_credit_card_fee").val("");
+        console.log('credit_card_fee:' + credit_card_fee);
+
+        // 摘要
+        let credit_card_summary = $("#modal_credit_card_summary").val("");
+        console.log('credit_card_summary:' + credit_card_summary);
+
+        // 備考
+        let credit_card_memo = $("#modal_credit_card_memo").val("");
+        console.log('credit_card_memo:' + credit_card_memo);
+
+        // id
+        let credit_card_id = $("#modal_credit_card_id").val("");
+        console.log('credit_card_id:' + credit_card_id);
+
+        // validationフラグ初期値
+        let v_check = true;
+        
+        /**
+         * v_checkフラグがfalseの場合、下段のバリデーションに引っ掛かり
+         * modalFormにwas-validatedを付与、エラー文字の表示
+         */
+        if(credit_card_name == ''){
+
+            v_check = false;
+        }
+
+        if(credit_card_date == ''){
+
+            v_check = false;
+        }
+
+        if(credit_card_account_id == ''){
+
+            v_check = false;
+        }
+
+        if(credit_card_fee == ''){
+
+            v_check = false;
+        }
+        
+        // チェック=falseの場合プログラム終了
+        console.log('v_check' + v_check);
+
+        if (v_check === false) {
+
+            // ローディング画面停止
+            setTimeout(function(){
+                $("#overlay").fadeOut(300);
+            },500);
+
+            $('#creditCardModalForm').addClass("was-validated");
+
+            return false;
+        }
+
+        /**
+         * 送信データ設定
+         */
+        // 送信データインスタンス化
+        var sendData = new FormData();
+
+        sendData.append('information_id', information_id);
+        sendData.append('information_title', information_title);
+        sendData.append('information_type', information_type);
+        sendData.append('information_contents', information_contents);
+
+        // ajaxヘッダー
+        $.ajaxSetup({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
+        });
+
+        $.ajax({
+
+            type: 'post',
+            url: 'backInformationEditEntry',
+            dataType: 'json',
+            data: sendData,
+            /**
+             * 画像送信設定
+             */
             //ajaxのキャッシュの削除
             cache:false,
             /**
@@ -1193,25 +1432,49 @@ $(function() {
 
         // 接続が出来た場合の処理
         }).done(function(data) {
-            
-            console.log("status:" + data.status);
-            console.log("message:" + data.message);
-            console.log("typeof:" + typeof(data.message));
 
             // trueの処理->申込一覧に遷移
             if(data.status == true){
 
+                console.log("status:" + data.status);
 
+                // alertの設定
+                var options = {
+                    title: "登録が完了しました。",
+                    icon: "success",
+                    buttons: {
+                        OK: true
+                    }
+                };
+                
+                // then() OKを押した時の処理
+                swal(options)
+                    .then(function(val) {
+                    if (val == 'OK' || val == null) {
 
+                        location.reload();
+                    };
+                });
+
+                // ローディング画面終了の処理
+                setTimeout(function(){
+                    $("#overlay").fadeOut(300);
+                },500);
+                
+                return false;
             };
 
              // falseの処理->アラートでエラーメッセージを表示
             if(data.status == false){
 
+                console.log("status:" + data.status);
+                console.log("messages:" + data.messages);
+                console.log("errorkeys:" + data.errkeys);
+
                 // アラートボタン設定
                 var options = {
-                    title: 'データ取得に失敗しました。',
-                    text: "メッセージ:" + data.message,
+                    title: '入力箇所をご確認ください。',
+                    text: '※赤表示の箇所を修正後、再登録をしてください。',
                     icon: 'error',
                     buttons: {
                         OK: 'OK'
@@ -1227,8 +1490,34 @@ $(function() {
                      */
                     if (val == 'OK' || val == null) {
 
-                        // エラーメッセージをExcelに出力
-                        message_export(data);
+                        console.log(val);
+
+                        /**
+                         * formの全要素をerror_Messageを表示に変更
+                         * error数だけループ処理
+                         */
+                        for (let i = 0; i < data.errkeys.length; i++) {
+                            
+                            // bladeの各divにclass指定
+                            let id_key = "#" + data.errkeys[i];
+                            $(id_key).addClass('is-invalid');
+                            console.log(id_key);
+
+                            // 表示箇所のMessageのkey取得
+                            let msg_key = "#" + data.errkeys[i] + "_error"
+
+                            // error_messageテキスト追加
+                            $(msg_key).text(data.messages[i]);
+                            $(msg_key).show();
+                            console.log(msg_key);
+
+                            // ローディング画面停止
+                            setTimeout(function(){
+                                $("#overlay").fadeOut(300);
+                            },500);
+                        };
+
+                        return false;
                     };
                 });
             }
@@ -1237,6 +1526,8 @@ $(function() {
             setTimeout(function(){
                 $("#overlay").fadeOut(300);
             },500);
+            
+            return false;
 
         // ajax接続が出来なかった場合の処理
         }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -1252,6 +1543,7 @@ $(function() {
             
         });
 
+        
     });
 
 });

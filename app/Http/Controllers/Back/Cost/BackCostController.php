@@ -973,7 +973,7 @@ class BackCostController extends Controller
 
             // クレジットカードフォーマットタイプリスト
             $credit_card_format_type_list = $this->getCreditCardFormatTypeList($request);
-        
+            
             // 共通クラスインスタンス化
             $common = new Common();
 
@@ -988,7 +988,7 @@ class BackCostController extends Controller
 
             // 画像種別
             $cost_img_type_list = $common->getImgTypes();
-
+            
         // 例外処理
         } catch (\Throwable $e) {
 
@@ -2525,12 +2525,42 @@ class BackCostController extends Controller
 
         try {
 
-            // 一覧取得
-            $cost_info = $this->getEditList($request);
-            $cost_list = $cost_info[0];
+            // return初期値
+            $response = [];
 
-            // 勘定科目一覧取得
-            $cost_img_list = $this->getImgList($request);
+            /**
+             * 値取得
+             */
+            // クレジットカードid
+            $credit_card_id = $request->input('credit_card_id');
+
+            // sql
+            $str = "select "
+            ."credit_cards.credit_card_id "
+            .",credit_cards.cost_id "
+            .",credit_cards.credit_card_type_id "
+            .",credit_card_types.credit_card_type_name "
+            .",credit_cards.credit_card_date "
+            .",credit_cards.cost_account_id "
+            .",cost_accounts.cost_account_name "
+            .",credit_cards.credit_card_fee "
+            .",credit_cards.credit_card_summary "
+            .",credit_cards.credit_card_memo "
+            .",credit_cards.approval_id "
+            .",credit_cards.entry_user_id "
+            .",credit_cards.entry_date "
+            .",credit_cards.update_user_id "
+            .",credit_cards.updated "
+            ."from credit_cards "
+            ."left join cost_accounts on "
+            ."cost_accounts.cost_account_id = credit_cards.credit_card_id "
+            ."left join credit_card_types on "
+            ."credit_card_types.credit_card_type_id = credit_cards.credit_card_type_id "
+            ."where credit_card_id = $credit_card_id ";
+
+            Log::debug('sql:' .$str);
+            
+            $response['credit_card_list'] = DB::select($str);
 
         // 例外処理
         } catch (\Throwable $e) {
@@ -2541,7 +2571,60 @@ class BackCostController extends Controller
 
         }
 
-        Log::debug('end:' .__FUNCTION__);
-        return view('back.backCostEdit', compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list', 'cost_img_type_list', 'cost_img_list', 'credit_card_format_type_list', 'credit_card_list'));
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * 編集(表示:sql)
+     *
+     * @return void
+     */
+    private function getEditCreditCard(Request $request){
+
+        Log::debug('start:' .__FUNCTION__);
+
+        try{
+            /**
+             * 値取得
+             */
+            // クレジットカードid
+            $credit_card_id = $request->input('credit_card_id');
+
+            // sql
+            $str = "select "
+            ."credit_cards.credit_card_id "
+            .",credit_cards.cost_id "
+            .",credit_cards.credit_card_type_id "
+            .",credit_cards.credit_card_date "
+            .",credit_cards.cost_account_id "
+            .",cost_accounts.cost_account_name "
+            .",credit_cards.credit_card_fee "
+            .",credit_cards.credit_card_summary "
+            .",credit_cards.credit_card_memo "
+            .",credit_cards.approval_id "
+            .",credit_cards.entry_user_id "
+            .",credit_cards.entry_date "
+            .",credit_cards.update_user_id "
+            .",credit_cards.updated "
+            ."from credit_cards "
+            ."left join cost_accounts on "
+            ."cost_accounts.cost_account_id = credit_cards.credit_card_id "
+            ."where cost_id = $credit_card_id ";
+
+            Log::debug('sql:' .$str);
+            
+            $ret = DB::select($str);
+
+        // 例外処理
+        } catch (\Exception $e) {
+
+            throw $e;
+
+        } finally {
+        }
+        
+        Log::debug('start:' .__FUNCTION__);
+        return $ret;
     }
 } 
