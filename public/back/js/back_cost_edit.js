@@ -8,7 +8,7 @@ $(function() {
         console.log('モーダル初期化の処理')
 
         // クレジットカード種別名
-        $("#modal_credit_card_name").val("");
+        $("#modal_credit_card_type_id").val("");
 
         // 勘定日
         $("#modal_credit_card_date").val("");
@@ -1179,14 +1179,11 @@ $(function() {
     });
 
     /**
-     * クレジットカード詳細表示
+     * ダブルクリック（クレジットカード詳細表示）
      */
     $(".click_class").on('dblclick', function(e) {
         
         console.log("クレジット詳細画面の処理");
-
-        // 初期化
-        clearProc();
 
         // ローディング画面
         $("#overlay").fadeIn(300);
@@ -1228,16 +1225,12 @@ $(function() {
         }).done(function(data) {
 
             // クレジットカードid
-            credit_card_id = data.credit_card_list[0]['credit_card_id'];
-            console.log(credit_card_id);   
-
-            // クレジットカード種別id
             credit_card_type_id = data.credit_card_list[0]['credit_card_type_id'];
-            console.log(credit_card_type_id);   
+            console.log("credit_card_type_id:" + credit_card_type_id);    
 
             // クレジットカード種別名
             credit_card_type_name = data.credit_card_list[0]['credit_card_type_name'];
-            console.log(credit_card_type_name);
+            console.log("credit_card_type_name:" + credit_card_type_name);
 
             // 勘定日
             credit_card_date = data.credit_card_list[0]['credit_card_date'];
@@ -1267,7 +1260,7 @@ $(function() {
              * 値挿入
              */
             // クレジットカード種別名
-            $("#modal_credit_card_name").val(credit_card_type_id);
+            $("#modal_credit_card_type_id").val(credit_card_type_id);
 
             // 勘定日
             $("#modal_credit_card_date").val(credit_card_date);
@@ -1327,31 +1320,31 @@ $(function() {
          * 値取得
          */
         // クレジットカード種別名
-        let credit_card_name = $("#modal_credit_card_name").val();
-        console.log('credit_card_name:' + credit_card_name);
+        let credit_card_type_id = $("#modal_credit_card_type_id").val();
+        console.log('credit_card_type_id:' + credit_card_type_id);
 
         // 勘定日
-        let credit_card_date = $("#modal_credit_card_date").val("");
+        let credit_card_date = $("#modal_credit_card_date").val();
         console.log('credit_card_date:' + credit_card_date);
 
         // 勘定科目id
-        let credit_card_account_id = $("#modal_credit_card_account_id").val("");
+        let credit_card_account_id = $("#modal_credit_card_account_id").val();
         console.log('credit_card_account_id:' + credit_card_account_id);
 
         // 金額
-        let credit_card_fee = $("#modal_credit_card_fee").val("");
+        let credit_card_fee = $("#modal_credit_card_fee").val();
         console.log('credit_card_fee:' + credit_card_fee);
 
         // 摘要
-        let credit_card_summary = $("#modal_credit_card_summary").val("");
+        let credit_card_summary = $("#modal_credit_card_summary").val();
         console.log('credit_card_summary:' + credit_card_summary);
 
         // 備考
-        let credit_card_memo = $("#modal_credit_card_memo").val("");
+        let credit_card_memo = $("#modal_credit_card_memo").val();
         console.log('credit_card_memo:' + credit_card_memo);
 
         // id
-        let credit_card_id = $("#modal_credit_card_id").val("");
+        let credit_card_id = $("#modal_credit_card_id").val();
         console.log('credit_card_id:' + credit_card_id);
 
         // validationフラグ初期値
@@ -1361,28 +1354,28 @@ $(function() {
          * v_checkフラグがfalseの場合、下段のバリデーションに引っ掛かり
          * modalFormにwas-validatedを付与、エラー文字の表示
          */
-        if(credit_card_name == ''){
+        if(credit_card_type_id == null){
 
             v_check = false;
         }
 
-        if(credit_card_date == ''){
+        if(credit_card_date == null){
 
             v_check = false;
         }
 
-        if(credit_card_account_id == ''){
+        if(credit_card_account_id == null){
 
             v_check = false;
         }
 
-        if(credit_card_fee == ''){
+        if(credit_card_fee == null){
 
             v_check = false;
         }
         
         // チェック=falseの場合プログラム終了
-        console.log('v_check' + v_check);
+        console.log('v_check:' + v_check);
 
         if (v_check === false) {
 
@@ -1402,10 +1395,13 @@ $(function() {
         // 送信データインスタンス化
         var sendData = new FormData();
 
-        sendData.append('information_id', information_id);
-        sendData.append('information_title', information_title);
-        sendData.append('information_type', information_type);
-        sendData.append('information_contents', information_contents);
+        sendData.append('credit_card_type_id', credit_card_type_id);
+        sendData.append('credit_card_date', credit_card_date);
+        sendData.append('credit_card_account_id', credit_card_account_id);
+        sendData.append('credit_card_fee', credit_card_fee);
+        sendData.append('credit_card_summary', credit_card_summary);
+        sendData.append('credit_card_memo', credit_card_memo);
+        sendData.append('credit_card_id', credit_card_id);
 
         // ajaxヘッダー
         $.ajaxSetup({
@@ -1415,7 +1411,7 @@ $(function() {
         $.ajax({
 
             type: 'post',
-            url: 'backInformationEditEntry',
+            url: 'backCreditCardEditEntry',
             dataType: 'json',
             data: sendData,
             /**

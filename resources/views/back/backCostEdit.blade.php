@@ -441,7 +441,7 @@
                                                         </div>
 
                                                         <div class="col-12 col-md-12 col-lg-12 mt-3">
-                                                            <button type="button" id="btn_csv_capture" class="btn btn-outline-primary float-end btn-default" data-bs-toggle="modal" data-bs-target="#csvModal">CSV取込</button>
+                                                            <button type="button" id="btn_csv_capture" class="btn btn-outline-primary float-end btn-default disabled_class" data-bs-toggle="modal" data-bs-target="#csvModal">CSV取込</button>
                                                         </div>
 
                                                     </div>
@@ -618,14 +618,14 @@
                                     <!-- クレジットカード名 -->
                                     <div class="col-12 col-md-12 col-lg-12 mt-3">
                                         <label class="label_required mb-2" for="textBox"></label>クレジットカード名
-                                        <select class="form-select disabled_class" name="modal_credit_card_name" id="modal_credit_card_name" required>
+                                        <select class="form-select disabled_class" name="modal_credit_card_type_id" id="modal_credit_card_type_id" required>
                                             <!-- タグ内に値を追加、値追加後同一の場合選択する -->
                                             <option></option>
-                                            @foreach($credit_card_format_type_list as $credit_card_format_type)
-                                                <option value="{{ $credit_card_format_type->credit_card_format_type_id }}">{{ $credit_card_format_types->credit_card_format_type_name }}</option>
+                                            @foreach($credit_card_type_list as $credit_card_type)
+                                                <option value="{{ $credit_card_type->credit_card_type_id }}">{{ $credit_card_type->credit_card_type_name }}</option>
                                             @endforeach
                                         </select>
-                                        <div class="profit-tab invalid-feedback" id =credit_card_name_error">
+                                        <div class="invalid-feedback" id =credit_card_type_id_error">
                                             クレジットカード名は必須です。
                                         </div>
                                     </div>
@@ -635,7 +635,7 @@
                                     <div class="col-6 col-md-6 col-lg-6 mt-3">
                                         <label class="label_required mb-2" for=""></label>勘定日
                                         <input type="text" class="form-control disabled_class" id="modal_credit_card_date" name="modal_credit_card_date" autocomplete="off" value="" required>
-                                        <div class="cost-tab invalid-feedback" id ="credit_card_date_error">
+                                        <div class="invalid-feedback" id ="credit_card_date_error">
                                             勘定日は必須です。
                                         </div>
                                     </div>
@@ -651,8 +651,8 @@
                                                 <option value="{{ $cost_account->cost_account_id }}">{{ $cost_account->cost_account_name }}</option>
                                             @endforeach
                                         </select>
-                                        <div class="profit-tab invalid-feedback" id = credit_card_account_id_error">
-                                            照会口座名は必須です。
+                                        <div class="invalid-feedback" id = credit_card_account_id_error">
+                                            勘定科目は必須です。
                                         </div>
                                     </div>
                                     <!-- 勘定科目 -->
@@ -661,7 +661,7 @@
                                     <div class="col-6 col-md-6 col-lg-6 mt-3">
                                         <label class="label_required mb-2" for=""></label>金額
                                         <input type="text" class="form-control disabled_class" id="modal_credit_card_fee" name="modal_credit_card_fee" autocomplete="off" value="" style="text-align:right" required>
-                                        <div class="cost-tab invalid-feedback" id ="modal_credit_card_fee_error">
+                                        <div class="invalid-feedback" id ="modal_credit_card_fee_error">
                                             金額は必須です。
                                         </div>
                                     </div>
@@ -670,14 +670,14 @@
                                     <div class="col-12 col-md-12 col-lg-12 mt-3">
                                         <label class="label_required mb-2" for=""></label>摘要
                                         <textarea class="form-control disabled_class" name="modal_credit_card_summary" id="modal_credit_card_summary" rows="4" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
-                                        <div class="other-tab invalid-feedback" id ="modal_credit_card_summary_error"></div>
+                                        <div class="invalid-feedback" id ="modal_credit_card_summary_error"></div>
                                     </div>
 
                                     <!-- 備考 -->
                                     <div class="col-12 col-md-12 col-lg-12 mt-3 mb-3">
                                         <label class="label_any mb-2" for=""></label>備考
-                                        <textarea class="form-control disabled_class" name="modal_credit_card_memo" id="modal_credit_card_memo" rows="4" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
-                                        <div class="other-tab invalid-feedback" id ="modal_credit_card_memo_error"></div>
+                                        <textarea class="form-control" name="modal_credit_card_memo" id="modal_credit_card_memo" rows="4" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
+                                        <div class="invalid-feedback" id ="modal_credit_card_memo_error"></div>
                                     </div>
                                     
                                 </div>  

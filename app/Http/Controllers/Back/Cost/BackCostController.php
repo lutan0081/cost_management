@@ -974,6 +974,9 @@ class BackCostController extends Controller
             // クレジットカードフォーマットタイプリスト
             $credit_card_format_type_list = $this->getCreditCardFormatTypeList($request);
             
+            // クレジットカード種別id
+            $credit_card_type_list = $this->getCreditCardTypeList($request);
+
             // 共通クラスインスタンス化
             $common = new Common();
 
@@ -999,7 +1002,7 @@ class BackCostController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backCostEdit', compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list', 'cost_img_type_list', 'cost_img_list', 'credit_card_format_type_list', 'credit_card_list'));
+        return view('back.backCostEdit', compact('cost_list', 'bank_list', 'private_or_bank_list', 'cost_account_list', 'cost_img_type_list', 'cost_img_list', 'credit_card_format_type_list', 'credit_card_list', 'credit_card_type_list'));
     }
 
     /**
@@ -1204,6 +1207,34 @@ class BackCostController extends Controller
             ."* "
             ."from "
             ."credit_card_format_types ";
+            Log::debug('str:' .$str);
+            
+            $ret = DB::select($str);
+
+        } catch (\Throwable $e) {
+
+            throw $e;
+
+        } finally {
+
+        }
+
+        Log::debug('end:' .__FUNCTION__);
+        return $ret;
+    }
+
+    /**
+     * クレジットカード種別id
+     */
+    private function getCreditCardTypeList(Request $request){
+        Log::debug('start:' .__FUNCTION__);
+
+        try{
+
+            $str = "select "
+            ."* "
+            ."from "
+            ."credit_card_types ";
             Log::debug('str:' .$str);
             
             $ret = DB::select($str);
@@ -2576,7 +2607,7 @@ class BackCostController extends Controller
     }
 
     /**
-     * 編集(表示:sql)
+     * クレジットカード編集(表示:sql)
      *
      * @return void
      */
@@ -2625,6 +2656,227 @@ class BackCostController extends Controller
         }
         
         Log::debug('start:' .__FUNCTION__);
+        return $ret;
+    }
+
+    /**
+     * 登録分岐(新規/編集)
+     *
+     * @param $request(edit.blade.phpの各項目)
+     * @return $response(status:true=OK/false=NG)
+     */
+    public function backCreditCardEditEntry(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+        
+        // return初期値
+        $response = [];
+
+        // バリデーション:OK=true NG=false
+        // $response = $this->editValidationCreditCard($request);
+
+        // if($response["status"] == false){
+        //     Log::debug('validator_status:falseのif文通過');
+        //     return response()->json($response);
+        // }
+
+        // $responseの値設定
+        $ret = $this->updateCreditCardData($request);
+
+        // js側での判定のステータス(true:OK/false:NG)
+        $response["status"] = $ret['status'];
+
+        Log::debug('log_end:' .__FUNCTION__);
+        return response()->json($response);
+    }
+
+    /**
+     * バリデーション（クレジットカード）
+     *
+     * @param Request $request(bladeの項目)
+     * @return response(status=NG/msg="入力を確認して下さい/messages=$msgs/$errkeys=$keys)
+     */
+    private function editValidationCreditCard(Request $request){
+
+        /**
+         * 値取得
+         */
+        $guarantor_flag = $request->input('guarantor_flag');
+
+        // returnの出力値
+        $response = [];
+
+        // 初期値
+        $response["status"] = true;
+
+        /**
+         * rules
+         */
+        $rules = [];
+        $rules['credit_card_name'] = "required|integer";
+        $rules['credit_card_date'] = "required|date";
+        $rules['credit_card_account_id'] = "required|integer";
+        $rules['credit_card_fee'] = "required|integer";
+        $rules['credit_card_summary'] = "nullable|max:200";
+        $rules['credit_card_memo'] = "nullable|max:200";
+
+        /**
+         * messages
+         */
+        $messages = [];
+
+        $messages['credit_card_name.max'] = "クレジットカード名は必須です。";
+        $messages['credit_card_name.integer'] = "クレジットカード名の形式が不正です。";
+        $messages['credit_card_date.date'] = "勘定日の形式が不正です。";
+        $messages['credit_card_date.required'] = "勘定日は必須です。";
+        $messages['credit_card_account_id.integer'] = "勘定科目の形式が不正です。";
+        $messages['credit_card_account_id.required'] = "勘定科目は必須です。";
+        $messages['credit_card_fee.integer'] = "金額の形式が不正です。";
+        $messages['credit_card_fee.required'] = "金額は必須です。";
+        $messages['credit_card_summary.max'] = "摘要の文字数が超過しています。";
+        $messages['credit_card_memo.max'] = "備考の文字数が超過しています。";
+        
+        // validation判定
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // エラーがある場合処理
+        if ($validator->fails()) {
+            Log::debug('validator:失敗');
+
+            // response初期値
+            $keys = [];
+            $msgs = [];
+
+            // errorsをjson形式に変換(true=連想配列)
+            $ary = json_decode($validator->errors(), true);
+            
+            // ループ&値をvalueに設定
+            foreach ($ary as $key => $value) {
+                // キーを配列に設定
+                $keys[] = $key;
+                // 値(メッセージ)を設定
+                $msgs[] = $value;
+            }
+
+            // keyデバック
+            $arrKeys = print_r($keys , true);
+            Log::debug('keys:'.$arrKeys);
+
+            // msgsデバック
+            $arrMsgs = print_r($msgs , true);
+            Log::debug('msgs:'.$arrMsgs);
+
+            // response値設定
+            // status = falseの場合js側でerrorメッセージ表示
+            $response["status"] = false;
+            $response['msg'] = "入力を確認して下さい。";
+            $response["messages"] = $msgs;
+            $response["errkeys"] = $keys;
+            
+            Log::debug('log_end:' .__FUNCTION__);
+        }
+
+        return $response;
+    }
+
+    /**
+     * 編集
+     * 
+     * @param Request $request
+     * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''
+     */
+    private function updateCreditCardData(Request $request){
+        Log::debug('log_start:' .__FUNCTION__);
+
+        try {
+            // returnの初期値
+            $ret=[];
+
+            // 値取得
+            $session_id = $request->session()->get('create_user_id');
+            $credit_card_type_id = $request->input('credit_card_type_id');
+            $credit_card_date = $request->input('credit_card_date');
+            $credit_card_account_id = $request->input('credit_card_account_id');
+            $credit_card_fee = $request->input('credit_card_fee');
+            $credit_card_summary = $request->input('credit_card_summary');
+            $credit_card_memo = $request->input('credit_card_memo');
+            $credit_card_id = $request->input('credit_card_id');
+            
+            // 現在の日付取得
+            $date = now() .'.000';
+
+            // クレジットカード種別id
+            if($credit_card_type_id == null){
+                $credit_card_type_id = 0;
+            }
+
+            // 勘定日
+            if($credit_card_date == null){
+                $credit_card_date = '';
+            }
+
+            // 勘定科目id
+            if($credit_card_account_id == null){
+                $credit_card_account_id = 0;
+            }
+
+            // 金額
+            if($credit_card_fee == null){
+                $credit_card_fee = 0;
+            }
+
+            // 摘要
+            if($credit_card_summary == null){
+                $credit_card_summary = "";
+            }
+
+            // 備考
+            if($credit_card_memo == null){
+                $credit_card_memo = "";
+            }
+
+            $str = "update credit_cards "
+            ."set "
+            ."credit_card_type_id = $credit_card_type_id "
+            .",credit_card_date = '$credit_card_date' "
+            .",cost_account_id = $credit_card_account_id "
+            .",credit_card_fee = $credit_card_fee "
+            .",credit_card_summary = '$credit_card_summary' "
+            .",credit_card_memo = '$credit_card_memo' "
+            .",update_user_id = $session_id "
+            .",updated = '$date' "
+            ."where "
+            ."credit_card_id = $credit_card_id ";
+            Log::debug('sql:'.$str);
+
+            // OK=1/NG=0
+            $ret['status'] = DB::update($str);
+
+        // 例外処理
+        } catch (\Throwable $e) {
+
+            Log::debug(__FUNCTION__ .':' .$e);
+
+            $ret['status'] = 0;
+
+        // status:OK=1/NG=0
+        } finally {
+
+            if($ret['status'] == 1){
+
+                Log::debug('status:trueの処理');
+                $ret['status'] = true;
+
+            }else{
+
+                Log::debug('status:falseの処理');
+                $ret['status'] = false;
+            }
+
+            Log::debug('log_end:'.__FUNCTION__);
+            return $ret;
+        }
+
+        Log::debug('log_end:'.__FUNCTION__);
         return $ret;
     }
 } 

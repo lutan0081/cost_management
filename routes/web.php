@@ -151,6 +151,9 @@ Route::post('backCostModalBankChange', 'Back\Cost\BackCostController@backCostMod
 // クレジットカード詳細表示
 Route::post('backCostCreditCardDetailInit', 'Back\Cost\BackCostController@backCostCreditCardDetailInit')->middleware("cost_auth");
 
+// クレジットカード登録分岐（新規/編集）
+Route::post('backCreditCardEditEntry', 'Back\Cost\BackCostController@backCreditCardEditEntry')->middleware("cost_auth");
+
 /**
  * ユーザ一覧
  */
