@@ -2672,12 +2672,12 @@ class BackCostController extends Controller
         $response = [];
 
         // バリデーション:OK=true NG=false
-        // $response = $this->editValidationCreditCard($request);
+        $response = $this->editValidationCreditCard($request);
 
-        // if($response["status"] == false){
-        //     Log::debug('validator_status:falseのif文通過');
-        //     return response()->json($response);
-        // }
+        if($response["status"] == false){
+            Log::debug('validator_status:falseのif文通過');
+            return response()->json($response);
+        }
 
         // $responseの値設定
         $ret = $this->updateCreditCardData($request);
@@ -2697,11 +2697,6 @@ class BackCostController extends Controller
      */
     private function editValidationCreditCard(Request $request){
 
-        /**
-         * 値取得
-         */
-        $guarantor_flag = $request->input('guarantor_flag');
-
         // returnの出力値
         $response = [];
 
@@ -2712,7 +2707,7 @@ class BackCostController extends Controller
          * rules
          */
         $rules = [];
-        $rules['credit_card_name'] = "required|integer";
+        $rules['credit_card_type_id'] = "required|integer";
         $rules['credit_card_date'] = "required|date";
         $rules['credit_card_account_id'] = "required|integer";
         $rules['credit_card_fee'] = "required|integer";
@@ -2724,8 +2719,8 @@ class BackCostController extends Controller
          */
         $messages = [];
 
-        $messages['credit_card_name.max'] = "クレジットカード名は必須です。";
-        $messages['credit_card_name.integer'] = "クレジットカード名の形式が不正です。";
+        $messages['credit_card_type_id.max'] = "クレジットカード名は必須です。";
+        $messages['credit_card_type_id.integer'] = "クレジットカード名の形式が不正です。";
         $messages['credit_card_date.date'] = "勘定日の形式が不正です。";
         $messages['credit_card_date.required'] = "勘定日は必須です。";
         $messages['credit_card_account_id.integer'] = "勘定科目の形式が不正です。";
@@ -2779,7 +2774,7 @@ class BackCostController extends Controller
     }
 
     /**
-     * 編集
+     * 編集(sql)
      * 
      * @param Request $request
      * @return $ret['application_id(登録のapplication_id)']['status:1=OK/0=NG']''

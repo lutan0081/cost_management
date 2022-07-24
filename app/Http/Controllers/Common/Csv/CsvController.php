@@ -1590,7 +1590,7 @@ class CsvController extends Controller
     }
 
     /**
-     * csvインポート
+     * csvインポート(クレジットカード)
      *
      * @param Request $request
      * @return void
@@ -1865,28 +1865,28 @@ class CsvController extends Controller
                 /**
                  * DBと重複チェック
                  */
-                $str = "select * from credit_cards "
-                ."where "
-                ."(credit_card_date = '$credit_card_date') "
-                ."and "
-                ."(credit_card_fee = $credit_card_fee) "
-                ."and "
-                ."(credit_card_summary = '$credit_card_summary') ";
+                // $str = "select * from credit_cards "
+                // ."where "
+                // ."(credit_card_date = '$credit_card_date') "
+                // ."and "
+                // ."(credit_card_fee = $credit_card_fee) "
+                // ."and "
+                // ."(credit_card_summary = '$credit_card_summary') ";
                 
-                Log::debug('$select_str:' .$str);
-                $credit_card_list = DB::select($str);
+                // Log::debug('$select_str:' .$str);
+                // $credit_card_list = DB::select($str);
 
-                // 重複がある場合は、カウントが1以上になる
-                $credit_card_list_count = count($credit_card_list);
-                Log::debug('credit_card_list_count:'. $credit_card_list_count);
+                // // 重複がある場合は、カウントが1以上になる
+                // $credit_card_list_count = count($credit_card_list);
+                // Log::debug('credit_card_list_count:'. $credit_card_list_count);
 
-                // 重複がある場合は、次に行く
-                if($credit_card_list_count >= 1){
-                    Log::debug('DBに登録で重複がある場合の処理');
-                    $message[] = $count. '行目が重複しています。';
-                    $count++;
-                    continue;
-                }
+                // // 重複がある場合は、次に行く
+                // if($credit_card_list_count >= 1){
+                //     Log::debug('DBに登録で重複がある場合の処理');
+                //     $message[] = $count. '行目が重複しています。';
+                //     $count++;
+                //     continue;
+                // }
 
                 /**
                  * insert

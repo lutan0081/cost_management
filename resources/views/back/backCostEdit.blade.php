@@ -605,16 +605,6 @@
                             <div class="col-12 col-md-12 col-lg-12">
                                 <div class="row g-3">
 
-                                    <!-- 承諾する -->
-                                    <div class="col-12 col-md-12 col-lg-12">
-                                        <div class="form-check form-switch float-end">
-                                            <input class="form-check-input" type="checkbox" name="modal_credit_card_approval_id" id="modal_credit_card_approval_id" @if($cost_list->approval_id != 0)checked @endif>
-                                            <label class="form-check-label markerBlue" for="flexCheckDefault">
-                                                承諾する
-                                            </label>
-                                        </div>
-                                    </div>
-
                                     <!-- クレジットカード名 -->
                                     <div class="col-12 col-md-12 col-lg-12 mt-3">
                                         <label class="label_required mb-2" for="textBox"></label>クレジットカード名
@@ -661,7 +651,7 @@
                                     <div class="col-6 col-md-6 col-lg-6 mt-3">
                                         <label class="label_required mb-2" for=""></label>金額
                                         <input type="text" class="form-control disabled_class" id="modal_credit_card_fee" name="modal_credit_card_fee" autocomplete="off" value="" style="text-align:right" required>
-                                        <div class="invalid-feedback" id ="modal_credit_card_fee_error">
+                                        <div class="invalid-feedback" id ="credit_card_fee_error">
                                             金額は必須です。
                                         </div>
                                     </div>
@@ -670,14 +660,14 @@
                                     <div class="col-12 col-md-12 col-lg-12 mt-3">
                                         <label class="label_required mb-2" for=""></label>摘要
                                         <textarea class="form-control disabled_class" name="modal_credit_card_summary" id="modal_credit_card_summary" rows="4" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
-                                        <div class="invalid-feedback" id ="modal_credit_card_summary_error"></div>
+                                        <div class="invalid-feedback" id ="credit_card_summary_error"></div>
                                     </div>
 
                                     <!-- 備考 -->
                                     <div class="col-12 col-md-12 col-lg-12 mt-3 mb-3">
                                         <label class="label_any mb-2" for=""></label>備考
                                         <textarea class="form-control" name="modal_credit_card_memo" id="modal_credit_card_memo" rows="4" placeholder="例：内容を自由に入力">{{ $cost_list->answer_contents }}</textarea>
-                                        <div class="invalid-feedback" id ="modal_credit_card_memo_error"></div>
+                                        <div class="invalid-feedback" id ="credit_card_memo_error"></div>
                                     </div>
                                     
                                 </div>  
