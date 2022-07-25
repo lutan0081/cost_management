@@ -111,7 +111,7 @@ body {
 .table-responsive > .table-condensed > tbody > tr > td,
 .table-responsive > .table-condensed > tfoot > tr > td {
     
-    padding: 10px;  /* 5px の値を変更 */ 
+    padding: 15px;  /* 5px の値を変更 */ 
 
     /* 見出し線、テーブル線のカスタマイズ */
     border-bottom: 1px solid #dee2e6!important;

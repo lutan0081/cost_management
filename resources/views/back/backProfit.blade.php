@@ -240,13 +240,22 @@
                         </div>
                         <!-- テーブルcard -->
 
-                        <div class="col-12 col-md-6 col-lg-3">
+                        <div class="col-12 col-md-12 col-lg-6">
                             <div class="row">
 
-                                <div class="col-12 col-md-8 col-lg-12">
+                                <!-- 売上額 -->
+                                <div class="col-12 col-md-12 col-lg-6">
                                     <div class="form-group">
-                                        <label for=""><i class="bi bi-piggy-bank me-1 icon_blue"></i>利益額</label>
+                                        <label for=""><i class="bi bi-piggy-bank me-1 icon_blue"></i>売上</label>
                                         <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($profit_fee_sum_list->profit_fee) }}" style="text-align:right" disabled>
+                                    </div>
+                                </div>
+
+                                <!-- 承諾済利益額 -->
+                                <div class="col-12 col-md-12 col-lg-6">
+                                    <div class="form-group">
+                                        <label for=""><i class="bi bi-hand-thumbs-up me-1 icon_blue"></i>売上（承諾済）</label>
+                                        <input type="text" class="form-control" name="money" id="money" value=" {{ Common::format_three_digit_separator($profit_fee_sum_approval_list->profit_fee) }}" style="text-align:right" disabled>
                                     </div>
                                 </div>
 

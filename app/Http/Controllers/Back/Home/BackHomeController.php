@@ -84,6 +84,61 @@ class BackHomeController extends Controller
 
             // ★リクエストパラメータをページネーション用の連想配列に格納★
             $paginate_params = [];
+
+            /**
+             * グラフデータ
+             */
+            $chart_data = $this->getChartData($request);
+            // dd($chart_data);
+
+
+            // // 年月データ(DBから取得を想定)
+            // $date_list = [];
+
+            // $d = new \stdClass();
+            // $d->ym = '2020/01';
+            // $date_list[] = $d;
+
+            // $d = new \stdClass();
+            // $d->ym = '2020/02';
+            // $date_list[] = $d;
+
+            // $d = new \stdClass();
+            // $d->ym = '2020/03';
+            // $date_list[] = $d;
+
+            // $d = new \stdClass();
+            // $d->ym = '2020/04';
+            // $date_list[] = $d;
+
+            // $d = new \stdClass();
+            // $d->ym = '2020/05';
+            // $date_list[] = $d;
+
+            // // 金額データ(DBから取得を想定)
+            // $money_list = [];
+            // $m = new \stdClass();
+            // $m->money = '20';
+            // $money_list[] = $m;
+
+            // $m = new \stdClass();
+            // $m->money = '30';
+            // $money_list[] = $m;
+
+            // $m = new \stdClass();
+            // $m->money = '5';
+            // $money_list[] = $m;
+
+            // // 出力値
+            // $outPut = [];
+            // // 年月データを設定
+            // $outPut['date_list'] = $date_list;
+            // // 金額データを設定
+            // $outPut['money_list'] = $money_list;
+
+
+
+
             
         // 例外処理
         } catch (\Exception $e) {
@@ -96,7 +151,10 @@ class BackHomeController extends Controller
 
         Log::debug('end:' .__FUNCTION__);
 
-        return view('back.backHome', $information_list, compact('paginate_params', 'thisMonthProfit_list', 'thisYearProfit_list', 'thisMonthCost_list', 'thisYearCost_list', 'profitApproval_list', 'costApproval_list', 'cost_quetion_list', 'profit_quetion_list'));
+        // compctは代入名=キーになる
+        // キーに名前をつけるときはwith()にする
+        return view('back.backHome', $information_list, compact('paginate_params', 'thisMonthProfit_list', 'thisYearProfit_list', 'thisMonthCost_list', 'thisYearCost_list', 'profitApproval_list', 'costApproval_list', 'cost_quetion_list', 'profit_quetion_list'))->with($chart_data);
+        // return view('back.backHome', $information_list, compact('paginate_params', 'thisMonthProfit_list', 'thisYearProfit_list', 'thisMonthCost_list', 'thisYearCost_list', 'profitApproval_list', 'costApproval_list', 'cost_quetion_list', 'profit_quetion_list', 'chart_data'));
     }
 
     /**
@@ -259,7 +317,7 @@ class BackHomeController extends Controller
     }
 
     /**
-     * 年度の売上取得
+     * 年度の経費取得
      * @param Request $request
      * @param [type] $start_date
      * @param [type] $end_date
@@ -497,6 +555,334 @@ class BackHomeController extends Controller
             // resの中に値が代入されている
             $ret = [];
             $ret['res'] = $res;
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
+
+    /**
+     * グラフデータ
+     */
+    private function getChartData(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+            // 初期値
+            $ret = [];
+
+            // 本日の日付を取得
+            $nowDate = date("Y/m/d");
+            Log::debug('nowDate:'.$nowDate);
+
+            // 本日の年度だけを取得
+            $nowYear = explode("/",$nowDate)[0];
+            Log::debug('nowYear:'.$nowYear);
+
+            // 本日の日付を年月日に分割
+            $explode_date = explode("/",$nowDate);
+            
+            // 月日を変数に格納
+            $month = $explode_date[1];
+            $date = $explode_date[2];
+
+            // 現在の月日を生成
+            $nowMonthDate = $month. '/'. $date;
+            Log::debug('nowMonthDate:'.$nowMonthDate);
+            
+            // 配列初期値（日付）
+            $date_list = [];
+
+            // 金額初期値（日付）
+            $money_list = [];
+
+            // 現在が8月から12月の場合の処理
+            if($nowMonthDate >= '08/01' && $nowMonthDate <= '12/31'){
+                Log::debug('現在が8月から12月の場合の処理');
+
+
+                // 本年度
+                $nowYear = $nowYear;
+                Log::debug('$nowYear:'. $nowYear);
+
+                // 翌年度
+                $nextYear = $nowYear + 1;
+                Log::debug('$nextYear:'. $nextYear);
+
+                /**
+                 * グラフデータ
+                 */               
+                $date_list[] = $nowYear. '/08';
+
+                $date_list[] = $nowYear. '/09';
+
+                $date_list[] = $nowYear. '/10';
+
+                $date_list[] = $nowYear. '/11';
+
+                $date_list[] = $nowYear. '/12';
+                
+                $date_list[] = $nextYear. '/01';
+
+                $date_list[] = $nextYear. '/02';
+
+                $date_list[] = $nextYear. '/03';
+
+                $date_list[] = $nextYear. '/04';
+
+                $date_list[] = $nextYear. '/05';
+
+                $date_list[] = $nextYear. '/06';
+
+                $date_list[] = $nextYear. '/07';
+    
+                /**
+                 * 売上データ
+                 */
+                /**
+                 * 8月～12月までをループ
+                 */
+                // 月の初期値
+                $first_half_month_count = 8;
+
+                for($i = 0; $i < 5; $i++){
+                    Log::debug('$i:'. $i);
+
+                    // ループの回数分月を加算
+                    $month_count = $first_half_month_count + $i;
+
+                    // 月初・月末を取得
+                    $year_month = $nowYear. '-'. $month_count;
+                    Log::debug('$year_month:'. $year_month);
+
+                    // 月初取得
+                    $first_date = date('Y/m/d', strtotime('first day of ' . $year_month));
+                    Log::debug('$first_date:'. $first_date);
+
+                    // 月末取得
+                    $last_date = date('Y/m/d', strtotime('last day of ' . $year_month));
+                    Log::debug('$last_date:'. $last_date);
+
+                    // 売上データ取得
+                    $str = "select "
+                    ."count(*) as row_count "
+                    .",sum(profit_fee) as profit_fee "
+                    ."from "
+                    ."profits "
+                    ."where "
+                    ."profits.profit_date between '$first_date' and '$last_date' ";
+                    Log::debug('$str:'. $str);
+
+                    // 実行
+                    $profit_fee_info = DB::select($str)[0];
+
+                    // 売上合計値を取得
+                    $profit_fee = $profit_fee_info->profit_fee;
+                    Log::debug('profit_fee:'.$profit_fee);
+
+                    // 連想配列に売上を設定
+                    $money_list[] = $profit_fee;  
+                }
+
+                /**
+                 * 1月～7月までをループ
+                 */
+                // 月の初期値
+                $second_half_month_count = 1;
+
+                for($i = 0; $i < 7; $i++){
+                    Log::debug('$i:'. $i);
+
+                    // ループの回数分月を加算
+                    $month_count = $second_half_month_count + $i;
+
+                    // 月初・月末を取得
+                    $year_month = $nextYear. '-'. $month_count;
+                    Log::debug('$year_month:'. $year_month);
+
+                    // 月初取得
+                    $first_date = date('Y/m/d', strtotime('first day of ' . $year_month));
+                    Log::debug('$first_date:'. $first_date);
+
+                    // 月末取得
+                    $last_date = date('Y/m/d', strtotime('last day of ' . $year_month));
+                    Log::debug('$last_date:'. $last_date);
+
+                    // 売上データ取得
+                    $str = "select "
+                    ."count(*) as row_count "
+                    .",sum(profit_fee) as profit_fee "
+                    ."from "
+                    ."profits "
+                    ."where "
+                    ."profits.profit_date between '$first_date' and '$last_date' ";
+                    Log::debug('$str:'. $str);
+
+                    // 実行
+                    $profit_fee_info = DB::select($str)[0];
+
+                    // 売上合計値を取得
+                    $profit_fee = $profit_fee_info->profit_fee;
+                    Log::debug('profit_fee:'.$profit_fee);
+
+                    // 連想配列に売上を設定
+                    $money_list[] = $profit_fee;  
+                }
+
+                // 配列デバック
+                $arrString = print_r($money_list , true);
+                Log::debug('money_list:'.$arrString);
+
+            }
+
+            // 現在が1月から7月の場合の処理
+            elseif($nowMonthDate >= '01/01' && $nowMonthDate <= '07/31'){
+                Log::debug('現在が1月から7月の場合の処理');
+
+                // 本年度
+                $nowYear = $nowYear;
+                Log::debug('$nowYear:'. $nowYear);
+
+                // 昨年度
+                $last_year = $nowYear - 1;
+                Log::debug('$last_year:'. $last_year);
+
+                /**
+                 * グラフデータ
+                 */               
+                $date_list[] = $last_year. '/08';
+
+                $date_list[] = $last_year. '/09';
+
+                $date_list[] = $last_year. '/10';
+
+                $date_list[] = $last_year. '/11';
+
+                $date_list[] = $last_year. '/12';
+                
+                $date_list[] = $nowYear. '/01';
+
+                $date_list[] = $nowYear. '/02';
+
+                $date_list[] = $nowYear. '/03';
+
+                $date_list[] = $nowYear. '/04';
+
+                $date_list[] = $nowYear. '/05';
+
+                $date_list[] = $nowYear. '/06';
+
+                $date_list[] = $nowYear. '/07';
+
+                /**
+                 * 8月～12月までをループ
+                 */
+                // 月の初期値
+                $first_half_month_count = 8;
+
+                for($i = 0; $i < 5; $i++){
+                    Log::debug('$i:'. $i);
+
+                    // ループの回数分月を加算
+                    $month_count = $first_half_month_count + $i;
+
+                    // 月初・月末を取得
+                    $year_month = $last_year. '-'. $month_count;
+                    Log::debug('$year_month:'. $year_month);
+
+                    // 月初取得
+                    $first_date = date('Y/m/d', strtotime('first day of ' . $year_month));
+                    Log::debug('$first_date:'. $first_date);
+
+                    // 月末取得
+                    $last_date = date('Y/m/d', strtotime('last day of ' . $year_month));
+                    Log::debug('$last_date:'. $last_date);
+
+                    // 売上データ取得
+                    $str = "select "
+                    ."count(*) as row_count "
+                    .",sum(profit_fee) as profit_fee "
+                    ."from "
+                    ."profits "
+                    ."where "
+                    ."profits.profit_date between '$first_date' and '$last_date' ";
+                    Log::debug('$str:'. $str);
+
+                    // 実行
+                    $profit_fee_info = DB::select($str)[0];
+
+                    // 売上合計値を取得
+                    $profit_fee = $profit_fee_info->profit_fee;
+                    Log::debug('profit_fee:'.$profit_fee);
+
+                    // 連想配列に売上を設定
+                    $money_list[] = $profit_fee;  
+                }
+
+                /**
+                 * 1月～7月までをループ
+                 */
+                // 月の初期値
+                $second_half_month_count = 1;
+
+                for($i = 0; $i < 7; $i++){
+                    Log::debug('$i:'. $i);
+
+                    // ループの回数分月を加算
+                    $month_count = $second_half_month_count + $i;
+
+                    // 月初・月末を取得
+                    $year_month = $nowYear. '-'. $month_count;
+                    Log::debug('$year_month:'. $year_month);
+
+                    // 月初取得
+                    $first_date = date('Y/m/d', strtotime('first day of ' . $year_month));
+                    Log::debug('$first_date:'. $first_date);
+
+                    // 月末取得
+                    $last_date = date('Y/m/d', strtotime('last day of ' . $year_month));
+                    Log::debug('$last_date:'. $last_date);
+
+                    // 売上データ取得
+                    $str = "select "
+                    ."count(*) as row_count "
+                    .",sum(profit_fee) as profit_fee "
+                    ."from "
+                    ."profits "
+                    ."where "
+                    ."profits.profit_date between '$first_date' and '$last_date' ";
+                    Log::debug('$str:'. $str);
+
+                    // 実行
+                    $profit_fee_info = DB::select($str)[0];
+
+                    // 売上合計値を取得
+                    $profit_fee = $profit_fee_info->profit_fee;
+                    Log::debug('profit_fee:'.$profit_fee);
+
+                    // 連想配列に売上を設定
+                    $money_list[] = $profit_fee;  
+                }
+
+                // 配列デバック
+                $arrString = print_r($money_list , true);
+                Log::debug('money_list:'.$arrString);
+            }
+
+            $ret['date_list'] = $date_list;
+
+            // 金額データを設定
+            $ret['money_list'] = $money_list;
+
+
 
         }catch(\Throwable $e) {
 

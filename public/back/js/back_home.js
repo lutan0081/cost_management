@@ -5,5 +5,5 @@ $(function(){
      */
     $(".pagination").addClass("justify-content-center");
     $("#links").show();
-
+    
 });

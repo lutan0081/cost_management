@@ -41,9 +41,11 @@ class BackProfitController extends Controller
             // 売上一覧取得
             $profit_list = $this->getProfitList($request);
 
-            // 売上合計値取得
+            // 売上額
             $profit_fee_sum_list = $this->getProfitSumList($request);
-            // dd($profit_fee_sum_list);
+
+            // 売上額（承諾済）
+            $profit_fee_sum_approval_list = $this->getProfitSumApprovalList($request);
 
             $common = new Common();
 
@@ -106,7 +108,7 @@ class BackProfitController extends Controller
         }
 
         Log::debug('end:' .__FUNCTION__);
-        return view('back.backProfit', $profit_list, compact('paginate_params' ,'real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list', 'free_word', 'profit_account_id', 'create_user_id', 'real_estate_id', 'start_date', 'end_date', 'question_contents', 'approval_id'));
+        return view('back.backProfit', $profit_list, compact('paginate_params' ,'real_estate_list' ,'profit_account_list' ,'create_user_list' ,'profit_fee_sum_list', 'free_word', 'profit_account_id', 'create_user_id', 'real_estate_id', 'start_date', 'end_date', 'question_contents', 'approval_id', 'profit_fee_sum_approval_list'));
     }
 
     /**
@@ -299,7 +301,7 @@ class BackProfitController extends Controller
     }
     
     /**
-     * 合計値取得(sql)
+     * 売上取得(sql)
      *
      * @param Request $request
      * @return void
@@ -423,6 +425,148 @@ class BackProfitController extends Controller
 
             // query
             Log::debug('str:'.$str);
+            $ret = DB::select($str)[0];
+
+        }catch(\Throwable $e) {
+
+            throw $e;
+
+        }finally{
+
+        };
+
+        Log::debug('log_end:'.__FUNCTION__);
+
+        return $ret;
+    }
+
+    /**
+     * 売上取得：承諾済(sql)
+     *
+     * @param Request $request
+     * @return void
+     */
+    private function getProfitSumApprovalList(Request $request){
+        Log::debug('log_start:'.__FUNCTION__);
+
+        try{
+
+            // フリーワード
+            $free_word = $request->input('free_word');
+            Log::debug('$free_word:' .$free_word);
+
+            // session_id
+            $session_id = $request->session()->get('create_user_id');
+            Log::debug('$session_id:' .$session_id);
+            
+            // 勘定科目id
+            $profit_account_id = $request->input('profit_account_id');
+            Log::debug('$profit_account_id:' .$profit_account_id);
+
+            // 担当者id
+            $create_user_id = $request->input('create_user_id');
+            Log::debug('$create_user_id:' .$create_user_id);
+
+            // 不動産id
+            $real_estate_id = $request->input('real_estate_id');
+            Log::debug('$real_estate_id:' .$real_estate_id);
+
+            // 始期
+            $start_date = $request->input('start_date');
+            Log::debug('$start_date:' .$start_date);
+
+            // 終期
+            $end_date = $request->input('end_date');
+            Log::debug('$end_date:' .$end_date);
+
+            // where句
+            $where = "";
+
+            // 勘定項目id
+            if($profit_account_id !== null){
+
+                $where = $where ."and profits.profit_account_id = '$profit_account_id' ";
+            
+            };
+
+            // 担当者id
+            if($create_user_id !== null){
+
+                $where = $where ."and profits.profit_person_id = '$create_user_id' ";
+            
+            };
+
+            // 不動産id
+            if($real_estate_id !== null){
+
+                $where = $where ."and rooms.real_estate_id = '$real_estate_id' ";
+            
+            };
+    
+            // 勘定日
+            // 始期・終期がnullでない場合
+            if(($start_date !== null) && ($end_date !== null)) {
+
+                Log::debug('始期・終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '$start_date') "
+                ."and" 
+                ."(profit_date <= '$end_date')";
+            };
+
+            // 始期がnullでない場合の処理
+            if(($start_date !== null) && ($end_date == null)) {
+
+                Log::debug('始期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '$start_date') "
+                ."and" 
+                ."(profit_date <= '9999/12/31')";
+                
+            };
+
+            // 終期がnullでない場合の処理
+            if(($start_date == null) && ($end_date !== null)) {
+
+                Log::debug('終期がnullでない場合の処理');
+
+                $where = $where ."and " 
+                ."(profit_date >= '1900/01/01') "
+                ."and" 
+                ."(profit_date <= '$end_date')";
+
+            };
+
+            $str = "select "
+            ."count(*) as row_count, "
+            ."sum(profit_fee) as profit_fee "
+            ."from ( "
+            ."select "
+            ."profits.profit_id, "
+            ."profits.profit_person_id, "
+            ."profits.customer_name, "
+            ."profits.room_id, "
+            ."profits.profit_account_id, "
+            ."profits.profit_date, "
+            ."profits.profit_fee, "
+            ."profits.profit_memo, "
+            ."profits.profit_approval_id, "
+            ."profits.entry_user_id, "
+            ."profits.entry_date, "
+            ."profits.update_user_id, "
+            ."profits.update_date "
+            ."from profits "
+            ."left join rooms on "
+            ."rooms.room_id = profits.room_id "
+            ."where 1 = 1 "
+            ."and profits.profit_approval_id != 0 "
+            ."$where "
+            .") as t; ";
+
+            // query
+            Log::debug('profitSumApprovalList_sql:'.$str);
             $ret = DB::select($str)[0];
 
         }catch(\Throwable $e) {
